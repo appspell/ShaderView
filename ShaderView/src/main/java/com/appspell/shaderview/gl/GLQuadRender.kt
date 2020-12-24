@@ -77,8 +77,10 @@ internal class GLQuadRender(
 
         // set custom uniforms
         shader.uniforms = ShaderParams.Builder()
-            .addVec3("myUniform", floatArrayOf(0f, 0f, 0f))
-            .add("isEnabled", false)
+            .addVec3f("myUniform")
+            .addBool("isEnabled")
+            .addMat4f("uMVPMatrix")
+            .addMat4f("uSTMatrix")
             .build()
 
         maPositionHandle = GLES30.glGetAttribLocation(shader.program, "inPosition")
@@ -90,16 +92,6 @@ internal class GLQuadRender(
         checkGlError("glGetAttribLocation aTextureCoord")
         if (maTextureHandle == -1) {
             throw RuntimeException("Could not get attrib location for aTextureCoord")
-        }
-        muMVPMatrixHandle = GLES30.glGetUniformLocation(shader.program, "uMVPMatrix")
-        checkGlError("glGetUniformLocation uMVPMatrix")
-        if (muMVPMatrixHandle == -1) {
-            throw RuntimeException("Could not get attrib location for uMVPMatrix")
-        }
-        muSTMatrixHandle = GLES30.glGetUniformLocation(shader.program, "uSTMatrix")
-        checkGlError("glGetUniformLocation uSTMatrix")
-        if (muSTMatrixHandle == -1) {
-            throw RuntimeException("Could not get attrib location for uSTMatrix")
         }
 
 //        val textures = IntArray(1)
@@ -158,12 +150,6 @@ internal class GLQuadRender(
         GLES30.glEnableVertexAttribArray(maTextureHandle)
         checkGlError("glEnableVertexAttribArray maTextureHandle")
 
-        Matrix.setIdentityM(mMVPMatrix, 0)
-        GLES30.glUniformMatrix4fv(muMVPMatrixHandle, 1, false, mMVPMatrix, 0)
-        GLES30.glUniformMatrix4fv(muSTMatrixHandle, 1, false, mSTMatrix, 0)
-        GLES30.glDrawArrays(GLES30.GL_TRIANGLE_STRIP, 0, 4)
-
-
         // update uniforms
         shader.updateValue(
             "myUniform",
@@ -173,9 +159,18 @@ internal class GLQuadRender(
                 (System.currentTimeMillis() % 1000L) / 1000f
             )
         )
+
+        Matrix.setIdentityM(mMVPMatrix, 0)
+        shader.updateValue("uMVPMatrix", mMVPMatrix)
+        shader.updateValue("uSTMatrix", mSTMatrix)
+
         shader.updateValue("isEnabled", false)
         shader.onDrawFrame()
         checkGlError("onDrawFrame")
+
+        // draw scene
+        GLES30.glDrawArrays(GLES30.GL_TRIANGLE_STRIP, 0, 4)
+        checkGlError("glDrawArrays")
 
         GLES30.glFinish()
     }

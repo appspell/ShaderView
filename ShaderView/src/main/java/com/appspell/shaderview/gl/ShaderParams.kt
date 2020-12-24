@@ -11,14 +11,14 @@ class ShaderParams {
     private data class Attr(
         val type: AttrType,
         var location: Int = UNKNOWN_LOCATION,
-        var value: Any
+        var value: Any? = null
     )
 
     enum class AttrType {
-        FLOAT, INT,
+        FLOAT, INT, BOOL,
         FLOAT_VEC2, FLOAT_VEC3, FLOAT_VEC4,
         INT_VEC2, INT_VEC3, INT_VEC4,
-        BOOL,
+        MAT3, MAT4, MAT3x4,
         SAMPLER_2D
     }
 
@@ -65,13 +65,64 @@ class ShaderParams {
             when (attr.type) {
                 AttrType.FLOAT -> GLES30.glUniform1f(attr.location, attr.value as Float)
                 AttrType.INT -> GLES30.glUniform1i(attr.location, attr.value as Int)
-                AttrType.FLOAT_VEC2 -> GLES30.glUniform2fv(attr.location, 1, (attr.value as FloatArray), 0)
-                AttrType.FLOAT_VEC3 -> GLES30.glUniform3fv(attr.location, 1, (attr.value as FloatArray), 0)
-                AttrType.FLOAT_VEC4 -> GLES30.glUniform4fv(attr.location, 1, (attr.value as FloatArray), 0)
-                AttrType.INT_VEC2 -> GLES30.glUniform2iv(attr.location, 1, (attr.value as IntArray), 0)
-                AttrType.INT_VEC3 -> GLES30.glUniform3iv(attr.location, 1, (attr.value as IntArray), 0)
-                AttrType.INT_VEC4 -> GLES30.glUniform4iv(attr.location, 1, (attr.value as IntArray), 0)
                 AttrType.BOOL -> GLES30.glUniform1i(attr.location, if (attr.value as Boolean) 1 else 0)
+                AttrType.FLOAT_VEC2 -> GLES30.glUniform2fv(
+                    attr.location,
+                    1,
+                    (attr.value as FloatArray),
+                    0
+                )
+                AttrType.FLOAT_VEC3 -> GLES30.glUniform3fv(
+                    attr.location,
+                    1,
+                    (attr.value as FloatArray),
+                    0
+                )
+                AttrType.FLOAT_VEC4 -> GLES30.glUniform4fv(
+                    attr.location,
+                    1,
+                    (attr.value as FloatArray),
+                    0
+                )
+                AttrType.INT_VEC2 -> GLES30.glUniform2iv(
+                    attr.location,
+                    1,
+                    (attr.value as IntArray),
+                    0
+                )
+                AttrType.INT_VEC3 -> GLES30.glUniform3iv(
+                    attr.location,
+                    1,
+                    (attr.value as IntArray),
+                    0
+                )
+                AttrType.INT_VEC4 -> GLES30.glUniform4iv(
+                    attr.location,
+                    1,
+                    (attr.value as IntArray),
+                    0
+                )
+                AttrType.MAT3 -> GLES30.glUniformMatrix3fv(
+                    attr.location,
+                    1,
+                    false,
+                    (attr.value as FloatArray),
+                    0
+                )
+                AttrType.MAT4 -> GLES30.glUniformMatrix4fv(
+                    attr.location,
+                    1,
+                    false,
+                    (attr.value as FloatArray),
+                    0
+                )
+                AttrType.MAT3x4 -> GLES30.glUniformMatrix3x4fv(
+                    attr.location,
+                    1,
+                    false,
+                    (attr.value as FloatArray),
+                    0
+                )
                 AttrType.SAMPLER_2D -> TODO()
             }
         }
@@ -80,56 +131,74 @@ class ShaderParams {
     class Builder {
         private val result = ShaderParams()
 
-        fun add(attrName: String, value: Float): Builder {
+        fun addFloat(attrName: String, value: Float? = null): Builder {
             val attr = Attr(type = AttrType.FLOAT, value = value)
             result.map[attrName] = attr
             return this
         }
 
-        fun add(attrName: String, value: Int): Builder {
+        fun addInt(attrName: String, value: Int? = null): Builder {
             val attr = Attr(type = AttrType.INT, value = value)
             result.map[attrName] = attr
             return this
         }
 
-        fun add(attrName: String, value: Boolean): Builder {
+        fun addBool(attrName: String, value: Boolean? = null): Builder {
             val attr = Attr(type = AttrType.BOOL, value = value)
             result.map[attrName] = attr
             return this
         }
 
-        fun addVec2(attrName: String, value: FloatArray): Builder {
+        fun addVec2f(attrName: String, value: FloatArray? = null): Builder {
             val attr = Attr(type = AttrType.FLOAT_VEC2, value = value)
             result.map[attrName] = attr
             return this
         }
 
-        fun addVec3(attrName: String, value: FloatArray): Builder {
+        fun addVec3f(attrName: String, value: FloatArray? = null): Builder {
             val attr = Attr(type = AttrType.FLOAT_VEC3, value = value)
             result.map[attrName] = attr
             return this
         }
 
-        fun addVec4(attrName: String, value: FloatArray): Builder {
+        fun addVec4f(attrName: String, value: FloatArray? = null): Builder {
             val attr = Attr(type = AttrType.FLOAT_VEC4, value = value)
             result.map[attrName] = attr
             return this
         }
 
-        fun addVec2(attrName: String, value: IntArray): Builder {
+        fun addVec2i(attrName: String, value: IntArray? = null): Builder {
             val attr = Attr(type = AttrType.INT_VEC2, value = value)
             result.map[attrName] = attr
             return this
         }
 
-        fun addVec3(attrName: String, value: IntArray): Builder {
+        fun addVec3i(attrName: String, value: IntArray? = null): Builder {
             val attr = Attr(type = AttrType.INT_VEC3, value = value)
             result.map[attrName] = attr
             return this
         }
 
-        fun addVec4(attrName: String, value: IntArray): Builder {
+        fun addVec4i(attrName: String, value: IntArray? = null): Builder {
             val attr = Attr(type = AttrType.INT_VEC4, value = value)
+            result.map[attrName] = attr
+            return this
+        }
+
+        fun addMat3f(attrName: String, value: FloatArray? = null): Builder {
+            val attr = Attr(type = AttrType.MAT3, value = value)
+            result.map[attrName] = attr
+            return this
+        }
+
+        fun addMat4f(attrName: String, value: FloatArray? = null): Builder {
+            val attr = Attr(type = AttrType.MAT4, value = value)
+            result.map[attrName] = attr
+            return this
+        }
+
+        fun addMat3x4f(attrName: String, value: FloatArray? = null): Builder {
+            val attr = Attr(type = AttrType.MAT3x4, value = value)
             result.map[attrName] = attr
             return this
         }
