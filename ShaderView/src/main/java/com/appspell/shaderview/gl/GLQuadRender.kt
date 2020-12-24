@@ -2,12 +2,10 @@ package com.appspell.shaderview.gl
 
 import android.content.Context
 import android.graphics.SurfaceTexture
-import android.opengl.GLES20
-import android.opengl.GLES20.glGetUniformLocation
+import android.opengl.GLES30
 import android.opengl.Matrix
 import android.util.Log
 import com.appspell.shaderview.R
-import com.appspell.shaderview.ext.getRawTextFile
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
@@ -15,13 +13,13 @@ import java.util.concurrent.locks.ReentrantLock
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 import kotlin.concurrent.withLock
-import kotlin.random.Random
-
 
 /**
  * Render full-screen quad
  */
-internal class GLQuadRender(val context: Context) : GLTextureView.Renderer,
+internal class GLQuadRender(
+    private val context: Context // TODO remove Android dependency
+) : GLTextureView.Renderer,
     SurfaceTexture.OnFrameAvailableListener {
 
     companion object {
@@ -73,56 +71,56 @@ internal class GLQuadRender(val context: Context) : GLTextureView.Renderer,
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {}
 
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
+        if (!shader.createProgram(context, R.raw.simple_frag)) {
+            return
+        }
+
         // set custom uniforms
         shader.uniforms = ShaderParams.Builder()
             .addVec3("myUniform", floatArrayOf(0f, 0f, 0f))
             .add("isEnabled", false)
             .build()
 
-        if (!shader.createProgram(context, R.raw.simple_frag)) {
-            return
-        }
-
-        maPositionHandle = GLES20.glGetAttribLocation(shader.program, "aPosition")
+        maPositionHandle = GLES30.glGetAttribLocation(shader.program, "inPosition")
         checkGlError("glGetAttribLocation aPosition")
         if (maPositionHandle == -1) {
             throw RuntimeException("Could not get attrib location for aPosition")
         }
-        maTextureHandle = GLES20.glGetAttribLocation(shader.program, "aTextureCoord")
+        maTextureHandle = GLES30.glGetAttribLocation(shader.program, "inTextureCoord")
         checkGlError("glGetAttribLocation aTextureCoord")
         if (maTextureHandle == -1) {
             throw RuntimeException("Could not get attrib location for aTextureCoord")
         }
-        muMVPMatrixHandle = GLES20.glGetUniformLocation(shader.program, "uMVPMatrix")
+        muMVPMatrixHandle = GLES30.glGetUniformLocation(shader.program, "uMVPMatrix")
         checkGlError("glGetUniformLocation uMVPMatrix")
         if (muMVPMatrixHandle == -1) {
             throw RuntimeException("Could not get attrib location for uMVPMatrix")
         }
-        muSTMatrixHandle = GLES20.glGetUniformLocation(shader.program, "uSTMatrix")
+        muSTMatrixHandle = GLES30.glGetUniformLocation(shader.program, "uSTMatrix")
         checkGlError("glGetUniformLocation uSTMatrix")
         if (muSTMatrixHandle == -1) {
             throw RuntimeException("Could not get attrib location for uSTMatrix")
         }
 
-        val textures = IntArray(1)
-        GLES20.glGenTextures(1, textures, 0)
-        mTextureID = textures[0]
-        GLES20.glBindTexture(GL_TEXTURE_EXTERNAL_OES, mTextureID)
-        checkGlError("glBindTexture mTextureID")
-        GLES20.glTexParameterf(
-            GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_MIN_FILTER,
-            GLES20.GL_NEAREST.toFloat()
-        )
-        GLES20.glTexParameterf(
-            GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_MAG_FILTER,
-            GLES20.GL_LINEAR.toFloat()
-        )
+//        val textures = IntArray(1)
+//        GLES30.glGenTextures(1, textures, 0)
+//        mTextureID = textures[0]
+//        GLES30.glBindTexture(GL_TEXTURE_EXTERNAL_OES, mTextureID)
+//        checkGlError("glBindTexture mTextureID")
+//        GLES30.glTexParameterf(
+//            GL_TEXTURE_EXTERNAL_OES, GLES30.GL_TEXTURE_MIN_FILTER,
+//            GLES30.GL_NEAREST.toFloat()
+//        )
+//        GLES30.glTexParameterf(
+//            GL_TEXTURE_EXTERNAL_OES, GLES30.GL_TEXTURE_MAG_FILTER,
+//            GLES30.GL_LINEAR.toFloat()
+//        )
 
         /*
          * Create the SurfaceTexture that will feed this textureID,
          * and pass it to the MediaPlayer
          */
-        mSurface = SurfaceTexture(mTextureID)
+//        mSurface = SurfaceTexture(mTextureID)
         mSurface?.setOnFrameAvailableListener(this)
 //            val surface = Surface(mSurface)
         lock.withLock { updateSurface = false }
@@ -137,33 +135,33 @@ internal class GLQuadRender(val context: Context) : GLTextureView.Renderer,
                 updateSurface = false
             }
         }
-        GLES20.glClearColor(0.0f, 0.0f, 0.0f, 0.0f)
-        GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT or GLES20.GL_COLOR_BUFFER_BIT)
-        GLES20.glUseProgram(shader.program)
+        GLES30.glClearColor(0.0f, 0.0f, 0.0f, 0.0f)
+        GLES30.glClear(GLES30.GL_DEPTH_BUFFER_BIT or GLES30.GL_COLOR_BUFFER_BIT)
+        GLES30.glUseProgram(shader.program)
         checkGlError("glUseProgram")
-        GLES20.glActiveTexture(GLES20.GL_TEXTURE0)
-        GLES20.glBindTexture(GL_TEXTURE_EXTERNAL_OES, mTextureID)
+        GLES30.glActiveTexture(GLES30.GL_TEXTURE0)
+        GLES30.glBindTexture(GL_TEXTURE_EXTERNAL_OES, mTextureID)
         mTriangleVertices.position(TRIANGLE_VERTICES_DATA_POS_OFFSET)
-        GLES20.glVertexAttribPointer(
-            maPositionHandle, 3, GLES20.GL_FLOAT, false,
+        GLES30.glVertexAttribPointer(
+            maPositionHandle, 3, GLES30.GL_FLOAT, false,
             TRIANGLE_VERTICES_DATA_STRIDE_BYTES, mTriangleVertices
         )
-        checkGlError("glVertexAttribPointer maPosition")
-        GLES20.glEnableVertexAttribArray(maPositionHandle)
+        checkGlError("glVertexAttribPointer aPosition")
+        GLES30.glEnableVertexAttribArray(maPositionHandle)
         checkGlError("glEnableVertexAttribArray maPositionHandle")
         mTriangleVertices.position(TRIANGLE_VERTICES_DATA_UV_OFFSET)
-        GLES20.glVertexAttribPointer(
-            maTextureHandle, 3, GLES20.GL_FLOAT, false,
+        GLES30.glVertexAttribPointer(
+            maTextureHandle, 3, GLES30.GL_FLOAT, false,
             TRIANGLE_VERTICES_DATA_STRIDE_BYTES, mTriangleVertices
         )
         checkGlError("glVertexAttribPointer maTextureHandle")
-        GLES20.glEnableVertexAttribArray(maTextureHandle)
+        GLES30.glEnableVertexAttribArray(maTextureHandle)
         checkGlError("glEnableVertexAttribArray maTextureHandle")
 
         Matrix.setIdentityM(mMVPMatrix, 0)
-        GLES20.glUniformMatrix4fv(muMVPMatrixHandle, 1, false, mMVPMatrix, 0)
-        GLES20.glUniformMatrix4fv(muSTMatrixHandle, 1, false, mSTMatrix, 0)
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4)
+        GLES30.glUniformMatrix4fv(muMVPMatrixHandle, 1, false, mMVPMatrix, 0)
+        GLES30.glUniformMatrix4fv(muSTMatrixHandle, 1, false, mSTMatrix, 0)
+        GLES30.glDrawArrays(GLES30.GL_TRIANGLE_STRIP, 0, 4)
 
 
         // update uniforms
@@ -171,16 +169,15 @@ internal class GLQuadRender(val context: Context) : GLTextureView.Renderer,
             "myUniform",
             floatArrayOf(
                 1f,
-                (System.currentTimeMillis() % 100L) / 100f,
+                (System.currentTimeMillis() % 5000L) / 5000f,
                 (System.currentTimeMillis() % 1000L) / 1000f
             )
         )
-//        shader.updateValue("isEnabled", true)
+        shader.updateValue("isEnabled", false)
         shader.onDrawFrame()
-        checkGlError("glUniform1i isEnabled")
+        checkGlError("onDrawFrame")
 
-        checkGlError("glDrawArrays")
-        GLES20.glFinish()
+        GLES30.glFinish()
     }
 
     override fun onFrameAvailable(surface: SurfaceTexture) {
@@ -191,7 +188,7 @@ internal class GLQuadRender(val context: Context) : GLTextureView.Renderer,
 
     private fun checkGlError(op: String) {
         var error: Int
-        while (GLES20.glGetError().also { error = it } != GLES20.GL_NO_ERROR) {
+        while (GLES30.glGetError().also { error = it } != GLES30.GL_NO_ERROR) {
             Log.e(TAG, "$op: glError $error")
             throw RuntimeException("$op: glError $error")
         }

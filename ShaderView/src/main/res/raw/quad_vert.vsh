@@ -1,9 +1,13 @@
+#version 300 es
+
 uniform mat4 uMVPMatrix;
 uniform mat4 uSTMatrix;
-attribute vec4 aPosition;
-attribute vec4 aTextureCoord;
-varying vec2 vTextureCoord;
+
+in vec4 inPosition;
+in vec4 inTextureCoord;
+out vec2 textCoord;
+
 void main() {
-    gl_Position = uMVPMatrix * aPosition;
-    vTextureCoord = (uSTMatrix * aTextureCoord).xy;
+    gl_Position = uMVPMatrix * inPosition;
+    textCoord = (uSTMatrix * inTextureCoord).xy;
 }

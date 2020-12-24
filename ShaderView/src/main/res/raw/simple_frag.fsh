@@ -1,8 +1,19 @@
-#extension GL_OES_EGL_image_external : require
+#version 300 es
+
 precision mediump float;
-varying vec2 vTextureCoord;
+
 uniform vec3 myUniform;
-//uniform int isEnabled;
+uniform bool isEnabled;
+
+in vec2 textCoord;
+out vec4 fragColor;
+
 void main() {
-    gl_FragColor = vec4(vTextureCoord.x, vTextureCoord.y * myUniform.y, myUniform.x, myUniform.z);
+    if(isEnabled) {
+        fragColor = vec4(textCoord.x, 1.0, 1.0, 1.0);
+    } else {
+        fragColor = vec4(textCoord.x, textCoord.y * myUniform.y, myUniform.x, myUniform.z);
+    }
+
+//    fragColor = vec4(textCoord.x, textCoord.y * myUniform.y, myUniform.x, myUniform.z);
 }

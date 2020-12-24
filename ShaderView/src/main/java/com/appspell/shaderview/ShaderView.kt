@@ -10,6 +10,8 @@ import android.view.View
 import com.appspell.shaderview.gl.GLQuadRender
 import com.appspell.shaderview.gl.GLTextureView
 
+private const val OPENGL_VERSION = 3
+
 class ShaderView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -36,7 +38,7 @@ class ShaderView @JvmOverloads constructor(
         }
 
     init {
-        setEGLContextClientVersion(2)
+        setEGLContextClientVersion(OPENGL_VERSION)
         val renderer = GLQuadRender(context)
         setRenderer(renderer)
         setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY)

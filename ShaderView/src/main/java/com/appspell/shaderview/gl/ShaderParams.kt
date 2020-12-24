@@ -1,6 +1,6 @@
 package com.appspell.shaderview.gl
 
-import android.opengl.GLES20
+import android.opengl.GLES30
 import java.nio.FloatBuffer
 import java.nio.IntBuffer
 import java.util.*
@@ -46,7 +46,7 @@ class ShaderParams {
 
     fun updateAttrLocation(attrName: String, shaderProgram: Int) {
         map[attrName]?.apply {
-            this.location = GLES20.glGetUniformLocation(shaderProgram, attrName)
+            this.location = GLES30.glGetUniformLocation(shaderProgram, attrName)
         }
     }
 
@@ -63,15 +63,15 @@ class ShaderParams {
                 continue
             }
             when (attr.type) {
-                AttrType.FLOAT -> GLES20.glUniform1f(attr.location, attr.value as Float)
-                AttrType.INT -> GLES20.glUniform1i(attr.location, attr.value as Int)
-                AttrType.FLOAT_VEC2 -> GLES20.glUniform2fv(attr.location, 1, (attr.value as FloatArray), 0)
-                AttrType.FLOAT_VEC3 -> GLES20.glUniform3fv(attr.location, 1, (attr.value as FloatArray), 0)
-                AttrType.FLOAT_VEC4 -> GLES20.glUniform4fv(attr.location, 1, (attr.value as FloatArray), 0)
-                AttrType.INT_VEC2 -> GLES20.glUniform2iv(attr.location, 1, (attr.value as IntArray), 0)
-                AttrType.INT_VEC3 -> GLES20.glUniform3iv(attr.location, 1, (attr.value as IntArray), 0)
-                AttrType.INT_VEC4 -> GLES20.glUniform4iv(attr.location, 1, (attr.value as IntArray), 0)
-                AttrType.BOOL -> GLES20.glUniform1i(attr.location, if (attr.value as Boolean) 1 else 0)
+                AttrType.FLOAT -> GLES30.glUniform1f(attr.location, attr.value as Float)
+                AttrType.INT -> GLES30.glUniform1i(attr.location, attr.value as Int)
+                AttrType.FLOAT_VEC2 -> GLES30.glUniform2fv(attr.location, 1, (attr.value as FloatArray), 0)
+                AttrType.FLOAT_VEC3 -> GLES30.glUniform3fv(attr.location, 1, (attr.value as FloatArray), 0)
+                AttrType.FLOAT_VEC4 -> GLES30.glUniform4fv(attr.location, 1, (attr.value as FloatArray), 0)
+                AttrType.INT_VEC2 -> GLES30.glUniform2iv(attr.location, 1, (attr.value as IntArray), 0)
+                AttrType.INT_VEC3 -> GLES30.glUniform3iv(attr.location, 1, (attr.value as IntArray), 0)
+                AttrType.INT_VEC4 -> GLES30.glUniform4iv(attr.location, 1, (attr.value as IntArray), 0)
+                AttrType.BOOL -> GLES30.glUniform1i(attr.location, if (attr.value as Boolean) 1 else 0)
                 AttrType.SAMPLER_2D -> TODO()
             }
         }
