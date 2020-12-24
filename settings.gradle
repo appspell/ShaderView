@@ -1,0 +1,3 @@
+rootProject.name = "ShaderView"
+include ':app'
+include ':ShaderView'
