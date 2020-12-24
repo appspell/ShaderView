@@ -11,8 +11,10 @@ import com.appspell.shaderview.ext.getRawTextFile
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
+import java.util.concurrent.locks.ReentrantLock
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
+import kotlin.concurrent.withLock
 import kotlin.random.Random
 
 
@@ -53,7 +55,11 @@ internal class GLQuadRender(val context: Context) : GLTextureView.Renderer,
     private var maTextureHandle = 0
 
     private var mSurface: SurfaceTexture? = null
+
+    @Volatile
     private var updateSurface = false
+
+    private val lock = ReentrantLock()
 
     init {
         mTriangleVertices = ByteBuffer.allocateDirect(
@@ -64,14 +70,13 @@ internal class GLQuadRender(val context: Context) : GLTextureView.Renderer,
         Matrix.setIdentityM(mSTMatrix, 0)
     }
 
-
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {}
 
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
         // set custom uniforms
         shader.uniforms = ShaderParams.Builder()
             .addVec3("myUniform", floatArrayOf(0f, 0f, 0f))
-//            .add("isEnabled", false)
+            .add("isEnabled", false)
             .build()
 
         if (!shader.createProgram(context, R.raw.simple_frag)) {
@@ -120,12 +125,12 @@ internal class GLQuadRender(val context: Context) : GLTextureView.Renderer,
         mSurface = SurfaceTexture(mTextureID)
         mSurface?.setOnFrameAvailableListener(this)
 //            val surface = Surface(mSurface)
-        synchronized(this) { updateSurface = false }
+        lock.withLock { updateSurface = false }
     }
 
 
     override fun onDrawFrame(gl: GL10?) {
-        synchronized(this) {
+        lock.withLock {
             if (updateSurface) {
                 mSurface?.updateTexImage()
                 mSurface?.getTransformMatrix(mSTMatrix)
@@ -159,21 +164,29 @@ internal class GLQuadRender(val context: Context) : GLTextureView.Renderer,
         GLES20.glUniformMatrix4fv(muMVPMatrixHandle, 1, false, mMVPMatrix, 0)
         GLES20.glUniformMatrix4fv(muSTMatrixHandle, 1, false, mSTMatrix, 0)
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4)
-        checkGlError("glDrawArrays")
 
 
         // update uniforms
-        shader.updateValue("myUniform", floatArrayOf(1f, (System.currentTimeMillis() % 100L) / 100f, (System.currentTimeMillis() % 1000L) / 1000f))
+        shader.updateValue(
+            "myUniform",
+            floatArrayOf(
+                1f,
+                (System.currentTimeMillis() % 100L) / 100f,
+                (System.currentTimeMillis() % 1000L) / 1000f
+            )
+        )
 //        shader.updateValue("isEnabled", true)
         shader.onDrawFrame()
         checkGlError("glUniform1i isEnabled")
 
+        checkGlError("glDrawArrays")
         GLES20.glFinish()
     }
 
-    @Synchronized
     override fun onFrameAvailable(surface: SurfaceTexture) {
-        updateSurface = true
+        lock.withLock {
+            updateSurface = true
+        }
     }
 
     private fun checkGlError(op: String) {
