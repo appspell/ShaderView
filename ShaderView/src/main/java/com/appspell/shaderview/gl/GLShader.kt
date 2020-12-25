@@ -6,43 +6,40 @@ import android.util.Log
 import androidx.annotation.RawRes
 import com.appspell.shaderview.R
 import com.appspell.shaderview.ext.getRawTextFile
-import java.nio.FloatBuffer
 
 const val UNKNOWN_PROGRAM = 0
+private const val TAG = "GLShader"
 
 internal class GLShader {
-    companion object {
-        private const val TAG = "GLShader"
-    }
-
-    var program = UNKNOWN_PROGRAM
 
     val isReady: Boolean
         get() = program != UNKNOWN_PROGRAM
 
-    var uniforms = ShaderParams()
+    var params = ShaderParams()
         set(value) {
             field = value
-            bindUniforms()
+            bindParams()
         }
 
-    fun createProgram(context: Context, @RawRes fragmentShaderRaw: Int): Boolean {
+    var program = UNKNOWN_PROGRAM
+
+    fun create(context: Context, @RawRes fragmentShaderRaw: Int): Boolean {
         val vsh = context.resources.getRawTextFile(R.raw.quad_vert)
         val fsh = context.resources.getRawTextFile(fragmentShaderRaw)
-        return createProgram(vsh, fsh)
+        return create(vsh, fsh)
     }
 
-    fun createProgram(
+    fun create(
         context: Context,
         @RawRes vertexShaderRaw: Int,
         @RawRes fragmentShaderRaw: Int
     ): Boolean {
         val vsh = context.resources.getRawTextFile(vertexShaderRaw)
         val fsh = context.resources.getRawTextFile(fragmentShaderRaw)
-        return createProgram(vsh, fsh)
+        return create(vsh, fsh)
     }
 
-    fun createProgram(vertexSource: String, fragmentSource: String): Boolean {
+    fun create(vertexSource: String, fragmentSource: String): Boolean {
         val vertexShader = loadShader(GLES30.GL_VERTEX_SHADER, vertexSource)
         if (vertexShader == 0) {
             return false
@@ -67,7 +64,7 @@ internal class GLShader {
                 program = UNKNOWN_PROGRAM
                 return false
             }
-            bindUniforms()
+            bindParams()
         }
         return true
     }
@@ -79,38 +76,38 @@ internal class GLShader {
         pushValuesToProgram()
     }
 
-    fun updateValue(attrName: String, value: Float) {
-        uniforms.updateValue(attrName, value)
+    fun updateValue(paramName: String, value: Float) {
+        params.updateValue(paramName, value)
     }
 
-    fun updateValue(attrName: String, value: Int) {
-        uniforms.updateValue(attrName, value)
+    fun updateValue(paramName: String, value: Int) {
+        params.updateValue(paramName, value)
     }
 
-    fun updateValue(attrName: String, value: Boolean) {
-        uniforms.updateValue(attrName, value)
+    fun updateValue(paramName: String, value: Boolean) {
+        params.updateValue(paramName, value)
     }
 
-    fun updateValue(attrName: String, value: FloatArray) {
-        uniforms.updateValue(attrName, value)
+    fun updateValue(paramName: String, value: FloatArray) {
+        params.updateValue(paramName, value)
     }
 
-    fun updateValue(attrName: String, value: IntArray) {
-        uniforms.updateValue(attrName, value)
+    fun updateValue(paramName: String, value: IntArray) {
+        params.updateValue(paramName, value)
     }
 
-    private fun bindUniforms() {
+    private fun bindParams() {
         if (program == UNKNOWN_PROGRAM) {
             return
         }
-        uniforms.bindAttrs(program)
+        params.bindParams(program)
     }
 
     private fun pushValuesToProgram() {
         if (program == UNKNOWN_PROGRAM) {
             return
         }
-        uniforms.pushValuesToProgram()
+        params.pushValuesToProgram()
     }
 
     private fun loadShader(shaderType: Int, source: String): Int {
@@ -137,5 +134,4 @@ internal class GLShader {
             throw RuntimeException("$op: glError $error")
         }
     }
-
 }
