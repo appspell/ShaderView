@@ -1,12 +1,16 @@
 package com.appspell.shaderview.gl
 
 import android.content.Context
+import android.graphics.BitmapFactory
 import android.graphics.SurfaceTexture
-import android.opengl.GLES20.*
+import android.opengl.GLES20
 import android.opengl.GLES30
+import android.opengl.GLUtils
 import android.opengl.Matrix
 import android.util.Log
+import androidx.annotation.DrawableRes
 import com.appspell.shaderview.R
+import com.appspell.shaderview.ext.loadTexture
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
@@ -14,6 +18,7 @@ import java.util.concurrent.locks.ReentrantLock
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 import kotlin.concurrent.withLock
+
 
 private const val TAG = "GLQuadRender"
 private const val FLOAT_SIZE_BYTES = 4
@@ -42,9 +47,6 @@ internal class GLQuadRender(
     private val quadVertices: FloatBuffer
 
     private var shader = GLShader()
-
-    // TODO delete
-//    private var mTextureID = 0
 
     private val matrixMVP = FloatArray(16)
     private val matrixSTM = FloatArray(16)
@@ -93,7 +95,9 @@ internal class GLQuadRender(
         // set custom uniforms
         shader.params = ShaderParams.Builder()
             .addVec3f("myUniform")
-            .addBool("isEnabled", false)
+            .addTexture2D("uTextureSampler1", R.drawable.bokeh, context.resources, GLES30.GL_TEXTURE0)
+            .addTexture2D("uTextureSampler2", R.drawable.button_normal, context.resources, GLES30.GL_TEXTURE1)
+            .addTexture2D("uTextureSampler3", R.drawable.test_texture, context.resources, GLES30.GL_TEXTURE2)
             .build()
 
         if (!shader.isReady) {
@@ -110,21 +114,6 @@ internal class GLQuadRender(
         // set attributes (input for Vertex Shader)
         inPositionHandle = glGetAttribLocation(VERTEX_SHADER_IN_POSITION)
         inTextureHandle = glGetAttribLocation(VERTEX_SHADER_IN_TEXTURE_COORD)
-
-//        val textures = IntArray(1)
-//        GLES30.glGenTextures(1, textures, 0)
-//        mTextureID = textures[0]
-//        GLES30.glBindTexture(GL_TEXTURE_EXTERNAL_OES, mTextureID)
-//        checkGlError("glBindTexture mTextureID")
-//        GLES30.glTexParameterf(
-//            GL_TEXTURE_EXTERNAL_OES, GLES30.GL_TEXTURE_MIN_FILTER,
-//            GLES30.GL_NEAREST.toFloat()
-//        )
-//        GLES30.glTexParameterf(
-//            GL_TEXTURE_EXTERNAL_OES, GLES30.GL_TEXTURE_MAG_FILTER,
-//            GLES30.GL_LINEAR.toFloat()
-//        )
-//        mSurface = SurfaceTexture(mTextureID)
 
         surface?.setOnFrameAvailableListener(this)
         lock.withLock { updateSurface = false }
@@ -144,8 +133,6 @@ internal class GLQuadRender(
 
         GLES30.glUseProgram(shader.program)
         checkGlError("glUseProgram")
-//        GLES30.glActiveTexture(GLES30.GL_TEXTURE0)
-//        GLES30.glBindTexture(GL_TEXTURE_EXTERNAL_OES, mTextureID)
 
         // shader input (built-in attributes)
         setAttribute(inPositionHandle, VERTEX_SHADER_IN_POSITION, TRIANGLE_VERTICES_DATA_POS_OFFSET)
@@ -168,6 +155,10 @@ internal class GLQuadRender(
 
         // send params to shaders
         shader.onDrawFrame()
+
+        // activate blending for textures
+        GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA)
+        GLES30.glEnable(GLES20.GL_BLEND)
 
         // draw scene
         GLES30.glDrawArrays(GLES30.GL_TRIANGLE_STRIP, 0, 4)

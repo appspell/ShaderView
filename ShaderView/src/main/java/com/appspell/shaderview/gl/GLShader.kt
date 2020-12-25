@@ -10,6 +10,7 @@ import com.appspell.shaderview.ext.getRawTextFile
 const val UNKNOWN_PROGRAM = 0
 private const val TAG = "GLShader"
 
+// TODO builder
 internal class GLShader {
 
     val isReady: Boolean

@@ -1,6 +1,11 @@
 package com.appspell.shaderview.gl
 
+import android.content.res.Resources
+import android.graphics.Bitmap
 import android.opengl.GLES30
+import androidx.annotation.DrawableRes
+import com.appspell.shaderview.ext.loadTexture
+import com.appspell.shaderview.ext.toGlTexture
 import java.util.*
 
 const val UNKNOWN_LOCATION = -1
@@ -10,7 +15,8 @@ class ShaderParams {
     private data class Param(
         val valeType: ValueType,
         var location: Int = UNKNOWN_LOCATION,
-        var value: Any? = null
+        var value: Any? = null,
+        var addtional: Any? = null
     ) {
         enum class ValueType {
             FLOAT, INT, BOOL,
@@ -124,7 +130,11 @@ class ShaderParams {
                     (param.value as FloatArray),
                     0
                 )
-                Param.ValueType.SAMPLER_2D -> TODO()
+                Param.ValueType.SAMPLER_2D -> {
+                    GLES30.glUniform1i(param.location, (param.addtional as Int).convertTextureSlotToIndex())
+                    GLES30.glActiveTexture(param.addtional as Int)
+                    GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, param.value as Int)
+                }
             }
         }
     }
@@ -213,6 +223,78 @@ class ShaderParams {
             return this
         }
 
+        /**
+         * Set texture for GL_TEXTURE0 slot
+         */
+        fun addTexture2D(
+            paramName: String,
+            bitmap: Bitmap? = null,
+            textureSlot: Int = GLES30.GL_TEXTURE0
+        ): Builder {
+            val param = Param(
+                valeType = Param.ValueType.SAMPLER_2D,
+                value = bitmap?.toGlTexture(true, textureSlot),
+                addtional = textureSlot
+            )
+            result.map[paramName] = param
+            return this
+        }
+
+        /**
+         * Set texture for GL_TEXTURE0 slot
+         */
+        fun addTexture2D(
+            paramName: String,
+            @DrawableRes textureResourceId: Int,
+            resources: Resources,
+            textureSlot: Int = GLES30.GL_TEXTURE0
+        ): Builder {
+            val param = Param(
+                valeType = Param.ValueType.SAMPLER_2D,
+                value = resources.loadTexture(textureResourceId, textureSlot),
+                addtional = textureSlot
+            )
+            result.map[paramName] = param
+            return this
+        }
+
         fun build() = result
     }
+
+    private fun Int.convertTextureSlotToIndex(): Int =
+        when (this) {
+            GLES30.GL_TEXTURE0 -> 0
+            GLES30.GL_TEXTURE1 -> 1
+            GLES30.GL_TEXTURE2 -> 2
+            GLES30.GL_TEXTURE3 -> 3
+            GLES30.GL_TEXTURE4 -> 4
+            GLES30.GL_TEXTURE5 -> 5
+            GLES30.GL_TEXTURE6 -> 6
+            GLES30.GL_TEXTURE7 -> 7
+            GLES30.GL_TEXTURE8 -> 8
+            GLES30.GL_TEXTURE9 -> 9
+            GLES30.GL_TEXTURE10 -> 10
+            GLES30.GL_TEXTURE11 -> 11
+            GLES30.GL_TEXTURE12 -> 12
+            GLES30.GL_TEXTURE13 -> 13
+            GLES30.GL_TEXTURE14 -> 14
+            GLES30.GL_TEXTURE15 -> 15
+            GLES30.GL_TEXTURE16 -> 16
+            GLES30.GL_TEXTURE17 -> 17
+            GLES30.GL_TEXTURE18 -> 18
+            GLES30.GL_TEXTURE19 -> 19
+            GLES30.GL_TEXTURE20 -> 20
+            GLES30.GL_TEXTURE21 -> 21
+            GLES30.GL_TEXTURE22 -> 22
+            GLES30.GL_TEXTURE23 -> 23
+            GLES30.GL_TEXTURE24 -> 24
+            GLES30.GL_TEXTURE25 -> 25
+            GLES30.GL_TEXTURE26 -> 26
+            GLES30.GL_TEXTURE27 -> 27
+            GLES30.GL_TEXTURE28 -> 28
+            GLES30.GL_TEXTURE29 -> 29
+            GLES30.GL_TEXTURE30 -> 30
+            GLES30.GL_TEXTURE31 -> 31
+            else -> 0
+        }
 }
