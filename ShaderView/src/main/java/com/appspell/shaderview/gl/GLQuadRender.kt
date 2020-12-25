@@ -138,6 +138,7 @@ internal class GLQuadRender(
                 updateSurface = false
             }
         }
+
         GLES30.glClearColor(1.0f, 1.0f, 1.0f, 1.0f)
         GLES30.glClear(GLES30.GL_DEPTH_BUFFER_BIT or GLES30.GL_COLOR_BUFFER_BIT)
 
@@ -147,8 +148,8 @@ internal class GLQuadRender(
 //        GLES30.glBindTexture(GL_TEXTURE_EXTERNAL_OES, mTextureID)
 
         // shader input (built-in attributes)
-        setAttribute(inPositionHandle, VERTEX_SHADER_IN_POSITION)
-        setAttribute(inTextureHandle, VERTEX_SHADER_IN_TEXTURE_COORD)
+        setAttribute(inPositionHandle, VERTEX_SHADER_IN_POSITION, TRIANGLE_VERTICES_DATA_POS_OFFSET)
+        setAttribute(inTextureHandle, VERTEX_SHADER_IN_TEXTURE_COORD, TRIANGLE_VERTICES_DATA_UV_OFFSET)
 
         // update uniforms
         shader.updateValue(
@@ -160,12 +161,13 @@ internal class GLQuadRender(
             )
         )
 
+        // build-in uniforms
         Matrix.setIdentityM(matrixMVP, 0)
         shader.updateValue(VERTEX_SHADER_UNIFORM_MATRIX_MVP, matrixMVP)
         shader.updateValue(VERTEX_SHADER_UNIFORM_MATRIX_STM, matrixSTM)
 
+        // send params to shaders
         shader.onDrawFrame()
-        checkGlError("onDrawFrame")
 
         // draw scene
         GLES30.glDrawArrays(GLES30.GL_TRIANGLE_STRIP, 0, 4)
@@ -180,6 +182,9 @@ internal class GLQuadRender(
         }
     }
 
+    /**
+     * get location of some input attribute for shader
+     */
     private fun glGetAttribLocation(attrName: String): Int {
         val attr = GLES30.glGetAttribLocation(shader.program, attrName)
         checkGlError("glGetAttribLocation $attrName")
@@ -189,8 +194,11 @@ internal class GLQuadRender(
         return attr
     }
 
-    private fun setAttribute(attrLocation : Int, attrName : String) {
-        quadVertices.position(TRIANGLE_VERTICES_DATA_POS_OFFSET)
+    /**
+     * set values for attributes of input vertices
+     */
+    private fun setAttribute(attrLocation: Int, attrName: String, offset: Int) {
+        quadVertices.position(offset)
         GLES30.glVertexAttribPointer(
             attrLocation, 3, GLES30.GL_FLOAT, false,
             TRIANGLE_VERTICES_DATA_STRIDE_BYTES, quadVertices
