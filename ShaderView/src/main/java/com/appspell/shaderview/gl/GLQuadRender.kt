@@ -2,6 +2,7 @@ package com.appspell.shaderview.gl
 
 import android.content.Context
 import android.graphics.SurfaceTexture
+import android.opengl.GLES20.*
 import android.opengl.GLES30
 import android.opengl.Matrix
 import android.util.Log
@@ -100,7 +101,8 @@ internal class GLQuadRender(
         }
 
         // built-in parameters
-        shader.params = shader.params.newBuilder()
+        shader.params = shader.params
+            .newBuilder()
             .addMat4f(VERTEX_SHADER_UNIFORM_MATRIX_MVP)
             .addMat4f(VERTEX_SHADER_UNIFORM_MATRIX_STM)
             .build()
@@ -136,33 +138,17 @@ internal class GLQuadRender(
                 updateSurface = false
             }
         }
-        GLES30.glClearColor(0.0f, 0.0f, 0.0f, 0.0f)
+        GLES30.glClearColor(1.0f, 1.0f, 1.0f, 1.0f)
         GLES30.glClear(GLES30.GL_DEPTH_BUFFER_BIT or GLES30.GL_COLOR_BUFFER_BIT)
+
         GLES30.glUseProgram(shader.program)
         checkGlError("glUseProgram")
 //        GLES30.glActiveTexture(GLES30.GL_TEXTURE0)
 //        GLES30.glBindTexture(GL_TEXTURE_EXTERNAL_OES, mTextureID)
 
-        // shader input
-        // vertex shader inPosition
-        quadVertices.position(TRIANGLE_VERTICES_DATA_POS_OFFSET)
-        GLES30.glVertexAttribPointer(
-            inPositionHandle, 3, GLES30.GL_FLOAT, false,
-            TRIANGLE_VERTICES_DATA_STRIDE_BYTES, quadVertices
-        )
-        checkGlError("glVertexAttribPointer $VERTEX_SHADER_IN_POSITION")
-        GLES30.glEnableVertexAttribArray(inPositionHandle)
-        checkGlError("glEnableVertexAttribArray iPositionHandle")
-
-        // vertex shader inTextCoord
-        quadVertices.position(TRIANGLE_VERTICES_DATA_UV_OFFSET)
-        GLES30.glVertexAttribPointer(
-            inTextureHandle, 3, GLES30.GL_FLOAT, false,
-            TRIANGLE_VERTICES_DATA_STRIDE_BYTES, quadVertices
-        )
-        checkGlError("glVertexAttribPointer iTextureHandle")
-        GLES30.glEnableVertexAttribArray(inTextureHandle)
-        checkGlError("glEnableVertexAttribArray iTextureHandle")
+        // shader input (built-in attributes)
+        setAttribute(inPositionHandle, VERTEX_SHADER_IN_POSITION)
+        setAttribute(inTextureHandle, VERTEX_SHADER_IN_TEXTURE_COORD)
 
         // update uniforms
         shader.updateValue(
@@ -201,6 +187,17 @@ internal class GLQuadRender(
             throw RuntimeException("Could not get attrib location for input '$attrName'")
         }
         return attr
+    }
+
+    private fun setAttribute(attrLocation : Int, attrName : String) {
+        quadVertices.position(TRIANGLE_VERTICES_DATA_POS_OFFSET)
+        GLES30.glVertexAttribPointer(
+            attrLocation, 3, GLES30.GL_FLOAT, false,
+            TRIANGLE_VERTICES_DATA_STRIDE_BYTES, quadVertices
+        )
+        checkGlError("glVertexAttribPointer $attrName")
+        GLES30.glEnableVertexAttribArray(attrLocation)
+        checkGlError("glEnableVertexAttribArray $attrName")
     }
 
     private fun checkGlError(op: String) {
