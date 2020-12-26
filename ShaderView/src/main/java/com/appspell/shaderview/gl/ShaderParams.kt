@@ -4,7 +4,7 @@ import android.content.res.Resources
 import android.graphics.Bitmap
 import android.opengl.GLES30
 import androidx.annotation.DrawableRes
-import com.appspell.shaderview.ext.loadTexture
+import com.appspell.shaderview.ext.loadBitmapForTexture
 import com.appspell.shaderview.ext.toGlTexture
 import java.util.*
 
@@ -51,7 +51,25 @@ class ShaderParams {
 
     fun updateParamsLocation(paramName: String, shaderProgram: Int) {
         map[paramName]?.apply {
-            this.location = GLES30.glGetUniformLocation(shaderProgram, paramName)
+            location = GLES30.glGetUniformLocation(shaderProgram, paramName)
+
+            when (valeType) {
+                // We have a different flow for Textures.
+                // At first, we get a bitmap from params and when OpenGL context is ready we convert it to Texture
+                Param.ValueType.SAMPLER_2D -> {
+                    // if it is a Bitmap let's upload it to the GPU
+                    value = value
+                        ?.takeIf { it is Bitmap }
+                        ?.run {
+                            (this as? Bitmap)?.toGlTexture(needToRecycle = true, addtional as Int)
+                        }
+                        ?: value
+                }
+                else -> {
+                    // Do Nothing for the other types
+                }
+            }
+
         }
     }
 
@@ -66,7 +84,7 @@ class ShaderParams {
     fun pushValuesToProgram() {
         for (key in map.keys) {
             val param = map[key]
-            if (param == null || param.location == UNKNOWN_LOCATION) {
+            if (param == null || param.location == UNKNOWN_LOCATION || param.value == null) {
                 continue
             }
             when (param.valeType) {
@@ -233,7 +251,7 @@ class ShaderParams {
         ): Builder {
             val param = Param(
                 valeType = Param.ValueType.SAMPLER_2D,
-                value = bitmap?.toGlTexture(true, textureSlot),
+                value = bitmap,
                 addtional = textureSlot
             )
             result.map[paramName] = param
@@ -251,7 +269,7 @@ class ShaderParams {
         ): Builder {
             val param = Param(
                 valeType = Param.ValueType.SAMPLER_2D,
-                value = resources.loadTexture(textureResourceId, textureSlot),
+                value = resources.loadBitmapForTexture(textureResourceId),
                 addtional = textureSlot
             )
             result.map[paramName] = param

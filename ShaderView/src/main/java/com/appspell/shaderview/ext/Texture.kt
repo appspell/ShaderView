@@ -8,18 +8,12 @@ import android.opengl.GLES30
 import android.opengl.GLUtils
 import androidx.annotation.DrawableRes
 
-/**
- * Load texture from DrawableResId and write it to the video memory
- */
-@Throws(RuntimeException::class)
-fun Resources.loadTexture(@DrawableRes drawableRes: Int, textureSlot: Int = GLES30.GL_TEXTURE0): Int {
+fun Resources.loadBitmapForTexture(@DrawableRes drawableRes: Int): Bitmap {
     val options = BitmapFactory.Options()
     options.inScaled = false // true by default. false if we need scalable image
 
     // load from resources
-    val bitmap = BitmapFactory.decodeResource(this, drawableRes, options)
-
-    return bitmap.toGlTexture(true, textureSlot)
+    return BitmapFactory.decodeResource(this, drawableRes, options)
 }
 
 /**

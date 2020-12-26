@@ -6,12 +6,12 @@ import android.util.Log
 import androidx.annotation.RawRes
 import com.appspell.shaderview.R
 import com.appspell.shaderview.ext.getRawTextFile
+import java.lang.Exception
 
 const val UNKNOWN_PROGRAM = 0
 private const val TAG = "GLShader"
 
-// TODO builder
-internal class GLShader {
+class GLShader {
 
     val isReady: Boolean
         get() = program != UNKNOWN_PROGRAM
@@ -24,29 +24,13 @@ internal class GLShader {
 
     var program = UNKNOWN_PROGRAM
 
-    fun create(context: Context, @RawRes fragmentShaderRaw: Int): Boolean {
-        val vsh = context.resources.getRawTextFile(R.raw.quad_vert)
-        val fsh = context.resources.getRawTextFile(fragmentShaderRaw)
-        return create(vsh, fsh)
-    }
-
-    fun create(
-        context: Context,
-        @RawRes vertexShaderRaw: Int,
-        @RawRes fragmentShaderRaw: Int
-    ): Boolean {
-        val vsh = context.resources.getRawTextFile(vertexShaderRaw)
-        val fsh = context.resources.getRawTextFile(fragmentShaderRaw)
-        return create(vsh, fsh)
-    }
-
-    fun create(vertexSource: String, fragmentSource: String): Boolean {
+    fun createProgram(vertexSource: String, fragmentSource: String): Boolean {
         val vertexShader = loadShader(GLES30.GL_VERTEX_SHADER, vertexSource)
-        if (vertexShader == 0) {
+        if (vertexShader == UNKNOWN_PROGRAM) {
             return false
         }
         val pixelShader = loadShader(GLES30.GL_FRAGMENT_SHADER, fragmentSource)
-        if (pixelShader == 0) {
+        if (pixelShader == UNKNOWN_PROGRAM) {
             return false
         }
         program = GLES30.glCreateProgram()
@@ -77,25 +61,7 @@ internal class GLShader {
         pushValuesToProgram()
     }
 
-    fun updateValue(paramName: String, value: Float) {
-        params.updateValue(paramName, value)
-    }
-
-    fun updateValue(paramName: String, value: Int) {
-        params.updateValue(paramName, value)
-    }
-
-    fun updateValue(paramName: String, value: Boolean) {
-        params.updateValue(paramName, value)
-    }
-
-    fun updateValue(paramName: String, value: FloatArray) {
-        params.updateValue(paramName, value)
-    }
-
-    fun updateValue(paramName: String, value: IntArray) {
-        params.updateValue(paramName, value)
-    }
+    fun newBuilder() = Builder(this)
 
     private fun bindParams() {
         if (program == UNKNOWN_PROGRAM) {
@@ -134,5 +100,53 @@ internal class GLShader {
             Log.e(TAG, "$op: glError $error")
             throw RuntimeException("$op: glError $error")
         }
+    }
+
+    class Builder {
+        private var shader: GLShader = GLShader()
+
+        constructor() {
+            this.shader = GLShader()
+        }
+
+        internal constructor(shader: GLShader) {
+            this.shader = shader
+        }
+
+        fun fragmentShader(
+            context: Context,
+            @RawRes fragmentShaderRawResId: Int
+        ): Builder {
+            val vsh = context.resources.getRawTextFile(R.raw.quad_vert)
+            val fsh = context.resources.getRawTextFile(fragmentShaderRawResId)
+            if (!shader.createProgram(vsh, fsh)) {
+                Log.e(TAG, "shader program wasn't created")
+            }
+            return this
+        }
+
+        /**
+         * Create Vertex and Fragment shader
+         * "internal" as far as custom vertex shader is not supproted right now
+         */
+        internal fun create(
+            context: Context,
+            @RawRes vertexShaderRaw: Int,
+            @RawRes fragmentShaderRaw: Int
+        ): Builder {
+            val vsh = context.resources.getRawTextFile(vertexShaderRaw)
+            val fsh = context.resources.getRawTextFile(fragmentShaderRaw)
+            if (!shader.createProgram(vsh, fsh)) {
+                Log.e(TAG, "shader program wasn't created")
+            }
+            return this
+        }
+
+        fun params(shaderParams: ShaderParams): Builder {
+            shader.params = shaderParams
+            return this
+        }
+
+        fun build() = shader
     }
 }

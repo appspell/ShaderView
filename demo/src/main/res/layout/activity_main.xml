@@ -38,14 +38,14 @@
 
         <com.appspell.shaderview.ShaderView
             android:id="@+id/texture3"
-            android:layout_width="50dp"
-            android:layout_height="15dp"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
             android:layout_margin="10dp" />
 
         <com.appspell.shaderview.ShaderView
             android:id="@+id/texture4"
-            android:layout_width="350dp"
-            android:layout_height="315dp"
+            android:layout_width="50dp"
+            android:layout_height="115dp"
             android:layout_margin="10dp" />
 
         <com.appspell.shaderview.ShaderView
@@ -56,8 +56,20 @@
 
         <com.appspell.shaderview.ShaderView
             android:id="@+id/texture6"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="350dp"
+            android:layout_height="350dp"
+            android:layout_margin="10dp" />
+
+        <com.appspell.shaderview.ShaderView
+            android:id="@+id/texture7"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_margin="10dp" />
+
+        <com.appspell.shaderview.ShaderView
+            android:id="@+id/texture8"
+            android:layout_width="100dp"
+            android:layout_height="200dp"
             android:layout_margin="10dp" />
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>
