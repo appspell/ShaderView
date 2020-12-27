@@ -33,9 +33,6 @@ internal class GLQuadRender : GLTextureView.Renderer, SurfaceTexture.OnFrameAvai
     companion object {
         const val VERTEX_SHADER_IN_POSITION = "inPosition"
         const val VERTEX_SHADER_IN_TEXTURE_COORD = "inTextureCoord"
-        const val VERTEX_SHADER_IN_NORMAL = "inNormal"
-        const val VERTEX_SHADER_IN_TANGENT = "inTangent"
-        const val VERTEX_SHADER_IN_BINORMAL = "inBiNormal"
 
         const val VERTEX_SHADER_UNIFORM_MATRIX_MVP = "uMVPMatrix"
         const val VERTEX_SHADER_UNIFORM_MATRIX_STM = "uSTMatrix"

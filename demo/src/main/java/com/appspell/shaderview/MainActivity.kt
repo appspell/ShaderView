@@ -21,23 +21,21 @@ class MainActivity : AppCompatActivity() {
             shaderParams = ShaderParams.Builder()
                 .addTexture2D(
                     "uNormalTexture",
-                    R.drawable.normal_sphere,
+                    R.drawable.normal_button,
                     context.resources,
                     GLES30.GL_TEXTURE1
                 )
                 .addVec3f("uColor", floatArrayOf(0.5f, 0.5f, 0.5f))
                 .addVec3f("uVaryingColor", floatArrayOf(0.5f, 0.5f, 0.5f))
-                .addVec3f("uLightDirection", floatArrayOf(0.0f, 1.0f, 0.0f))
-                .addVec3f("uEyeDirection", floatArrayOf(0.0f, 1.0f, 0.0f))
+                .addVec3f("uLightDirection", floatArrayOf(-1.0f, 1.0f, 0.0f))
+                .addVec3f("uEyeDirection", floatArrayOf(0.0f, 0.0f, 0.0f))
                 .build()
             onDrawFrameListener = { shaderParams ->
-                val pos = (System.currentTimeMillis() % 1000L) / 1000f
-//                Log.e("ASDA", "ASDA " + pos)
-                shaderParams.updateValue("uLightDirection", floatArrayOf(pos, 1f, 0f))
+                val pos = (System.currentTimeMillis() % 2500L) / 2500f
+                shaderParams.updateValue("uLightDirection", floatArrayOf(-1.0f + pos, 1.0f, 0.0f))
             }
         }
         findViewById<ShaderView>(R.id.texture2).apply {
-            updateContinuously = true
             fragmentShaderRawResId = R.raw.color_frag
             shaderParams = ShaderParams.Builder()
                 .addVec3f("diffuseColor", floatArrayOf(1.0f, 0.5f, 0.5f))
@@ -54,7 +52,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
         findViewById<ShaderView>(R.id.texture4).apply {
-            updateContinuously = true
             fragmentShaderRawResId = R.raw.simple_frag
         }
         findViewById<ShaderView>(R.id.texture5).apply {
@@ -91,7 +88,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         findViewById<ShaderView>(R.id.texture7).apply {
-            updateContinuously = true
             fragmentShaderRawResId = R.raw.multiple_textures_frag
             shaderParams = ShaderParams.Builder()
                 .addTexture2D(
