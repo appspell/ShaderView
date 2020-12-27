@@ -3,6 +3,7 @@ package com.appspell.shaderview
 import android.opengl.GLES30
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import com.appspell.shaderview.gl.GLShader
 import com.appspell.shaderview.gl.ShaderParams
 import kotlin.math.cos
@@ -15,27 +16,25 @@ class MainActivity : AppCompatActivity() {
 
         findViewById<ShaderView>(R.id.texture).apply {
             updateContinuously = true
-            fragmentShaderRawResId = R.raw.multiple_textures_frag
+            vertexShaderRawResId = R.raw.quad_tangent_space_vert
+            fragmentShaderRawResId = R.raw.nomral_map
             shaderParams = ShaderParams.Builder()
                 .addTexture2D(
-                    "uTextureSampler1",
-                    R.drawable.bokeh,
-                    context.resources,
-                    GLES30.GL_TEXTURE0
-                )
-                .addTexture2D(
-                    "uTextureSampler2",
-                    R.drawable.button_normal,
+                    "uNormalTexture",
+                    R.drawable.normal_sphere,
                     context.resources,
                     GLES30.GL_TEXTURE1
                 )
-                .addTexture2D(
-                    "uTextureSampler3",
-                    R.drawable.test_texture,
-                    context.resources,
-                    GLES30.GL_TEXTURE2
-                )
+                .addVec3f("uColor", floatArrayOf(0.5f, 0.5f, 0.5f))
+                .addVec3f("uVaryingColor", floatArrayOf(0.5f, 0.5f, 0.5f))
+                .addVec3f("uLightDirection", floatArrayOf(0.0f, 1.0f, 0.0f))
+                .addVec3f("uEyeDirection", floatArrayOf(0.0f, 1.0f, 0.0f))
                 .build()
+            onDrawFrameListener = { shaderParams ->
+                val pos = (System.currentTimeMillis() % 1000L) / 1000f
+//                Log.e("ASDA", "ASDA " + pos)
+                shaderParams.updateValue("uLightDirection", floatArrayOf(pos, 1f, 0f))
+            }
         }
         findViewById<ShaderView>(R.id.texture2).apply {
             updateContinuously = true
@@ -78,7 +77,7 @@ class MainActivity : AppCompatActivity() {
             shaderParams = ShaderParams.Builder()
                 .addTexture2D(
                     "uTexture",
-                    R.drawable.button_normal,
+                    R.drawable.normal_button,
                     context.resources,
                     GLES30.GL_TEXTURE0
                 )
@@ -103,9 +102,15 @@ class MainActivity : AppCompatActivity() {
                 )
                 .addTexture2D(
                     "uTextureSampler2",
-                    R.drawable.test_texture,
+                    R.drawable.normal_button,
                     context.resources,
                     GLES30.GL_TEXTURE1
+                )
+                .addTexture2D(
+                    "uTextureSampler3",
+                    R.drawable.test_texture,
+                    context.resources,
+                    GLES30.GL_TEXTURE2
                 )
                 .build()
         }

@@ -23,6 +23,9 @@ class ShaderView @JvmOverloads constructor(
     View.OnLayoutChangeListener {
 
     @RawRes
+    var vertexShaderRawResId: Int? = R.raw.quad_vert
+
+    @RawRes
     var fragmentShaderRawResId: Int? = null
     var shaderParams: ShaderParams? = null
     var onViewReadyListener: ((shader: GLShader) -> Unit)? = null
@@ -44,7 +47,7 @@ class ShaderView @JvmOverloads constructor(
             }
         }
 
-    private val renderer = GLQuadRender(context)
+    private val renderer = GLQuadRender()
 
     private val rendererListener = object : GLQuadRender.ShaderViewListener {
         override fun onSurfaceCreated() {
@@ -67,8 +70,9 @@ class ShaderView @JvmOverloads constructor(
     private fun initShaders() {
         fragmentShaderRawResId?.let { fragmentShader ->
             renderer.shader = renderer.shader.newBuilder()
-                .fragmentShader(
+                .create(
                     context = context,
+                    vertexShaderRawResId = vertexShaderRawResId ?: R.raw.quad_vert,
                     fragmentShaderRawResId = fragmentShader
                 )
                 .apply { shaderParams?.apply { params(this) } }

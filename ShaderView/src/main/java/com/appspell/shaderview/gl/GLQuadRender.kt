@@ -1,3 +1,5 @@
+
+
 package com.appspell.shaderview.gl
 
 import android.content.Context
@@ -14,26 +16,26 @@ import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 import kotlin.concurrent.withLock
 
-
 private const val TAG = "GLQuadRender"
+
 private const val FLOAT_SIZE_BYTES = 4
 private const val TRIANGLE_VERTICES_DATA_STRIDE_BYTES = 5 * FLOAT_SIZE_BYTES
 private const val TRIANGLE_VERTICES_DATA_POS_OFFSET = 0
 private const val TRIANGLE_VERTICES_DATA_UV_OFFSET = 3
 
-//private const val GL_TEXTURE_EXTERNAL_OES = 0x8D65 // TODO remove
 private const val UNKNOWN_ATTRIBUTE = -1
 
 /**
  * Render full-screen quad render
  */
-internal class GLQuadRender(
-    private val context: Context // TODO remove Android dependency
-) : GLTextureView.Renderer, SurfaceTexture.OnFrameAvailableListener {
+internal class GLQuadRender : GLTextureView.Renderer, SurfaceTexture.OnFrameAvailableListener {
 
     companion object {
         const val VERTEX_SHADER_IN_POSITION = "inPosition"
         const val VERTEX_SHADER_IN_TEXTURE_COORD = "inTextureCoord"
+        const val VERTEX_SHADER_IN_NORMAL = "inNormal"
+        const val VERTEX_SHADER_IN_TANGENT = "inTangent"
+        const val VERTEX_SHADER_IN_BINORMAL = "inBiNormal"
 
         const val VERTEX_SHADER_UNIFORM_MATRIX_MVP = "uMVPMatrix"
         const val VERTEX_SHADER_UNIFORM_MATRIX_STM = "uSTMatrix"
@@ -45,7 +47,6 @@ internal class GLQuadRender(
 
         fun onDrawFrame(shaderParams: ShaderParams)
     }
-
 
     internal var shader = GLShader()
 
@@ -132,8 +133,8 @@ internal class GLQuadRender(
         checkGlError("glUseProgram")
 
         // shader input (built-in attributes)
-        setAttribute(inPositionHandle, VERTEX_SHADER_IN_POSITION, TRIANGLE_VERTICES_DATA_POS_OFFSET)
-        setAttribute(inTextureHandle, VERTEX_SHADER_IN_TEXTURE_COORD, TRIANGLE_VERTICES_DATA_UV_OFFSET)
+        setAttribute(inPositionHandle, VERTEX_SHADER_IN_POSITION, 3, TRIANGLE_VERTICES_DATA_POS_OFFSET)
+        setAttribute(inTextureHandle, VERTEX_SHADER_IN_TEXTURE_COORD, 2, TRIANGLE_VERTICES_DATA_UV_OFFSET)
 
         // callback if we need to update some custom parameters
         listener?.onDrawFrame(shaderParams = shader.params)
@@ -178,10 +179,10 @@ internal class GLQuadRender(
     /**
      * set values for attributes of input vertices
      */
-    private fun setAttribute(attrLocation: Int, attrName: String, offset: Int) {
+    private fun setAttribute(attrLocation: Int, attrName: String, size: Int, offset: Int) {
         quadVertices.position(offset)
         GLES30.glVertexAttribPointer(
-            attrLocation, 3, GLES30.GL_FLOAT, false,
+            attrLocation, size, GLES30.GL_FLOAT, false,
             TRIANGLE_VERTICES_DATA_STRIDE_BYTES, quadVertices
         )
         checkGlError("glVertexAttribPointer $attrName")

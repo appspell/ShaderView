@@ -7,7 +7,6 @@ in vec4 inPosition;
 in vec4 inTextureCoord;
 
 out vec2 textureCoord;
-//out vec2 normalCoord; // TODO
 
 void main() {
     gl_Position = uMVPMatrix * inPosition;

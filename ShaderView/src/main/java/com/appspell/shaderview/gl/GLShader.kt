@@ -125,17 +125,13 @@ class GLShader {
             return this
         }
 
-        /**
-         * Create Vertex and Fragment shader
-         * "internal" as far as custom vertex shader is not supproted right now
-         */
-        internal fun create(
+        fun create(
             context: Context,
-            @RawRes vertexShaderRaw: Int,
-            @RawRes fragmentShaderRaw: Int
+            @RawRes vertexShaderRawResId: Int,
+            @RawRes fragmentShaderRawResId: Int
         ): Builder {
-            val vsh = context.resources.getRawTextFile(vertexShaderRaw)
-            val fsh = context.resources.getRawTextFile(fragmentShaderRaw)
+            val vsh = context.resources.getRawTextFile(vertexShaderRawResId)
+            val fsh = context.resources.getRawTextFile(fragmentShaderRawResId)
             if (!shader.createProgram(vsh, fsh)) {
                 Log.e(TAG, "shader program wasn't created")
             }
