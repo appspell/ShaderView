@@ -44,9 +44,10 @@
 
         <com.appspell.shaderview.ShaderView
             android:id="@+id/texture4"
-            android:layout_width="50dp"
+            android:layout_width="150dp"
             android:layout_height="115dp"
-            android:layout_margin="10dp" />
+            android:layout_margin="20dp"
+            app:fragment_shader_raw_res_id="@raw/simple_frag" />
 
         <com.appspell.shaderview.ShaderView
             android:id="@+id/texture5"

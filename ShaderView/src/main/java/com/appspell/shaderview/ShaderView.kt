@@ -12,6 +12,8 @@ import com.appspell.shaderview.gl.GLTextureView
 import com.appspell.shaderview.gl.ShaderParams
 
 private const val OPENGL_VERSION = 3
+private val DEFAULT_VERTEX_SHADER_RESOURCE = R.raw.quad_vert
+private val DEFAULT_FRAGMENT_SHADER_RESOURCE = R.raw.default_frag
 
 class ShaderView @JvmOverloads constructor(
     context: Context,
@@ -23,10 +25,11 @@ class ShaderView @JvmOverloads constructor(
     View.OnLayoutChangeListener {
 
     @RawRes
-    var vertexShaderRawResId: Int? = R.raw.quad_vert
+    var vertexShaderRawResId: Int? = null
 
     @RawRes
     var fragmentShaderRawResId: Int? = null
+
     var shaderParams: ShaderParams? = null
     var onViewReadyListener: ((shader: GLShader) -> Unit)? = null
     var onDrawFrameListener: ((shaderParams: ShaderParams) -> Unit)? = null
@@ -61,10 +64,29 @@ class ShaderView @JvmOverloads constructor(
     }
 
     init {
+        initAttr(attrs)
+
         setEGLContextClientVersion(OPENGL_VERSION)
         renderer.listener = rendererListener
         setRenderer(renderer)
         setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY)
+    }
+
+    private fun initAttr(attrs: AttributeSet?) {
+        context.theme.obtainStyledAttributes(attrs, R.styleable.ShaderView, 0, 0)
+            .apply {
+                try {
+                    fragmentShaderRawResId =
+                        getResourceId(
+                            R.styleable.ShaderView_fragment_shader_raw_res_id,
+                            DEFAULT_FRAGMENT_SHADER_RESOURCE
+                        )
+                    vertexShaderRawResId =
+                        getResourceId(R.styleable.ShaderView_vertex_shader_raw_res_id, DEFAULT_VERTEX_SHADER_RESOURCE)
+                } finally {
+                    recycle()
+                }
+            }
     }
 
     private fun initShaders() {
@@ -72,7 +94,7 @@ class ShaderView @JvmOverloads constructor(
             renderer.shader = renderer.shader.newBuilder()
                 .create(
                     context = context,
-                    vertexShaderRawResId = vertexShaderRawResId ?: R.raw.quad_vert,
+                    vertexShaderRawResId = vertexShaderRawResId ?: DEFAULT_VERTEX_SHADER_RESOURCE,
                     fragmentShaderRawResId = fragmentShader
                 )
                 .apply { shaderParams?.apply { params(this) } }

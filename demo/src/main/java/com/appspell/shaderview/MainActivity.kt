@@ -51,9 +51,9 @@ class MainActivity : AppCompatActivity() {
                 shaderParams.updateValue("time", (System.currentTimeMillis() % 5000L) / 5000f)
             }
         }
-        findViewById<ShaderView>(R.id.texture4).apply {
-            fragmentShaderRawResId = R.raw.simple_frag
-        }
+//        findViewById<ShaderView>(R.id.texture4).apply {
+//            fragmentShaderRawResId = R.raw.simple_frag
+//        }
         findViewById<ShaderView>(R.id.texture5).apply {
             updateContinuously = true
             fragmentShaderRawResId = R.raw.color_frag
