@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
                     context.resources,
                     GLES30.GL_TEXTURE1
                 )
-                .addVec3f("uColor", floatArrayOf(0.5f, 0.5f, 0.5f))
+                .addColor("uColor", R.color.grey, resources)
                 .addVec3f("uVaryingColor", floatArrayOf(0.5f, 0.5f, 0.5f))
                 .addVec3f("uLightDirection", floatArrayOf(-1.0f, 1.0f, 0.0f))
                 .addVec3f("uEyeDirection", floatArrayOf(0.0f, 0.0f, 0.0f))
@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
         findViewById<ShaderView>(R.id.texture2).apply {
             fragmentShaderRawResId = R.raw.color_frag
             shaderParams = ShaderParams.Builder()
-                .addVec3f("diffuseColor", floatArrayOf(1.0f, 0.5f, 0.5f))
+                .addColor("diffuseColor", R.color.teal_200, resources)
                 .build()
         }
         findViewById<ShaderView>(R.id.texture3).apply {
@@ -58,13 +58,13 @@ class MainActivity : AppCompatActivity() {
             updateContinuously = true
             fragmentShaderRawResId = R.raw.color_frag
             shaderParams = ShaderParams.Builder()
-                .addVec3f("diffuseColor", floatArrayOf(1.0f, 1.0f, 1.0f))
+                .addVec4f("diffuseColor", floatArrayOf(1.0f, 1.0f, 1.0f, 1.0f))
                 .build()
             onDrawFrameListener = { shaderParams ->
                 val r = (System.currentTimeMillis() % 50000L) / 50000f
                 val g = (System.currentTimeMillis() % 10000L) / 10000f
                 val b = (System.currentTimeMillis() % 5000L) / 5000f
-                shaderParams.updateValue("diffuseColor", floatArrayOf(r, g, b))
+                shaderParams.updateValue("diffuseColor", floatArrayOf(r, g, b, 1.0f))
             }
         }
 

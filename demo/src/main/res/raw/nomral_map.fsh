@@ -2,7 +2,7 @@
 
 precision mediump float;
 
-uniform vec3 uColor;
+uniform vec4 uColor;
 uniform vec3 uVaryingColor;
 uniform vec3 uLightDirection;
 uniform vec3 uEyeDirection;
@@ -39,7 +39,7 @@ void main() {
     vec3 specularColor = pow(normalDotReflection, shininess) * vertexSpecularReflectionConstant * specularLightIntensity;
 
     // combine result color
-    vec3 color = uColor + diffuseColor + ambientColor + specularColor;
+    vec3 color = uColor.rgb + diffuseColor + ambientColor + specularColor;
 
     // output colour should be in between 0 and 1
     clamp(color, 0.0, 1.0);

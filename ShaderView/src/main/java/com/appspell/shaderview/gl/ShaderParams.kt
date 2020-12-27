@@ -2,8 +2,12 @@ package com.appspell.shaderview.gl
 
 import android.content.res.Resources
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.opengl.GLES30
+import androidx.annotation.ColorInt
+import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
+import androidx.core.content.res.ResourcesCompat
 import com.appspell.shaderview.ext.loadBitmapForTexture
 import com.appspell.shaderview.ext.toGlTexture
 import java.util.*
@@ -190,6 +194,30 @@ class ShaderParams {
         fun addVec2f(paramName: String, value: FloatArray? = null): Builder {
             val param = Param(valeType = Param.ValueType.FLOAT_VEC2, value = value)
             result.map[paramName] = param
+            return this
+        }
+
+        /**
+         * Pass color form android resources to shader as vec4
+         */
+        fun addColor(paramName: String, @ColorRes colorRes: Int, resources: Resources): Builder {
+            val color = ResourcesCompat.getColor(resources, colorRes, null)
+            addColor(paramName, color)
+            return this
+        }
+
+        /**
+         * Pass color integer as color to shader as vec4
+         */
+        fun addColor(paramName: String, @ColorInt color: Int): Builder {
+            addVec4f(
+                paramName, floatArrayOf(
+                    Color.red(color) / 255f,
+                    Color.green(color) / 255f,
+                    Color.blue(color) / 255f,
+                    Color.alpha(color) / 255f
+                )
+            )
             return this
         }
 
