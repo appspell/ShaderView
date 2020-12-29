@@ -1,9 +1,5 @@
-
-
 package com.appspell.shaderview.gl
 
-import android.content.Context
-import android.graphics.SurfaceTexture
 import android.opengl.GLES20
 import android.opengl.GLES30
 import android.opengl.Matrix
@@ -11,10 +7,8 @@ import android.util.Log
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
-import java.util.concurrent.locks.ReentrantLock
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
-import kotlin.concurrent.withLock
 
 private const val TAG = "GLQuadRender"
 
@@ -28,7 +22,7 @@ private const val UNKNOWN_ATTRIBUTE = -1
 /**
  * Render full-screen quad render
  */
-internal class GLQuadRender : GLTextureView.Renderer, SurfaceTexture.OnFrameAvailableListener {
+internal class GLQuadRender : GLTextureView.Renderer {
 
     companion object {
         const val VERTEX_SHADER_IN_POSITION = "inPosition"
@@ -37,7 +31,6 @@ internal class GLQuadRender : GLTextureView.Renderer, SurfaceTexture.OnFrameAvai
         const val VERTEX_SHADER_UNIFORM_MATRIX_MVP = "uMVPMatrix"
         const val VERTEX_SHADER_UNIFORM_MATRIX_STM = "uSTMatrix"
     }
-
 
     interface ShaderViewListener {
         fun onSurfaceCreated()
@@ -55,15 +48,8 @@ internal class GLQuadRender : GLTextureView.Renderer, SurfaceTexture.OnFrameAvai
     private val matrixSTM = FloatArray(16)
 
     // shader vertex attributes
-    private var inPositionHandle = 0
-    private var inTextureHandle = 0
-
-    private var surface: SurfaceTexture? = null
-
-    @Volatile
-    private var updateSurface = false
-
-    private val lock = ReentrantLock()
+    private var inPositionHandle = UNKNOWN_ATTRIBUTE
+    private var inTextureHandle = UNKNOWN_ATTRIBUTE
 
     init {
         // set array of Quad vertices
@@ -105,22 +91,11 @@ internal class GLQuadRender : GLTextureView.Renderer, SurfaceTexture.OnFrameAvai
         // set attributes (input for Vertex Shader)
         inPositionHandle = glGetAttribLocation(VERTEX_SHADER_IN_POSITION)
         inTextureHandle = glGetAttribLocation(VERTEX_SHADER_IN_TEXTURE_COORD)
-
-        surface?.setOnFrameAvailableListener(this)
-        lock.withLock { updateSurface = false }
     }
 
     override fun onDrawFrame(gl: GL10?) {
         if (!shader.isReady) {
             return
-        }
-
-        lock.withLock {
-            if (updateSurface) {
-                surface?.updateTexImage()
-                surface?.getTransformMatrix(matrixSTM)
-                updateSurface = false
-            }
         }
 
         GLES30.glClearColor(1.0f, 1.0f, 1.0f, 1.0f)
@@ -155,28 +130,23 @@ internal class GLQuadRender : GLTextureView.Renderer, SurfaceTexture.OnFrameAvai
         GLES30.glFinish()
     }
 
-    override fun onFrameAvailable(surface: SurfaceTexture) {
-        lock.withLock {
-            updateSurface = true
-        }
-    }
-
     /**
      * get location of some input attribute for shader
      */
     private fun glGetAttribLocation(attrName: String): Int {
-        val attr = GLES30.glGetAttribLocation(shader.program, attrName)
+        val attrLocation = GLES30.glGetAttribLocation(shader.program, attrName)
         checkGlError("glGetAttribLocation $attrName")
-        if (inTextureHandle == UNKNOWN_ATTRIBUTE) {
-            throw RuntimeException("Could not get attrib location for input '$attrName'")
-        }
-        return attr
+        return attrLocation
     }
 
     /**
      * set values for attributes of input vertices
      */
     private fun setAttribute(attrLocation: Int, attrName: String, size: Int, offset: Int) {
+        if(attrLocation == UNKNOWN_ATTRIBUTE) {
+            // skip it if undefined
+            return
+        }
         quadVertices.position(offset)
         GLES30.glVertexAttribPointer(
             attrLocation, size, GLES30.GL_FLOAT, false,
