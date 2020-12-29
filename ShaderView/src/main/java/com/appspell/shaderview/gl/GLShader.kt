@@ -61,6 +61,10 @@ class GLShader {
         pushValuesToProgram()
     }
 
+    fun release() {
+        params.release()
+    }
+
     fun newBuilder() = Builder(this)
 
     private fun bindParams() {

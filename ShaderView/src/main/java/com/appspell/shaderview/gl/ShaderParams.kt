@@ -3,11 +3,15 @@ package com.appspell.shaderview.gl
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.graphics.SurfaceTexture
 import android.opengl.GLES30
+import android.view.Surface
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.core.content.res.ResourcesCompat
+import com.appspell.shaderview.ext.createExternalTexture
+import com.appspell.shaderview.ext.getTexture2dOESSurfaceTexture
 import com.appspell.shaderview.ext.loadBitmapForTexture
 import com.appspell.shaderview.ext.toGlTexture
 import java.util.*
@@ -27,7 +31,7 @@ class ShaderParams {
             FLOAT_VEC2, FLOAT_VEC3, FLOAT_VEC4,
             INT_VEC2, INT_VEC3, INT_VEC4,
             MAT3, MAT4, MAT3x4,
-            SAMPLER_2D
+            SAMPLER_2D, SAMPLER_OES
         }
     }
 
@@ -53,7 +57,16 @@ class ShaderParams {
         map[paramName]?.value = value
     }
 
-    fun updateParamsLocation(paramName: String, shaderProgram: Int) {
+    /**
+     * Usually it returns uniform shader ID of particaluar parameter (if initialized)
+     */
+    fun getParamShaderLocation(paramName: String): Int? = map[paramName]?.location
+
+    fun getParamValue(paramName: String): Any? = map[paramName]?.value
+
+    fun getParamAdditionalField(paramName: String): Any? = map[paramName]?.addtional
+
+    private fun updateParams(paramName: String, shaderProgram: Int) {
         map[paramName]?.apply {
             location = GLES30.glGetUniformLocation(shaderProgram, paramName)
 
@@ -64,10 +77,17 @@ class ShaderParams {
                     // if it is a Bitmap let's upload it to the GPU
                     value = value
                         ?.takeIf { it is Bitmap }
-                        ?.run {
-                            (this as? Bitmap)?.toGlTexture(needToRecycle = true, addtional as Int)
-                        }
+                        ?.run { (this as? Bitmap)?.toGlTexture(needToRecycle = true, addtional as Int) }
                         ?: value
+                }
+                // create Surface for External Texture
+                Param.ValueType.SAMPLER_OES -> {
+                    if (value == null) {
+                        // if it's not initialized
+                        location = createExternalTexture()
+                        value = SurfaceTexture(location)
+                        addtional = Surface(value as SurfaceTexture)
+                    }
                 }
                 else -> {
                     // Do Nothing for the other types
@@ -77,9 +97,23 @@ class ShaderParams {
         }
     }
 
+
+    fun release() {
+        for (key in map.keys) {
+            map[key]?.apply {
+                when (valeType) {
+                    Param.ValueType.SAMPLER_OES -> {
+                        (value as? SurfaceTexture)?.release()
+                        (addtional as? SurfaceTexture)?.release()
+                    }
+                }
+            }
+        }
+    }
+
     fun bindParams(shaderProgram: Int) {
         for (key in map.keys) {
-            updateParamsLocation(key, shaderProgram)
+            updateParams(key, shaderProgram)
         }
     }
 
@@ -156,6 +190,10 @@ class ShaderParams {
                     GLES30.glUniform1i(param.location, (param.addtional as Int).convertTextureSlotToIndex())
                     GLES30.glActiveTexture(param.addtional as Int)
                     GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, param.value as Int)
+                }
+                Param.ValueType.SAMPLER_OES -> {
+                    // update texture (as far as we stored SurfaceTexture to value in updateParams() method
+                    (param.value as? SurfaceTexture)?.updateTexImage()
                 }
             }
         }
@@ -270,7 +308,8 @@ class ShaderParams {
         }
 
         /**
-         * Set texture for GL_TEXTURE0 slot
+         * Set 2d texture
+         * set texture to GL_TEXTURE0 slot by default
          */
         fun addTexture2D(
             paramName: String,
@@ -287,7 +326,8 @@ class ShaderParams {
         }
 
         /**
-         * Set texture for GL_TEXTURE0 slot
+         * Set 2d texture
+         * set texture to GL_TEXTURE0 slot by default
          */
         fun addTexture2D(
             paramName: String,
@@ -299,6 +339,20 @@ class ShaderParams {
                 valeType = Param.ValueType.SAMPLER_2D,
                 value = resources.loadBitmapForTexture(textureResourceId),
                 addtional = textureSlot
+            )
+            result.map[paramName] = param
+            return this
+        }
+
+        /**
+         * Use external texture. Usually for video stream
+         * Currently we support only one instance of such texture per shader
+         *
+         * more info: https://www.khronos.org/registry/OpenGL/extensions/OES/OES_EGL_image_external.txt
+         */
+        fun addTextureOES(paramName: String): Builder {
+            val param = Param(
+                valeType = Param.ValueType.SAMPLER_OES
             )
             result.map[paramName] = param
             return this

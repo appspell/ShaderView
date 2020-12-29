@@ -69,10 +69,10 @@ internal class GLQuadRender : GLTextureView.Renderer, SurfaceTexture.OnFrameAvai
         // set array of Quad vertices
         val quadVerticesData = floatArrayOf(
             // [x,y,z, U,V]
-            -1.0f, -1.0f, 0f, 0f, 0f,
-            1.0f, -1.0f, 0f, 1f, 0f,
-            -1.0f, 1.0f, 0f, 0f, 1f,
-            1.0f, 1.0f, 0f, 1f, 1f
+            -1.0f, -1.0f, 0f, 0f, 1f,
+            1.0f, -1.0f, 0f, 1f, 1f,
+            -1.0f, 1.0f, 0f, 0f, 0f,
+            1.0f, 1.0f, 0f, 1f, 0f
         )
 
         quadVertices = ByteBuffer
