@@ -4,17 +4,19 @@ import android.opengl.GLES30
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import com.appspell.shaderview.databinding.ActivityShaderListBinding
 import com.appspell.shaderview.gl.GLShader
 import com.appspell.shaderview.gl.ShaderParams
 import kotlin.math.cos
 import kotlin.math.sin
 
-class MainActivity : AppCompatActivity() {
+class ShaderListActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        val binding = ActivityShaderListBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        findViewById<ShaderView>(R.id.texture).apply {
+        binding.texture.apply {
             updateContinuously = true
             vertexShaderRawResId = R.raw.quad_tangent_space_vert
             fragmentShaderRawResId = R.raw.nomral_map
@@ -35,13 +37,13 @@ class MainActivity : AppCompatActivity() {
                 shaderParams.updateValue("uLightDirection", floatArrayOf(-1.0f + pos, 1.0f, 0.0f))
             }
         }
-        findViewById<ShaderView>(R.id.texture2).apply {
+        binding.texture2.apply {
             fragmentShaderRawResId = R.raw.color_frag
             shaderParams = ShaderParams.Builder()
                 .addColor("diffuseColor", R.color.teal_200, resources)
                 .build()
         }
-        findViewById<ShaderView>(R.id.texture3).apply {
+        binding.texture3.apply {
             updateContinuously = true
             fragmentShaderRawResId = R.raw.simple_animation_frag
             shaderParams = ShaderParams.Builder()
@@ -51,10 +53,10 @@ class MainActivity : AppCompatActivity() {
                 shaderParams.updateValue("time", (System.currentTimeMillis() % 5000L) / 5000f)
             }
         }
-//        findViewById<ShaderView>(R.id.texture4).apply {
-//            fragmentShaderRawResId = R.raw.simple_frag
-//        }
-        findViewById<ShaderView>(R.id.texture5).apply {
+        binding.texture4.apply {
+            fragmentShaderRawResId = R.raw.simple_frag
+        }
+        binding.texture5.apply {
             updateContinuously = true
             fragmentShaderRawResId = R.raw.color_frag
             shaderParams = ShaderParams.Builder()
@@ -68,7 +70,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        findViewById<ShaderView>(R.id.texture6).apply {
+        binding.texture6.apply {
             updateContinuously = true
             fragmentShaderRawResId = R.raw.animated_texture
             shaderParams = ShaderParams.Builder()
@@ -87,7 +89,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        findViewById<ShaderView>(R.id.texture7).apply {
+        binding.texture7.apply {
             fragmentShaderRawResId = R.raw.multiple_textures_frag
             shaderParams = ShaderParams.Builder()
                 .addTexture2D(
@@ -111,7 +113,7 @@ class MainActivity : AppCompatActivity() {
                 .build()
         }
 
-        findViewById<ShaderView>(R.id.texture8).apply {
+        binding.texture8.apply {
             updateContinuously = true
             fragmentShaderRawResId = R.raw.animated_texture
             shaderParams = ShaderParams.Builder()

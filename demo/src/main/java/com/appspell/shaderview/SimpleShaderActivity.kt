@@ -13,7 +13,6 @@ class SimpleShaderActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.shaderView.apply {
-            updateContinuously = true // disable redraw every frame, draw it only if needed
             fragmentShaderRawResId = R.raw.color_frag // fragment shader file
 
             shaderParams = ShaderParams.Builder()

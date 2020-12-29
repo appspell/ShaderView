@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MenuActivity">
+
+    <Button
+        android:id="@+id/simpleShader"
+        android:layout_width="match_parent"
+        android:layout_margin="@dimen/marging"
+        android:layout_height="wrap_content"
+        android:text="@string/button_simple_shader"/>
+
+    <Button
+        android:id="@+id/shaderList"
+        android:layout_width="match_parent"
+        android:layout_margin="@dimen/marging"
+        android:layout_height="wrap_content"
+        android:text="@string/button_shader_list"/>
+
+    <Button
+        android:id="@+id/simpleVideo"
+        android:layout_width="match_parent"
+        android:layout_margin="@dimen/marging"
+        android:layout_height="wrap_content"
+        android:text="@string/button_simple_video_playback_shader"/>
+</LinearLayout>

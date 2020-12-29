@@ -14,7 +14,6 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.upstream.RawResourceDataSource
 import com.google.android.exoplayer2.util.Util
 
-
 class VideoActivity : AppCompatActivity() {
     lateinit var binding: ActivityVideoBinding
 
@@ -24,7 +23,7 @@ class VideoActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.shaderView.apply {
-            updateContinuously = true // update the view each frame
+            updateContinuously = true // update the view each frame (do not forget set it "true")
             fragmentShaderRawResId = R.raw.video_shader // fragment shader for video frame processing
             shaderParams = ShaderParams.Builder()
                 .addTextureOES("uVideoTexture") // video texture input/output
