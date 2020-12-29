@@ -1,6 +1,7 @@
 package com.appspell.shaderview
 
 import android.content.Context
+import android.graphics.SurfaceTexture
 import android.opengl.GLSurfaceView
 import android.util.AttributeSet
 import android.view.TextureView.SurfaceTextureListener
@@ -100,5 +101,10 @@ class ShaderView @JvmOverloads constructor(
                 .apply { shaderParams?.apply { params(this) } }
                 .build()
         }
+    }
+
+    override fun onSurfaceTextureDestroyed(surface: SurfaceTexture): Boolean {
+        renderer.shader.release()
+        return super.onSurfaceTextureDestroyed(surface)
     }
 }

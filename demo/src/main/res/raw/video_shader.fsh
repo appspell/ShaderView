@@ -10,5 +10,5 @@ out vec4 fragColor;
 
 void main() {
     vec4 videoTex = texture(uVideoTexture, textureCoord);
-    fragColor = vec4(videoTex.rrr, 1); // show b/w
+    fragColor = videoTex;// show it AS IS
 }
