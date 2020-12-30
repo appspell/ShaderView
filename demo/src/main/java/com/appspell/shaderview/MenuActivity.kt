@@ -14,6 +14,7 @@ class MenuActivity : AppCompatActivity() {
         binding.simpleShader.setOnClickListener { open(SimpleShaderActivity::class.java) }
         binding.shaderList.setOnClickListener { open(ShaderListActivity::class.java) }
         binding.simpleVideo.setOnClickListener { open(VideoActivity::class.java) }
+        binding.advancedVideo.setOnClickListener { open(VideoAdvancedActivity::class.java) }
     }
 
     private fun open(cls: Class<*>) = startActivity(Intent(this, cls))

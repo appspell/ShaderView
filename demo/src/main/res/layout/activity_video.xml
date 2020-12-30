@@ -10,6 +10,7 @@
         android:id="@+id/shaderView"
         android:layout_width="200dp"
         android:layout_height="200dp"
+        android:elevation="4dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
