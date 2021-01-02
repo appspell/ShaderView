@@ -4,6 +4,7 @@ import android.opengl.GLES20
 import android.opengl.GLES30
 import android.opengl.Matrix
 import android.util.Log
+import com.appspell.shaderview.log.LibLog
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
@@ -165,7 +166,7 @@ internal class GLQuadRender : GLTextureView.Renderer {
     private fun checkGlError(op: String) {
         var error: Int
         while (GLES30.glGetError().also { error = it } != GLES30.GL_NO_ERROR) {
-            Log.e(TAG, "$op: glError $error")
+            LibLog.e(TAG, "$op: glError $error")
             throw RuntimeException("$op: glError $error")
         }
     }
