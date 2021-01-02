@@ -11,6 +11,7 @@ import com.appspell.shaderview.gl.GLQuadRender
 import com.appspell.shaderview.gl.GLShader
 import com.appspell.shaderview.gl.GLTextureView
 import com.appspell.shaderview.gl.ShaderParams
+import com.appspell.shaderview.log.LibLog
 
 private const val OPENGL_VERSION = 3
 private val DEFAULT_VERTEX_SHADER_RESOURCE = R.raw.quad_vert
@@ -24,6 +25,17 @@ class ShaderView @JvmOverloads constructor(
     GLTextureView(context, attrs, defStyleAttr),
     SurfaceTextureListener,
     View.OnLayoutChangeListener {
+
+    companion object {
+        /**
+         * Enable or disable logging for all of ShaderView globally
+         */
+        var debugMode = false
+            set(value) {
+                field = value
+                LibLog.isEnabled = value
+            }
+    }
 
     @RawRes
     var vertexShaderRawResId: Int? = null

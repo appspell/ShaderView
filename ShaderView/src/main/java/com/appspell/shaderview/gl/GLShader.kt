@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.annotation.RawRes
 import com.appspell.shaderview.R
 import com.appspell.shaderview.ext.getRawTextFile
+import com.appspell.shaderview.log.LibLog
 import java.lang.Exception
 
 const val UNKNOWN_PROGRAM = 0
@@ -43,8 +44,8 @@ class GLShader {
             val linkStatus = IntArray(1)
             GLES30.glGetProgramiv(program, GLES30.GL_LINK_STATUS, linkStatus, 0)
             if (linkStatus[0] != GLES30.GL_TRUE) {
-                Log.e(TAG, "Could not link program: ")
-                Log.e(TAG, GLES30.glGetProgramInfoLog(program))
+                LibLog.e(TAG, "Could not link program: ")
+                LibLog.e(TAG, GLES30.glGetProgramInfoLog(program))
                 GLES30.glDeleteProgram(program)
                 program = UNKNOWN_PROGRAM
                 return false
@@ -89,8 +90,8 @@ class GLShader {
             val compiled = IntArray(1)
             GLES30.glGetShaderiv(shader, GLES30.GL_COMPILE_STATUS, compiled, 0)
             if (compiled[0] == UNKNOWN_PROGRAM) {
-                Log.e(TAG, "Could not compile shader $shaderType:")
-                Log.e(TAG, GLES30.glGetShaderInfoLog(shader))
+                LibLog.e(TAG, "Could not compile shader $shaderType:")
+                LibLog.e(TAG, GLES30.glGetShaderInfoLog(shader))
                 GLES30.glDeleteShader(shader)
                 shader = UNKNOWN_PROGRAM
             }
@@ -101,7 +102,7 @@ class GLShader {
     private fun checkGlError(op: String) {
         var error: Int
         while (GLES30.glGetError().also { error = it } != GLES30.GL_NO_ERROR) {
-            Log.e(TAG, "$op: glError $error")
+            LibLog.e(TAG, "$op: glError $error")
             throw RuntimeException("$op: glError $error")
         }
     }
@@ -124,7 +125,7 @@ class GLShader {
             val vsh = context.resources.getRawTextFile(R.raw.quad_vert)
             val fsh = context.resources.getRawTextFile(fragmentShaderRawResId)
             if (!shader.createProgram(vsh, fsh)) {
-                Log.e(TAG, "shader program wasn't created")
+                LibLog.e(TAG, "shader program wasn't created")
             }
             return this
         }
@@ -137,7 +138,7 @@ class GLShader {
             val vsh = context.resources.getRawTextFile(vertexShaderRawResId)
             val fsh = context.resources.getRawTextFile(fragmentShaderRawResId)
             if (!shader.createProgram(vsh, fsh)) {
-                Log.e(TAG, "shader program wasn't created")
+                LibLog.e(TAG, "shader program wasn't created")
             }
             return this
         }
