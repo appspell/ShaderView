@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:background="#ffffff"
         android:orientation="vertical"
-        tools:context=".ShaderListActivity">
+        tools:context=".list.ShaderListActivity">
 
         <TextView
             android:id="@+id/text"

@@ -1,13 +1,14 @@
-package com.appspell.shaderview
+package com.appspell.shaderview.video
 
-import android.graphics.Outline
-import android.os.Build
 import android.os.Bundle
 import android.view.Surface
-import android.view.View
-import android.view.ViewOutlineProvider
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.Lifecycle.*
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.OnLifecycleEvent
+import com.appspell.shaderview.BuildConfig
+import com.appspell.shaderview.R
 import com.appspell.shaderview.databinding.ActivityVideoBinding
 import com.appspell.shaderview.ext.getTexture2dOESSurface
 import com.appspell.shaderview.gl.ShaderParams
@@ -18,10 +19,8 @@ import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.upstream.RawResourceDataSource
 import com.google.android.exoplayer2.util.Util
-import kotlin.math.min
-import kotlin.random.Random
 
-class VideoAdvancedActivity : AppCompatActivity() {
+class VideoActivity : AppCompatActivity() {
     lateinit var binding: ActivityVideoBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,18 +29,9 @@ class VideoAdvancedActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.shaderView.apply {
-            // [ configure view ]
-            // As far it is android view we can set OutlineProvider to have round corners
-            clipToOutline = true
-            outlineProvider = RoundOutlineProvider()
-
-            // [ configure shaders ]
             updateContinuously = true // update the view each frame (do not forget set it "true")
-            fragmentShaderRawResId = R.raw.video_advanced_shader // fragment shader for video frame processing
+            fragmentShaderRawResId = R.raw.video_shader // fragment shader for video frame processing
             shaderParams = ShaderParams.Builder()
-                .addFloat("progress", 0.5f)
-                .addFloat("fps", 30f)
-                .addVec2f("resolution", floatArrayOf(1f, 1f))
                 .addTextureOES("uVideoTexture") // video texture input/output
                 .build()
             onViewReadyListener = { shader ->
@@ -51,10 +41,6 @@ class VideoAdvancedActivity : AppCompatActivity() {
                 // initialize video player when shader is ready
                 initVideoPlayer(surface)
             }
-            onDrawFrameListener = { shaderParams ->
-                shaderParams.updateValue("progress", Random.nextFloat())
-            }
-
         }
     }
 
@@ -72,22 +58,22 @@ class VideoAdvancedActivity : AppCompatActivity() {
             .Factory(defDataSourceFactory)
             .createMediaSource(uri)
 
-        val player = SimpleExoPlayer.Builder(this@VideoAdvancedActivity).build()
+        val player = SimpleExoPlayer.Builder(this@VideoActivity).build()
         player.prepare(mediaSource)
         player.setVideoSurface(surface)
         player.playWhenReady = true
         player.repeatMode = Player.REPEAT_MODE_ALL
-    }
 
-    /**
-     * the custom Outline Provider to apply some shape to the ShaderView
-     */
-    class RoundOutlineProvider : ViewOutlineProvider() {
-        override fun getOutline(view: View?, outline: Outline?) {
-            val width = view?.width ?: 0
-            val height = view?.height ?: 0
-            val radius = min(width / 2f, height / 2f)
-            outline?.setRoundRect(0, 0, width, height, radius)
-        }
+        lifecycle.addObserver(object : LifecycleObserver {
+            @OnLifecycleEvent(Event.ON_PAUSE)
+            fun onPause() {
+                player.stop()
+            }
+
+            @OnLifecycleEvent(Event.ON_RESUME)
+            fun onResume() {
+                player.playWhenReady = true
+            }
+        })
     }
 }

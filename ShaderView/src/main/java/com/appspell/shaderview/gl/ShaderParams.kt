@@ -11,10 +11,12 @@ import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.core.content.res.ResourcesCompat
 import com.appspell.shaderview.ext.createExternalTexture
-import com.appspell.shaderview.ext.getTexture2dOESSurfaceTexture
 import com.appspell.shaderview.ext.loadBitmapForTexture
 import com.appspell.shaderview.ext.toGlTexture
+import com.appspell.shaderview.gl.params.SamplerOESParam
 import java.util.*
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 
 const val UNKNOWN_LOCATION = -1
 
@@ -85,8 +87,17 @@ class ShaderParams {
                     if (value == null) {
                         // if it's not initialized
                         location = createExternalTexture()
-                        value = SurfaceTexture(location)
-                        addtional = Surface(value as SurfaceTexture)
+                        val surfaceTexture = SurfaceTexture(location)
+                        value = SamplerOESParam(
+                            surfaceTexture = surfaceTexture,
+                            surface = Surface(surfaceTexture)
+                        ).apply {
+                            surfaceTexture.setOnFrameAvailableListener {
+                                lock.withLock {
+                                    updateSurface.set(true)
+                                }
+                            }
+                        }
                     }
                 }
                 else -> {
@@ -192,8 +203,15 @@ class ShaderParams {
                     GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, param.value as Int)
                 }
                 Param.ValueType.SAMPLER_OES -> {
-                    // update texture (as far as we stored SurfaceTexture to value in updateParams() method
-                    (param.value as? SurfaceTexture)?.updateTexImage()
+                    // update texture (as far as we stored SurfaceTexture to value in updateParams() method)
+                    (param.value as? SamplerOESParam)?.apply {
+                        lock.withLock {
+                            if (updateSurface.get()) {
+                                surfaceTexture.updateTexImage()
+                                updateSurface.set(false)
+                            }
+                        }
+                    }
                 }
             }
         }

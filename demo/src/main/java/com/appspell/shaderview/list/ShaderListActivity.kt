@@ -1,11 +1,10 @@
-package com.appspell.shaderview
+package com.appspell.shaderview.list
 
 import android.opengl.GLES30
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
+import com.appspell.shaderview.R
 import com.appspell.shaderview.databinding.ActivityShaderListBinding
-import com.appspell.shaderview.gl.GLShader
 import com.appspell.shaderview.gl.ShaderParams
 import kotlin.math.cos
 import kotlin.math.sin

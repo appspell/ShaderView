@@ -42,6 +42,9 @@ internal class GLQuadRender : GLTextureView.Renderer {
 
     internal var listener: ShaderViewListener? = null
 
+    // should we render it or not
+    internal var isActive = false
+
     private val quadVertices: FloatBuffer
 
     private val matrixMVP = FloatArray(16)
@@ -73,7 +76,9 @@ internal class GLQuadRender : GLTextureView.Renderer {
         Matrix.setIdentityM(matrixSTM, 0)
     }
 
-    override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {}
+    override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
+        GLES30.glViewport(0, 0, width, height)
+    }
 
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
         listener?.onSurfaceCreated()
@@ -94,7 +99,7 @@ internal class GLQuadRender : GLTextureView.Renderer {
     }
 
     override fun onDrawFrame(gl: GL10?) {
-        if (!shader.isReady) {
+        if (!shader.isReady && isActive) {
             return
         }
 
@@ -143,7 +148,7 @@ internal class GLQuadRender : GLTextureView.Renderer {
      * set values for attributes of input vertices
      */
     private fun setAttribute(attrLocation: Int, attrName: String, size: Int, offset: Int) {
-        if(attrLocation == UNKNOWN_ATTRIBUTE) {
+        if (attrLocation == UNKNOWN_ATTRIBUTE) {
             // skip it if undefined
             return
         }
