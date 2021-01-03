@@ -244,7 +244,7 @@ class ShaderListAdapter : RecyclerView.Adapter<ShaderListAdapter.BaseShaderView>
                 val startTime = System.currentTimeMillis()
                 onDrawFrameListener = { shaderParams ->
                     val maxBlurSize = 25
-                    val size = ((System.currentTimeMillis() - startTime) / 100) % maxBlurSize
+                    val size = ((System.currentTimeMillis() - startTime) / 100) % maxBlurSize + 1
                     shaderParams.updateValue("uBlurSize", size.toInt())
                     shaderParams.updateValue("uScale", floatArrayOf(1.0f / width, 1.0f / height))
                 }
