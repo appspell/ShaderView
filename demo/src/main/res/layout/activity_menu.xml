@@ -15,6 +15,13 @@
         android:text="@string/button_simple_shader"/>
 
     <Button
+        android:id="@+id/simpleXmlOnlyShader"
+        android:layout_width="match_parent"
+        android:layout_margin="@dimen/marging"
+        android:layout_height="wrap_content"
+        android:text="@string/button_simple_XML_only_shader"/>
+
+    <Button
         android:id="@+id/shaderList"
         android:layout_width="match_parent"
         android:layout_margin="@dimen/marging"

@@ -4,12 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".simple.SimpleShaderActivity">
+    tools:context=".simple.SimpleOnlyXMLShaderActivity">
 
     <com.appspell.shaderview.ShaderView
         android:id="@+id/shaderView"
         android:layout_width="200dp"
         android:layout_height="200dp"
-        android:layout_gravity="center" />
+        android:layout_gravity="center"
+        app:fragment_shader_raw_res_id="@raw/simple_frag" />
 
 </FrameLayout>
