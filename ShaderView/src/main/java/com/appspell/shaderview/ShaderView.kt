@@ -26,17 +26,6 @@ class ShaderView @JvmOverloads constructor(
     SurfaceTextureListener,
     View.OnLayoutChangeListener {
 
-    companion object {
-        /**
-         * Enable or disable logging for all of ShaderView globally
-         */
-        var debugMode = false
-            set(value) {
-                field = value
-                LibLog.isEnabled = value
-            }
-    }
-
     @RawRes
     var vertexShaderRawResId: Int? = null
 
@@ -46,6 +35,22 @@ class ShaderView @JvmOverloads constructor(
     var shaderParams: ShaderParams? = null
     var onViewReadyListener: ((shader: GLShader) -> Unit)? = null
     var onDrawFrameListener: ((shaderParams: ShaderParams) -> Unit)? = null
+
+    /**
+     * Enable or disable logging for all of ShaderView globally
+     * TODO it need to enable logs for this view only
+     */
+    var debugMode = false
+        set(value) {
+            field = value
+            LibLog.isEnabled = value // TODO should be enabled for particular view only
+            if (value) {
+                setDebugFlags(DEBUG_CHECK_GL_ERROR.and(DEBUG_LOG_GL_CALLS))
+                enableLogPauseResume = true
+                enableLogEgl = true
+                enableLogSurface = true
+            }
+        }
 
     /**
      * should we re-render this view all the time
@@ -110,8 +115,14 @@ class ShaderView @JvmOverloads constructor(
                     vertexShaderRawResId = vertexShaderRawResId ?: DEFAULT_VERTEX_SHADER_RESOURCE,
                     fragmentShaderRawResId = fragmentShader
                 )
-                .apply { shaderParams?.apply { params(this) } }
+                .apply {
+                    // if we have some ShaderParams to set
+                    shaderParams?.apply { params(this) }
+                }
                 .build()
+                .apply {
+                    bindParams(resources)
+                }
         }
     }
 

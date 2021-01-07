@@ -6,9 +6,9 @@ import android.opengl.EGL14
 import android.opengl.EGLExt
 import android.opengl.GLDebugHelper
 import android.util.AttributeSet
-import android.util.Log
 import android.view.TextureView
 import android.view.View
+import androidx.annotation.CallSuper
 import com.appspell.shaderview.log.LibLog
 import java.io.Writer
 import java.lang.ref.WeakReference
@@ -37,6 +37,7 @@ import kotlin.concurrent.withLock
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
+private const val TAG = "GLTextureView"
 
 open class GLTextureView @JvmOverloads constructor(
     context: Context,
@@ -48,15 +49,6 @@ open class GLTextureView @JvmOverloads constructor(
     View.OnLayoutChangeListener {
 
     companion object {
-        private const val TAG = "GLTextureView"
-        private const val LOG_ATTACH_DETACH = false
-        private const val LOG_THREADS = false
-        private const val LOG_PAUSE_RESUME = false
-        private const val LOG_SURFACE = false
-        private const val LOG_RENDERER = false
-        private const val LOG_RENDERER_DRAW_FRAME = false
-        private const val LOG_EGL = false
-
         /**
          * The renderer only renders
          * when the surface is created, or when [.requestRender] is called.
@@ -65,7 +57,7 @@ open class GLTextureView @JvmOverloads constructor(
          * @see .setRenderMode
          * @see .requestRender
          */
-        val RENDERMODE_WHEN_DIRTY = 0
+        const val RENDERMODE_WHEN_DIRTY = 0
 
         /**
          * The renderer is called
@@ -97,6 +89,13 @@ open class GLTextureView @JvmOverloads constructor(
         const val DEBUG_LOG_GL_CALLS = 2
     }
 
+    internal var enableLogAttachDetach = false
+    internal var enableLogThreads = false
+    internal var enableLogPauseResume = false
+    internal var enableLogSurface = false
+    internal var enableLogRenderer = false
+    internal var enableLogRendererDrawFrame = false
+    internal var enableLogEgl = false
 
     private val sGLThreadManager = GLThreadManager()
     private val threadLock = ReentrantLock()
@@ -490,6 +489,7 @@ open class GLTextureView @JvmOverloads constructor(
      *
      * Must not be called before a renderer has been set.
      */
+    @CallSuper
     fun onPause() {
         mGLThread!!.onPause()
     }
@@ -503,6 +503,7 @@ open class GLTextureView @JvmOverloads constructor(
      *
      * Must not be called before a renderer has been set.
      */
+    @CallSuper
     fun onResume() {
         mGLThread!!.onResume()
     }
@@ -523,7 +524,7 @@ open class GLTextureView @JvmOverloads constructor(
      */
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        if (LOG_ATTACH_DETACH) {
+        if (enableLogAttachDetach) {
             LibLog.d(TAG, "onAttachedToWindow reattach =$mDetached")
         }
         if (mDetached && mRenderer != null) {
@@ -541,7 +542,7 @@ open class GLTextureView @JvmOverloads constructor(
     }
 
     override fun onDetachedFromWindow() {
-        if (LOG_ATTACH_DETACH) {
+        if (enableLogAttachDetach) {
             LibLog.d(TAG, "onDetachedFromWindow")
         }
         if (mGLThread != null) {
@@ -736,7 +737,7 @@ open class GLTextureView @JvmOverloads constructor(
         override fun destroyContext(egl: EGL10?, display: EGLDisplay?, context: EGLContext?) {
             if (egl?.eglDestroyContext(display, context) != true) {
                 LibLog.e("DefaultContextFactory", "display:$display context: $context")
-                if (LOG_THREADS) {
+                if (enableLogThreads) {
                     LibLog.i("DefaultContextFactory", "tid=" + Thread.currentThread().id)
                 }
                 LogHelper.throwEglException("eglDestroyContex", egl?.eglGetError() ?: -1)
@@ -967,12 +968,20 @@ open class GLTextureView @JvmOverloads constructor(
      * An EGL helper class.
      */
     private inner class EglHelper(private val mGLTextureViewWeakRef: WeakReference<GLTextureView?>) {
+
+        var mEgl: EGL10? = null
+        var mEglDisplay: EGLDisplay? = null
+        var mEglSurface: EGLSurface? = null
+        var mEglConfig: EGLConfig? = null
+
+        var mEglContext: EGLContext? = null
+
         /**
          * Initialize EGL for a given configuration spec.
          * @param configSpec
          */
         fun start() {
-            if (LOG_EGL) {
+            if (enableLogEgl) {
                 LibLog.w("EglHelper", "start() tid=" + Thread.currentThread().id)
             }
             /*
@@ -1010,7 +1019,7 @@ open class GLTextureView @JvmOverloads constructor(
                 mEglContext = null
                 LogHelper.throwEglException("createContext", mEgl?.eglGetError() ?: -1)
             }
-            if (LOG_EGL) {
+            if (enableLogEgl) {
                 LibLog.w(
                     "EglHelper",
                     "createContext " + mEglContext + " tid=" + Thread.currentThread().id
@@ -1026,7 +1035,7 @@ open class GLTextureView @JvmOverloads constructor(
          * @return true if the surface was created successfully.
          */
         fun createSurface(): Boolean {
-            if (LOG_EGL) {
+            if (enableLogEgl) {
                 LibLog.w("EglHelper", "createSurface()  tid=" + Thread.currentThread().id)
             }
             /*
@@ -1044,7 +1053,8 @@ open class GLTextureView @JvmOverloads constructor(
             /*
              *  The window size has changed, so we need to create a new
              *  surface.
-             */destroySurfaceImp()
+             */
+            destroySurfaceImp()
 
             /*
              * Create an EGL surface we can render into.
@@ -1052,7 +1062,7 @@ open class GLTextureView @JvmOverloads constructor(
             val view = mGLTextureViewWeakRef.get()
             mEglSurface = view?.mEGLWindowSurfaceFactory?.createWindowSurface(
                 mEgl,
-                mEglDisplay, mEglConfig, view.getSurfaceTexture()
+                mEglDisplay, mEglConfig, view.surfaceTexture
             )
             if (mEglSurface == null || mEglSurface === EGL10.EGL_NO_SURFACE) {
                 val error = mEgl!!.eglGetError()
@@ -1117,7 +1127,7 @@ open class GLTextureView @JvmOverloads constructor(
         }
 
         fun destroySurface() {
-            if (LOG_EGL) {
+            if (enableLogEgl) {
                 LibLog.w("EglHelper", "destroySurface()  tid=" + Thread.currentThread().id)
             }
             destroySurfaceImp()
@@ -1137,7 +1147,7 @@ open class GLTextureView @JvmOverloads constructor(
         }
 
         fun finish() {
-            if (LOG_EGL) {
+            if (enableLogEgl) {
                 LibLog.w("EglHelper", "finish() tid=" + Thread.currentThread().id)
             }
             if (mEglContext != null) {
@@ -1150,13 +1160,6 @@ open class GLTextureView @JvmOverloads constructor(
                 mEglDisplay = null
             }
         }
-
-        var mEgl: EGL10? = null
-        var mEglDisplay: EGLDisplay? = null
-        var mEglSurface: EGLSurface? = null
-        var mEglConfig: EGLConfig? = null
-
-        var mEglContext: EGLContext? = null
     }
 
     object LogHelper {
@@ -1215,7 +1218,7 @@ open class GLTextureView @JvmOverloads constructor(
         Thread() {
         override fun run() {
             name = "GLThread $id"
-            if (LOG_THREADS) {
+            if (enableLogThreads) {
                 LibLog.i("GLThread", "starting tid=$id")
             }
             try {
@@ -1287,7 +1290,7 @@ open class GLTextureView @JvmOverloads constructor(
                                 pausing = mRequestPaused
                                 mPaused = mRequestPaused
                                 threadLockCondition.signalAll()
-                                if (LOG_PAUSE_RESUME) {
+                                if (enableLogPauseResume) {
                                     LibLog.i(
                                         "GLThread",
                                         "mPaused is now " + mPaused + " tid=" + id
@@ -1297,7 +1300,7 @@ open class GLTextureView @JvmOverloads constructor(
 
                             // Do we need to give up the EGL context?
                             if (mShouldReleaseEglContext) {
-                                if (LOG_SURFACE) {
+                                if (enableLogSurface) {
                                     LibLog.i(
                                         "GLThread",
                                         "releasing EGL context because asked to tid=" + id
@@ -1318,7 +1321,7 @@ open class GLTextureView @JvmOverloads constructor(
 
                             // When pausing, release the EGL surface:
                             if (pausing && mHaveEglSurface) {
-                                if (LOG_SURFACE) {
+                                if (enableLogSurface) {
                                     LibLog.i(
                                         "GLThread",
                                         "releasing EGL surface because paused tid=" + id
@@ -1334,7 +1337,7 @@ open class GLTextureView @JvmOverloads constructor(
                                     if (view == null) false else view.mPreserveEGLContextOnPause
                                 if (!preserveEglContextOnPause) {
                                     stopEglContextLocked()
-                                    if (LOG_SURFACE) {
+                                    if (enableLogSurface) {
                                         LibLog.i(
                                             "GLThread",
                                             "releasing EGL context because paused tid=" + id
@@ -1345,7 +1348,7 @@ open class GLTextureView @JvmOverloads constructor(
 
                             // Have we lost the SurfaceView surface?
                             if (!mHasSurface && !mWaitingForSurface) {
-                                if (LOG_SURFACE) {
+                                if (enableLogSurface) {
                                     LibLog.i(
                                         "GLThread",
                                         "noticed surfaceView surface lost tid=" + id
@@ -1361,7 +1364,7 @@ open class GLTextureView @JvmOverloads constructor(
 
                             // Have we acquired the surface view surface?
                             if (mHasSurface && mWaitingForSurface) {
-                                if (LOG_SURFACE) {
+                                if (enableLogSurface) {
                                     LibLog.i(
                                         "GLThread",
                                         "noticed surfaceView surface acquired tid=" + id
@@ -1371,7 +1374,7 @@ open class GLTextureView @JvmOverloads constructor(
                                 threadLockCondition.signalAll()
                             }
                             if (doRenderNotification) {
-                                if (LOG_SURFACE) {
+                                if (enableLogSurface) {
                                     LibLog.i(
                                         "GLThread",
                                         "sending render notification tid=" + id
@@ -1418,7 +1421,7 @@ open class GLTextureView @JvmOverloads constructor(
                                         w = mWidth
                                         h = mHeight
                                         mWantRenderNotification = true
-                                        if (LOG_SURFACE) {
+                                        if (enableLogSurface) {
                                             LibLog.i(
                                                 "GLThread",
                                                 "noticing that we want render notification tid="
@@ -1448,7 +1451,7 @@ open class GLTextureView @JvmOverloads constructor(
                                 }
                             }
                             // By design, this is the only place in a GLThread thread where we wait().
-                            if (LOG_THREADS) {
+                            if (enableLogThreads) {
                                 LibLog.i(
                                     "GLThread", ("waiting tid=" + id
                                             + " mHaveEglContext: " + mHaveEglContext
@@ -1473,7 +1476,7 @@ open class GLTextureView @JvmOverloads constructor(
                         continue
                     }
                     if (createEglSurface) {
-                        if (LOG_SURFACE) {
+                        if (enableLogSurface) {
                             LibLog.w("GLThread", "egl createSurface")
                         }
                         if (mEglHelper!!.createSurface()) {
@@ -1496,7 +1499,7 @@ open class GLTextureView @JvmOverloads constructor(
                         createGlInterface = false
                     }
                     if (createEglContext) {
-                        if (LOG_RENDERER) {
+                        if (enableLogRenderer) {
                             LibLog.w("GLThread", "onSurfaceCreated")
                         }
                         val view = mGLTextureViewWeakRef.get()
@@ -1511,7 +1514,7 @@ open class GLTextureView @JvmOverloads constructor(
                         createEglContext = false
                     }
                     if (sizeChanged) {
-                        if (LOG_RENDERER) {
+                        if (enableLogRenderer) {
                             LibLog.w("GLThread", "onSurfaceChanged($w, $h)")
                         }
                         val view = mGLTextureViewWeakRef.get()
@@ -1525,7 +1528,7 @@ open class GLTextureView @JvmOverloads constructor(
                         }
                         sizeChanged = false
                     }
-                    if (LOG_RENDERER_DRAW_FRAME) {
+                    if (enableLogRendererDrawFrame) {
                         LibLog.w("GLThread", "onDrawFrame tid=$id")
                     }
                     run {
@@ -1551,7 +1554,7 @@ open class GLTextureView @JvmOverloads constructor(
                         EGL10.EGL_SUCCESS -> {
                         }
                         EGL11.EGL_CONTEXT_LOST -> {
-                            if (LOG_SURFACE) {
+                            if (enableLogSurface) {
                                 LibLog.i("GLThread", "egl context lost tid=$id")
                             }
                             lostEglContext = true
@@ -1633,7 +1636,7 @@ open class GLTextureView @JvmOverloads constructor(
 
         fun surfaceCreated() {
             threadLock.withLock {
-                if (LOG_THREADS) {
+                if (enableLogThreads) {
                     LibLog.i("GLThread", "surfaceCreated tid=" + id)
                 }
                 mHasSurface = true
@@ -1654,7 +1657,7 @@ open class GLTextureView @JvmOverloads constructor(
 
         fun surfaceDestroyed() {
             threadLock.withLock {
-                if (LOG_THREADS) {
+                if (enableLogThreads) {
                     LibLog.i("GLThread", "surfaceDestroyed tid=" + id)
                 }
                 mHasSurface = false
@@ -1671,13 +1674,13 @@ open class GLTextureView @JvmOverloads constructor(
 
         fun onPause() {
             threadLock.withLock {
-                if (LOG_PAUSE_RESUME) {
+                if (enableLogPauseResume) {
                     LibLog.i("GLThread", "onPause tid=" + id)
                 }
                 mRequestPaused = true
                 threadLockCondition.signalAll()
                 while ((!mExited) && (!mPaused)) {
-                    if (LOG_PAUSE_RESUME) {
+                    if (enableLogPauseResume) {
                         LibLog.i("Main thread", "onPause waiting for mPaused.")
                     }
                     try {
@@ -1691,7 +1694,7 @@ open class GLTextureView @JvmOverloads constructor(
 
         fun onResume() {
             threadLock.withLock {
-                if (LOG_PAUSE_RESUME) {
+                if (enableLogPauseResume) {
                     LibLog.i("GLThread", "onResume tid=" + id)
                 }
                 mRequestPaused = false
@@ -1699,7 +1702,7 @@ open class GLTextureView @JvmOverloads constructor(
                 mRenderComplete = false
                 threadLockCondition.signalAll()
                 while ((!mExited) && mPaused && (!mRenderComplete)) {
-                    if (LOG_PAUSE_RESUME) {
+                    if (enableLogPauseResume) {
                         LibLog.i("Main thread", "onResume waiting for !mPaused.")
                     }
                     try {
@@ -1733,7 +1736,7 @@ open class GLTextureView @JvmOverloads constructor(
                 while ((!mExited && !mPaused && !mRenderComplete
                             && ableToDraw())
                 ) {
-                    if (LOG_SURFACE) {
+                    if (enableLogSurface) {
                         LibLog.i(
                             "Main thread",
                             "onWindowResize waiting for render complete from tid=$id"
@@ -1870,7 +1873,7 @@ open class GLTextureView @JvmOverloads constructor(
         @Synchronized
         fun threadExiting(thread: GLThread) {
             threadLock.withLock {
-                if (LOG_THREADS) {
+                if (enableLogThreads) {
                     LibLog.i("GLThreadManager", "exiting tid=" + thread.id)
                 }
                 thread.mExited = true
