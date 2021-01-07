@@ -2,6 +2,7 @@ package com.appspell.shaderview.list
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.appspell.shaderview.ShaderView
 import com.appspell.shaderview.databinding.ActivityShaderListBinding
 import com.appspell.shaderview.list.ItemType.COLOR
 import com.appspell.shaderview.list.ItemType.COLOR_ANIMATED
@@ -21,11 +22,11 @@ class ShaderListActivity : AppCompatActivity() {
         binding.list.adapter = ShaderListAdapter()
             .apply {
                 items = mutableListOf(
-                    COLOR, NORMAL_MAP_2,
-                    BLUR, NORMAL_MAP,
-                    COLOR_ANIMATED, MULTIPLE_TEXTURES,
-                    SIMPLE_ANIMATION, ANIMATED_TEXTURES
-
+//                    COLOR, NORMAL_MAP_2,
+//                    BLUR, NORMAL_MAP,
+//                    COLOR_ANIMATED, MULTIPLE_TEXTURES,
+//                    SIMPLE_ANIMATION, ANIMATED_TEXTURES
+                            ANIMATED_TEXTURES
                 )
                     .repeat(10)
                     .map { it.ordinal }

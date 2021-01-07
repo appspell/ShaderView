@@ -1,13 +1,12 @@
 package com.appspell.shaderview.gl
 
 import android.content.Context
+import android.content.res.Resources
 import android.opengl.GLES30
-import android.util.Log
 import androidx.annotation.RawRes
 import com.appspell.shaderview.R
 import com.appspell.shaderview.ext.getRawTextFile
 import com.appspell.shaderview.log.LibLog
-import java.lang.Exception
 
 const val UNKNOWN_PROGRAM = 0
 private const val TAG = "GLShader"
@@ -18,10 +17,6 @@ class GLShader {
         get() = program != UNKNOWN_PROGRAM
 
     var params = ShaderParams()
-        set(value) {
-            field = value
-            bindParams()
-        }
 
     var program = UNKNOWN_PROGRAM
 
@@ -50,7 +45,6 @@ class GLShader {
                 program = UNKNOWN_PROGRAM
                 return false
             }
-            bindParams()
         }
         return true
     }
@@ -68,11 +62,20 @@ class GLShader {
 
     fun newBuilder() = Builder(this)
 
-    private fun bindParams() {
+    /**
+     * Do not forget to apply parameters for shaders before render
+     * Call it when shader program is created
+     *
+     * This method gets the location of uniform params and upload textures to GPU
+     *
+     * @param resources - we need to upload textures from resources
+     * if you don't need to load textures from android resources, you may omit such parameter
+     */
+    fun bindParams(resources: Resources? = null) {
         if (program == UNKNOWN_PROGRAM) {
             return
         }
-        params.bindParams(program)
+        params.bindParams(program, resources)
     }
 
     private fun pushValuesToProgram() {

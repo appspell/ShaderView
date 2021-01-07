@@ -94,6 +94,8 @@ internal class GLQuadRender : GLTextureView.Renderer {
             .addMat4f(VERTEX_SHADER_UNIFORM_MATRIX_STM)
             .build()
 
+        shader.bindParams(null)
+
         // set attributes (input for Vertex Shader)
         inPositionHandle = glGetAttribLocation(VERTEX_SHADER_IN_POSITION)
         inTextureHandle = glGetAttribLocation(VERTEX_SHADER_IN_TEXTURE_COORD)

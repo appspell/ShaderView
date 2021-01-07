@@ -57,6 +57,7 @@ class ShaderListAdapter : RecyclerView.Adapter<ShaderListAdapter.BaseShaderView>
         init {
             binding.name.text = "color_frag" // I'm sorry but it's too boring to move it to strings for such a demo
             binding.shaderView.apply {
+                updateContinuously = false // DO NOT update each frame
                 fragmentShaderRawResId = R.raw.color_frag
                 shaderParams = ShaderParams.Builder()
                     .addColor("diffuseColor", R.color.teal_200, resources)
@@ -70,24 +71,22 @@ class ShaderListAdapter : RecyclerView.Adapter<ShaderListAdapter.BaseShaderView>
             binding.name.text =
                 "multiple_textures_frag" // I'm sorry but it's too boring to move it to strings for such a demo
             binding.shaderView.apply {
+                updateContinuously = false // DO NOT update each frame
                 fragmentShaderRawResId = R.raw.multiple_textures_frag
                 shaderParams = ShaderParams.Builder()
                     .addTexture2D(
                         "uTextureSampler1",
                         R.drawable.bokeh,
-                        context.resources,
                         GLES30.GL_TEXTURE0
                     )
                     .addTexture2D(
                         "uTextureSampler2",
                         R.drawable.normal_button,
-                        context.resources,
                         GLES30.GL_TEXTURE1
                     )
                     .addTexture2D(
                         "uTextureSampler3",
                         R.drawable.test_texture,
-                        context.resources,
                         GLES30.GL_TEXTURE2
                     )
                     .build()
@@ -100,14 +99,13 @@ class ShaderListAdapter : RecyclerView.Adapter<ShaderListAdapter.BaseShaderView>
             binding.name.text =
                 "nomral_map" // I'm sorry but it's too boring to move it to strings for such a demo
             binding.shaderView.apply {
-                updateContinuously = true
+                updateContinuously = true // update each frame
                 vertexShaderRawResId = R.raw.quad_tangent_space_vert
                 fragmentShaderRawResId = R.raw.nomral_map
                 shaderParams = ShaderParams.Builder()
                     .addTexture2D(
                         "uNormalTexture",
                         R.drawable.normal_button,
-                        context.resources,
                         GLES30.GL_TEXTURE0
                     )
                     .addColor("uColor", R.color.grey, resources)
@@ -128,14 +126,13 @@ class ShaderListAdapter : RecyclerView.Adapter<ShaderListAdapter.BaseShaderView>
             binding.name.text =
                 "nomral_map v2" // I'm sorry but it's too boring to move it to strings for such a demo
             binding.shaderView.apply {
-                updateContinuously = true
+                updateContinuously = true // update each frame
                 vertexShaderRawResId = R.raw.quad_tangent_space_vert
                 fragmentShaderRawResId = R.raw.nomral_map
                 shaderParams = ShaderParams.Builder()
                     .addTexture2D(
                         "uNormalTexture",
                         R.drawable.normal_sphere,
-                        context.resources,
                         GLES30.GL_TEXTURE0
                     )
                     .addVec4f("uColor", floatArrayOf(0.2f, 0.2f, 0.2f, 1f))
@@ -163,7 +160,7 @@ class ShaderListAdapter : RecyclerView.Adapter<ShaderListAdapter.BaseShaderView>
             binding.name.text =
                 "simple_animation_frag" // I'm sorry but it's too boring to move it to strings for such a demo
             binding.shaderView.apply {
-                updateContinuously = true
+                updateContinuously = true // update each frame
                 fragmentShaderRawResId = R.raw.simple_animation_frag
                 shaderParams = ShaderParams.Builder()
                     .addFloat("time", 1.0f)
@@ -181,7 +178,7 @@ class ShaderListAdapter : RecyclerView.Adapter<ShaderListAdapter.BaseShaderView>
             binding.name.text =
                 "color animated" // I'm sorry but it's too boring to move it to strings for such a demo
             binding.shaderView.apply {
-                updateContinuously = true
+                updateContinuously = true // update each frame
                 fragmentShaderRawResId = R.raw.color_frag
                 shaderParams = ShaderParams.Builder()
                     .addVec4f("diffuseColor", floatArrayOf(1.0f, 1.0f, 1.0f, 1.0f))
@@ -199,18 +196,17 @@ class ShaderListAdapter : RecyclerView.Adapter<ShaderListAdapter.BaseShaderView>
         }
     }
 
-    class AnimatedTexturesShaderViewHolder(binding: ItemShaderBinding) : BaseShaderView(binding.root) {
+    class AnimatedTexturesShaderViewHolder(val binding: ItemShaderBinding) : BaseShaderView(binding.root) {
         init {
             binding.name.text =
                 "animated_texture" // I'm sorry but it's too boring to move it to strings for such a demo
             binding.shaderView.apply {
-                updateContinuously = true
+                updateContinuously = true // update each frame
                 fragmentShaderRawResId = R.raw.animated_texture
                 shaderParams = ShaderParams.Builder()
                     .addTexture2D(
                         "uTexture",
                         R.drawable.normal_sphere,
-                        context.resources,
                         GLES30.GL_TEXTURE0
                     )
                     .addVec2f("uOffset")
@@ -220,6 +216,7 @@ class ShaderListAdapter : RecyclerView.Adapter<ShaderListAdapter.BaseShaderView>
                     val v = (System.currentTimeMillis() % 1000L) / 1000f
                     shaderParams.updateValue("uOffset", floatArrayOf(u, v))
                 }
+                debugMode = true
             }
         }
     }
@@ -228,13 +225,12 @@ class ShaderListAdapter : RecyclerView.Adapter<ShaderListAdapter.BaseShaderView>
         init {
             binding.name.text = "blur" // I'm sorry but it's too boring to move it to strings for such a demo
             binding.shaderView.apply {
-                updateContinuously = true
+                updateContinuously = true // update each frame
                 fragmentShaderRawResId = R.raw.blur
                 shaderParams = ShaderParams.Builder()
                     .addTexture2D(
                         "uTexture",
                         R.drawable.test_texture,
-                        context.resources,
                         GLES30.GL_TEXTURE0
                     )
                     .addVec2f("uScale", floatArrayOf(0f, 0f))
