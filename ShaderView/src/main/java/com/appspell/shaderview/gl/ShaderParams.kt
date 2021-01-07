@@ -74,11 +74,12 @@ class ShaderParams {
                     // if it is a Bitmap let's upload it to the GPU
                     (value as? TextureParam)?.let { textureParam ->
                         // create Bitmap
-                        val bitmap = textureParam.bitmap
-                            ?: textureParam.textureResourceId?.let { resources.loadBitmapForTexture(it) }
+                        val bitmap = textureParam.bitmap ?: textureParam.textureResourceId?.let {
+                            resources.loadBitmapForTexture(it)
+                        }
 
                         // upload bitmap to GPU
-                        bitmap?.toGlTexture(needToRecycle = false, textureParam.textureSlot)
+                        bitmap?.toGlTexture(needToRecycle = true, textureParam.textureSlot)
                     }.also { textureId ->
                         value = (value as? TextureParam)?.copy(
                             textureId = textureId
@@ -134,7 +135,7 @@ class ShaderParams {
     fun bindParams(shaderProgram: Int, resources: Resources?) {
         for (key in map.keys) {
             updateUniformLocation(key, shaderProgram)
-            resources?.also {bindTextures(key, resources)}
+            resources?.also { bindTextures(key, resources) }
         }
     }
 
@@ -150,42 +151,12 @@ class ShaderParams {
                 Param.ValueType.FLOAT -> GLES30.glUniform1f(param.location, param.value as Float)
                 Param.ValueType.INT -> GLES30.glUniform1i(param.location, param.value as Int)
                 Param.ValueType.BOOL -> GLES30.glUniform1i(param.location, if (param.value as Boolean) 1 else 0)
-                Param.ValueType.FLOAT_VEC2 -> GLES30.glUniform2fv(
-                    param.location,
-                    1,
-                    (param.value as FloatArray),
-                    0
-                )
-                Param.ValueType.FLOAT_VEC3 -> GLES30.glUniform3fv(
-                    param.location,
-                    1,
-                    (param.value as FloatArray),
-                    0
-                )
-                Param.ValueType.FLOAT_VEC4 -> GLES30.glUniform4fv(
-                    param.location,
-                    1,
-                    (param.value as FloatArray),
-                    0
-                )
-                Param.ValueType.INT_VEC2 -> GLES30.glUniform2iv(
-                    param.location,
-                    1,
-                    (param.value as IntArray),
-                    0
-                )
-                Param.ValueType.INT_VEC3 -> GLES30.glUniform3iv(
-                    param.location,
-                    1,
-                    (param.value as IntArray),
-                    0
-                )
-                Param.ValueType.INT_VEC4 -> GLES30.glUniform4iv(
-                    param.location,
-                    1,
-                    (param.value as IntArray),
-                    0
-                )
+                Param.ValueType.FLOAT_VEC2 -> GLES30.glUniform2fv(param.location, 1, (param.value as FloatArray), 0)
+                Param.ValueType.FLOAT_VEC3 -> GLES30.glUniform3fv(param.location, 1, (param.value as FloatArray), 0)
+                Param.ValueType.FLOAT_VEC4 -> GLES30.glUniform4fv(param.location, 1, (param.value as FloatArray), 0)
+                Param.ValueType.INT_VEC2 -> GLES30.glUniform2iv(param.location, 1, (param.value as IntArray), 0)
+                Param.ValueType.INT_VEC3 -> GLES30.glUniform3iv(param.location, 1, (param.value as IntArray), 0)
+                Param.ValueType.INT_VEC4 -> GLES30.glUniform4iv(param.location, 1, (param.value as IntArray), 0)
                 Param.ValueType.MAT3 -> GLES30.glUniformMatrix3fv(
                     param.location,
                     1,

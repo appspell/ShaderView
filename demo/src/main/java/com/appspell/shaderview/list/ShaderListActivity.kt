@@ -22,17 +22,15 @@ class ShaderListActivity : AppCompatActivity() {
         binding.list.adapter = ShaderListAdapter()
             .apply {
                 items = mutableListOf(
-//                    COLOR, NORMAL_MAP_2,
-//                    BLUR, NORMAL_MAP,
-//                    COLOR_ANIMATED, MULTIPLE_TEXTURES,
-//                    SIMPLE_ANIMATION, ANIMATED_TEXTURES
-                            ANIMATED_TEXTURES
+                    COLOR, NORMAL_MAP_2,
+                    BLUR, NORMAL_MAP,
+                    COLOR_ANIMATED, MULTIPLE_TEXTURES,
+                    SIMPLE_ANIMATION, ANIMATED_TEXTURES
                 )
                     .repeat(10)
                     .map { it.ordinal }
             }
     }
-
 
     private fun <E> MutableList<E>.repeat(times: Int): MutableList<E> {
         for (i in 0..times) {

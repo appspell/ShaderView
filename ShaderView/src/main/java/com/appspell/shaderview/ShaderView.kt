@@ -130,14 +130,4 @@ class ShaderView @JvmOverloads constructor(
         renderer.shader.release()
         return super.onSurfaceTextureDestroyed(surface)
     }
-
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-        renderer.isActive = true
-    }
-
-    override fun onDetachedFromWindow() {
-        super.onDetachedFromWindow()
-        renderer.isActive = false
-    }
 }

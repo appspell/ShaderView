@@ -63,6 +63,8 @@ class GLShader {
     fun newBuilder() = Builder(this)
 
     /**
+     * Bind params to shaders, (when you just set ShaderParams to the shaders)
+     *
      * Do not forget to apply parameters for shaders before render
      * Call it when shader program is created
      *

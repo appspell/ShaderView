@@ -19,7 +19,6 @@ import javax.microedition.khronos.opengles.GL
 import javax.microedition.khronos.opengles.GL10
 import kotlin.concurrent.withLock
 
-
 /*
  * An implementation of TextureView that uses the dedicated surface for
  * displaying OpenGL rendering.
