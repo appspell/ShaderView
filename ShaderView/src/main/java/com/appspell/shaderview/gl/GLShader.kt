@@ -20,7 +20,10 @@ class GLShader {
 
     var program = UNKNOWN_PROGRAM
 
-    fun createProgram(vertexSource: String, fragmentSource: String): Boolean {
+    private fun createProgram(vertexSource: String, fragmentSource: String): Boolean {
+        if (program != UNKNOWN_PROGRAM) {
+            release()
+        }
         val vertexShader = loadShader(GLES30.GL_VERTEX_SHADER, vertexSource)
         if (vertexShader == UNKNOWN_PROGRAM) {
             return false
@@ -32,19 +35,27 @@ class GLShader {
         program = GLES30.glCreateProgram()
         if (program != UNKNOWN_PROGRAM) {
             GLES30.glAttachShader(program, vertexShader)
-            checkGlError("glAttachShader")
+            checkGlError("glAttachShader: vertex")
             GLES30.glAttachShader(program, pixelShader)
-            checkGlError("glAttachShader")
-            GLES30.glLinkProgram(program)
-            val linkStatus = IntArray(1)
-            GLES30.glGetProgramiv(program, GLES30.GL_LINK_STATUS, linkStatus, 0)
-            if (linkStatus[0] != GLES30.GL_TRUE) {
-                LibLog.e(TAG, "Could not link program: ")
-                LibLog.e(TAG, GLES30.glGetProgramInfoLog(program))
-                GLES30.glDeleteProgram(program)
-                program = UNKNOWN_PROGRAM
-                return false
-            }
+            checkGlError("glAttachShader: pixel")
+            return linkProgram()
+        }
+        return true
+    }
+
+    private fun linkProgram(): Boolean {
+        if (program == UNKNOWN_PROGRAM) {
+            return false
+        }
+        GLES30.glLinkProgram(program)
+        val linkStatus = IntArray(1)
+        GLES30.glGetProgramiv(program, GLES30.GL_LINK_STATUS, linkStatus, 0)
+        if (linkStatus[0] != GLES30.GL_TRUE) {
+            LibLog.e(TAG, "Could not link program: ")
+            LibLog.e(TAG, GLES30.glGetProgramInfoLog(program))
+            GLES30.glDeleteProgram(program)
+            program = UNKNOWN_PROGRAM
+            return false
         }
         return true
     }
@@ -57,6 +68,10 @@ class GLShader {
     }
 
     fun release() {
+        if (program != UNKNOWN_PROGRAM) {
+            GLES30.glDeleteProgram(program)
+            program = UNKNOWN_PROGRAM
+        }
         params.release()
     }
 

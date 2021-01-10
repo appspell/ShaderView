@@ -109,6 +109,10 @@ class ShaderView @JvmOverloads constructor(
 
     private fun initShaders() {
         fragmentShaderRawResId?.let { fragmentShader ->
+            // delete existing shader is we have some
+            renderer.shader.release()
+
+            // create a new shader
             renderer.shader = renderer.shader.newBuilder()
                 .create(
                     context = context,
@@ -121,6 +125,7 @@ class ShaderView @JvmOverloads constructor(
                 }
                 .build()
                 .apply {
+                    // bind shader params. We have to pass [android.content.res.Resources] to be able to load textures from Resources
                     bindParams(resources)
                 }
         }
