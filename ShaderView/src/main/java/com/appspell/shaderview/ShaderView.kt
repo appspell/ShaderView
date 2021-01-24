@@ -28,13 +28,23 @@ class ShaderView @JvmOverloads constructor(
 
     @RawRes
     var vertexShaderRawResId: Int? = null
+        set(value) {
+            needToRecreateShaders = true
+            field = value
+        }
 
     @RawRes
     var fragmentShaderRawResId: Int? = null
+        set(value) {
+            needToRecreateShaders = true
+            field = value
+        }
 
     var shaderParams: ShaderParams? = null
     var onViewReadyListener: ((shader: GLShader) -> Unit)? = null
     var onDrawFrameListener: ((shaderParams: ShaderParams) -> Unit)? = null
+
+    private var needToRecreateShaders = false
 
     /**
      * Enable or disable logging for all of ShaderView globally
@@ -108,27 +118,32 @@ class ShaderView @JvmOverloads constructor(
     }
 
     private fun initShaders() {
-        fragmentShaderRawResId?.let { fragmentShader ->
-            // delete existing shader is we have some
-            renderer.shader.release()
+        if (needToRecreateShaders) {
+            fragmentShaderRawResId?.also { fragmentShader ->
+                // delete existing shader is we have some
+                renderer.shader.release()
 
-            // create a new shader
-            renderer.shader = renderer.shader.newBuilder()
-                .create(
-                    context = context,
-                    vertexShaderRawResId = vertexShaderRawResId ?: DEFAULT_VERTEX_SHADER_RESOURCE,
-                    fragmentShaderRawResId = fragmentShader
-                )
-                .apply {
-                    // if we have some ShaderParams to set
-                    shaderParams?.apply { params(this) }
-                }
-                .build()
-                .apply {
-                    // bind shader params. We have to pass [android.content.res.Resources] to be able to load textures from Resources
-                    bindParams(resources)
-                }
+                // create a new shader
+                renderer.shader = renderer.shader.newBuilder()
+                    .create(
+                        context = context,
+                        vertexShaderRawResId = vertexShaderRawResId ?: DEFAULT_VERTEX_SHADER_RESOURCE,
+                        fragmentShaderRawResId = fragmentShader
+                    )
+                    .apply {
+                        // if we have some ShaderParams to set
+                        shaderParams?.apply { params(this) }
+                    }
+                    .build()
+                    .also {
+                        needToRecreateShaders = true
+                    }
+            }
         }
+
+        // bind shader params.
+        // note: we have to pass [android.content.res.Resources] to be able to load textures from Resources
+        renderer.shader.bindParams(resources)
     }
 
     override fun onSurfaceTextureDestroyed(surface: SurfaceTexture): Boolean {
