@@ -14,6 +14,10 @@ import com.appspell.shaderview.gl.ShaderParams
 import com.appspell.shaderview.log.LibLog
 
 private const val OPENGL_VERSION = 3
+
+private const val BIT_PER_CHANEL = 8
+private const val DEPTH_BIT_PER_CHANEL = 16
+
 private val DEFAULT_VERTEX_SHADER_RESOURCE = R.raw.quad_vert
 private val DEFAULT_FRAGMENT_SHADER_RESOURCE = R.raw.default_frag
 
@@ -96,6 +100,7 @@ class ShaderView @JvmOverloads constructor(
 
         setEGLContextClientVersion(OPENGL_VERSION)
         renderer.listener = rendererListener
+        setEGLConfigChooser(BIT_PER_CHANEL, BIT_PER_CHANEL, BIT_PER_CHANEL, BIT_PER_CHANEL, DEPTH_BIT_PER_CHANEL, 0)
         setRenderer(renderer)
         setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY)
     }

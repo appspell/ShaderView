@@ -3,7 +3,6 @@ package com.appspell.shaderview.gl
 import android.opengl.GLES20
 import android.opengl.GLES30
 import android.opengl.Matrix
-import android.util.Log
 import com.appspell.shaderview.log.LibLog
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -104,7 +103,7 @@ internal class GLQuadRender : GLTextureView.Renderer {
             return
         }
 
-        GLES30.glClearColor(1.0f, 1.0f, 1.0f, 1.0f)
+        GLES30.glClearColor(0.0f, 0.0f, 0.0f, 0.0f)
         GLES30.glClear(GLES30.GL_DEPTH_BUFFER_BIT or GLES30.GL_COLOR_BUFFER_BIT)
 
         GLES30.glUseProgram(shader.program)
