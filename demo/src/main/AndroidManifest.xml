@@ -16,12 +16,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".video.VideoActivity"></activity>
-        <activity android:name=".video.VideoAdvancedActivity">        </activity>
-        <activity android:name=".simple.SimpleShaderActivity"></activity>
-        <activity android:name=".list.ShaderListActivity">
-
-        </activity>
+        <activity android:name=".video.VideoActivity" />
+        <activity android:name=".video.VideoAdvancedActivity" />
+        <activity android:name=".simple.SimpleShaderActivity" />
+        <activity android:name=".simple.SimpleOnlyXMLShaderActivity" />
+        <activity android:name=".list.ShaderListActivity" />
     </application>
 
 </manifest>

@@ -1,12 +1,10 @@
 package com.appspell.shaderview.ext
 
-import android.graphics.SurfaceTexture
-import android.view.Surface
 import com.appspell.shaderview.gl.ShaderParams
-import com.appspell.shaderview.gl.params.SamplerOESParam
+import com.appspell.shaderview.gl.params.TextureOESParam
 
 fun ShaderParams.getTexture2dOESSurfaceTexture(parameterName: String) =
-    (this.getParamValue(parameterName) as? SamplerOESParam)?.surfaceTexture
+    (this.getParamValue(parameterName) as? TextureOESParam)?.surfaceTexture
 
 fun ShaderParams.getTexture2dOESSurface(parameterName: String) =
-    (this.getParamValue(parameterName) as? SamplerOESParam)?.surface
+    (this.getParamValue(parameterName) as? TextureOESParam)?.surface

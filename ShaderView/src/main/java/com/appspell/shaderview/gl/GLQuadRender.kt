@@ -43,9 +43,6 @@ internal class GLQuadRender : GLTextureView.Renderer {
 
     internal var listener: ShaderViewListener? = null
 
-    // should we render it or not
-    internal var isActive = false
-
     private val quadVertices: FloatBuffer
 
     private val matrixMVP = FloatArray(16)
@@ -94,13 +91,16 @@ internal class GLQuadRender : GLTextureView.Renderer {
             .addMat4f(VERTEX_SHADER_UNIFORM_MATRIX_STM)
             .build()
 
+        // as far as we set the new
+        shader.bindParams(null)
+
         // set attributes (input for Vertex Shader)
         inPositionHandle = glGetAttribLocation(VERTEX_SHADER_IN_POSITION)
         inTextureHandle = glGetAttribLocation(VERTEX_SHADER_IN_TEXTURE_COORD)
     }
 
     override fun onDrawFrame(gl: GL10?) {
-        if (!shader.isReady && isActive) {
+        if (!shader.isReady) {
             return
         }
 

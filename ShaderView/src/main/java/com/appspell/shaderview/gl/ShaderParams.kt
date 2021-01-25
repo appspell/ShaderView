@@ -13,9 +13,9 @@ import androidx.core.content.res.ResourcesCompat
 import com.appspell.shaderview.ext.createExternalTexture
 import com.appspell.shaderview.ext.loadBitmapForTexture
 import com.appspell.shaderview.ext.toGlTexture
-import com.appspell.shaderview.gl.params.SamplerOESParam
+import com.appspell.shaderview.gl.params.TextureOESParam
+import com.appspell.shaderview.gl.params.TextureParam
 import java.util.*
-import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
 const val UNKNOWN_LOCATION = -1
@@ -25,8 +25,7 @@ class ShaderParams {
     private data class Param(
         val valeType: ValueType,
         var location: Int = UNKNOWN_LOCATION,
-        var value: Any? = null,
-        var addtional: Any? = null
+        var value: Any? = null
     ) {
         enum class ValueType {
             FLOAT, INT, BOOL,
@@ -66,21 +65,26 @@ class ShaderParams {
 
     fun getParamValue(paramName: String): Any? = map[paramName]?.value
 
-    fun getParamAdditionalField(paramName: String): Any? = map[paramName]?.addtional
-
-    private fun updateParams(paramName: String, shaderProgram: Int) {
+    private fun bindTextures(paramName: String, resources: Resources) {
         map[paramName]?.apply {
-            location = GLES30.glGetUniformLocation(shaderProgram, paramName)
-
             when (valeType) {
                 // We have a different flow for Textures.
                 // At first, we get a bitmap from params and when OpenGL context is ready we convert it to Texture
                 Param.ValueType.SAMPLER_2D -> {
                     // if it is a Bitmap let's upload it to the GPU
-                    value = value
-                        ?.takeIf { it is Bitmap }
-                        ?.run { (this as? Bitmap)?.toGlTexture(needToRecycle = true, addtional as Int) }
-                        ?: value
+                    (value as? TextureParam)?.let { textureParam ->
+                        // create Bitmap
+                        val bitmap = textureParam.bitmap ?: textureParam.textureResourceId?.let {
+                            resources.loadBitmapForTexture(it)
+                        }
+
+                        // upload bitmap to GPU
+                        bitmap?.toGlTexture(needToRecycle = true, textureParam.textureSlot)
+                    }.also { textureId ->
+                        value = (value as? TextureParam)?.copy(
+                            textureId = textureId
+                        ) ?: value
+                    }
                 }
                 // create Surface for External Texture
                 Param.ValueType.SAMPLER_OES -> {
@@ -88,7 +92,7 @@ class ShaderParams {
                         // if it's not initialized
                         location = createExternalTexture()
                         val surfaceTexture = SurfaceTexture(location)
-                        value = SamplerOESParam(
+                        value = TextureOESParam(
                             surfaceTexture = surfaceTexture,
                             surface = Surface(surfaceTexture)
                         ).apply {
@@ -104,27 +108,34 @@ class ShaderParams {
                     // Do Nothing for the other types
                 }
             }
-
         }
     }
 
+    private fun updateUniformLocation(paramName: String, shaderProgram: Int) {
+        map[paramName]?.apply {
+            location = GLES30.glGetUniformLocation(shaderProgram, paramName)
+        }
+    }
 
     fun release() {
         for (key in map.keys) {
             map[key]?.apply {
                 when (valeType) {
                     Param.ValueType.SAMPLER_OES -> {
-                        (value as? SurfaceTexture)?.release()
-                        (addtional as? SurfaceTexture)?.release()
+                        (value as? TextureOESParam)?.apply {
+                            surfaceTexture.release()
+                            surface.release()
+                        }
                     }
                 }
             }
         }
     }
 
-    fun bindParams(shaderProgram: Int) {
+    fun bindParams(shaderProgram: Int, resources: Resources?) {
         for (key in map.keys) {
-            updateParams(key, shaderProgram)
+            updateUniformLocation(key, shaderProgram)
+            resources?.also { bindTextures(key, resources) }
         }
     }
 
@@ -140,42 +151,12 @@ class ShaderParams {
                 Param.ValueType.FLOAT -> GLES30.glUniform1f(param.location, param.value as Float)
                 Param.ValueType.INT -> GLES30.glUniform1i(param.location, param.value as Int)
                 Param.ValueType.BOOL -> GLES30.glUniform1i(param.location, if (param.value as Boolean) 1 else 0)
-                Param.ValueType.FLOAT_VEC2 -> GLES30.glUniform2fv(
-                    param.location,
-                    1,
-                    (param.value as FloatArray),
-                    0
-                )
-                Param.ValueType.FLOAT_VEC3 -> GLES30.glUniform3fv(
-                    param.location,
-                    1,
-                    (param.value as FloatArray),
-                    0
-                )
-                Param.ValueType.FLOAT_VEC4 -> GLES30.glUniform4fv(
-                    param.location,
-                    1,
-                    (param.value as FloatArray),
-                    0
-                )
-                Param.ValueType.INT_VEC2 -> GLES30.glUniform2iv(
-                    param.location,
-                    1,
-                    (param.value as IntArray),
-                    0
-                )
-                Param.ValueType.INT_VEC3 -> GLES30.glUniform3iv(
-                    param.location,
-                    1,
-                    (param.value as IntArray),
-                    0
-                )
-                Param.ValueType.INT_VEC4 -> GLES30.glUniform4iv(
-                    param.location,
-                    1,
-                    (param.value as IntArray),
-                    0
-                )
+                Param.ValueType.FLOAT_VEC2 -> GLES30.glUniform2fv(param.location, 1, (param.value as FloatArray), 0)
+                Param.ValueType.FLOAT_VEC3 -> GLES30.glUniform3fv(param.location, 1, (param.value as FloatArray), 0)
+                Param.ValueType.FLOAT_VEC4 -> GLES30.glUniform4fv(param.location, 1, (param.value as FloatArray), 0)
+                Param.ValueType.INT_VEC2 -> GLES30.glUniform2iv(param.location, 1, (param.value as IntArray), 0)
+                Param.ValueType.INT_VEC3 -> GLES30.glUniform3iv(param.location, 1, (param.value as IntArray), 0)
+                Param.ValueType.INT_VEC4 -> GLES30.glUniform4iv(param.location, 1, (param.value as IntArray), 0)
                 Param.ValueType.MAT3 -> GLES30.glUniformMatrix3fv(
                     param.location,
                     1,
@@ -198,13 +179,15 @@ class ShaderParams {
                     0
                 )
                 Param.ValueType.SAMPLER_2D -> {
-                    GLES30.glUniform1i(param.location, (param.addtional as Int).convertTextureSlotToIndex())
-                    GLES30.glActiveTexture(param.addtional as Int)
-                    GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, param.value as Int)
+                    (param.value as? TextureParam)?.apply {
+                        GLES30.glUniform1i(param.location, textureSlot.convertTextureSlotToIndex())
+                        GLES30.glActiveTexture(textureSlot)
+                        textureId?.also { GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, it) }
+                    }
                 }
                 Param.ValueType.SAMPLER_OES -> {
                     // update texture (as far as we stored SurfaceTexture to value in updateParams() method)
-                    (param.value as? SamplerOESParam)?.apply {
+                    (param.value as? TextureOESParam)?.apply {
                         lock.withLock {
                             if (updateSurface.get()) {
                                 surfaceTexture.updateTexImage()
@@ -336,8 +319,10 @@ class ShaderParams {
         ): Builder {
             val param = Param(
                 valeType = Param.ValueType.SAMPLER_2D,
-                value = bitmap,
-                addtional = textureSlot
+                value = TextureParam(
+                    bitmap = bitmap,
+                    textureSlot = textureSlot
+                )
             )
             result.map[paramName] = param
             return this
@@ -350,13 +335,14 @@ class ShaderParams {
         fun addTexture2D(
             paramName: String,
             @DrawableRes textureResourceId: Int,
-            resources: Resources,
             textureSlot: Int = GLES30.GL_TEXTURE0
         ): Builder {
             val param = Param(
                 valeType = Param.ValueType.SAMPLER_2D,
-                value = resources.loadBitmapForTexture(textureResourceId),
-                addtional = textureSlot
+                value = TextureParam(
+                    textureResourceId = textureResourceId,
+                    textureSlot = textureSlot
+                )
             )
             result.map[paramName] = param
             return this

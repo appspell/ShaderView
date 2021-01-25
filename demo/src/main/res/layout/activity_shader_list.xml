@@ -1,78 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.recyclerview.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/list"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#ffffff"
-        android:orientation="vertical"
-        tools:context=".list.ShaderListActivity">
-
-        <TextView
-            android:id="@+id/text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="#ffffff"
-            android:padding="20dp"
-            android:text="Hello World!"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <com.appspell.shaderview.ShaderView
-            android:id="@+id/texture"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
-            android:layout_margin="10dp" />
-
-        <com.appspell.shaderview.ShaderView
-            android:id="@+id/texture2"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_margin="10dp" />
-
-        <com.appspell.shaderview.ShaderView
-            android:id="@+id/texture3"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:layout_margin="10dp" />
-
-        <com.appspell.shaderview.ShaderView
-            android:id="@+id/texture4"
-            android:layout_width="150dp"
-            android:layout_height="115dp"
-            android:layout_margin="20dp"
-            app:fragment_shader_raw_res_id="@raw/simple_frag" />
-
-        <com.appspell.shaderview.ShaderView
-            android:id="@+id/texture5"
-            android:layout_width="50dp"
-            android:layout_height="100dp"
-            android:layout_margin="10dp" />
-
-        <com.appspell.shaderview.ShaderView
-            android:id="@+id/texture6"
-            android:layout_width="350dp"
-            android:layout_height="350dp"
-            android:layout_margin="10dp" />
-
-        <com.appspell.shaderview.ShaderView
-            android:id="@+id/texture7"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:layout_margin="10dp" />
-
-        <com.appspell.shaderview.ShaderView
-            android:id="@+id/texture8"
-            android:layout_width="100dp"
-            android:layout_height="200dp"
-            android:layout_margin="10dp" />
-    </LinearLayout>
-</androidx.core.widget.NestedScrollView>
+    android:orientation="vertical"
+    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+    app:spanCount="2"
+    tools:listitem="@layout/item_shader" />

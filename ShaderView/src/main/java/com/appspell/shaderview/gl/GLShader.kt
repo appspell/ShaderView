@@ -1,13 +1,12 @@
 package com.appspell.shaderview.gl
 
 import android.content.Context
+import android.content.res.Resources
 import android.opengl.GLES30
-import android.util.Log
 import androidx.annotation.RawRes
 import com.appspell.shaderview.R
 import com.appspell.shaderview.ext.getRawTextFile
 import com.appspell.shaderview.log.LibLog
-import java.lang.Exception
 
 const val UNKNOWN_PROGRAM = 0
 private const val TAG = "GLShader"
@@ -18,14 +17,13 @@ class GLShader {
         get() = program != UNKNOWN_PROGRAM
 
     var params = ShaderParams()
-        set(value) {
-            field = value
-            bindParams()
-        }
 
     var program = UNKNOWN_PROGRAM
 
-    fun createProgram(vertexSource: String, fragmentSource: String): Boolean {
+    private fun createProgram(vertexSource: String, fragmentSource: String): Boolean {
+        if (program != UNKNOWN_PROGRAM) {
+            release()
+        }
         val vertexShader = loadShader(GLES30.GL_VERTEX_SHADER, vertexSource)
         if (vertexShader == UNKNOWN_PROGRAM) {
             return false
@@ -37,20 +35,27 @@ class GLShader {
         program = GLES30.glCreateProgram()
         if (program != UNKNOWN_PROGRAM) {
             GLES30.glAttachShader(program, vertexShader)
-            checkGlError("glAttachShader")
+            checkGlError("glAttachShader: vertex")
             GLES30.glAttachShader(program, pixelShader)
-            checkGlError("glAttachShader")
-            GLES30.glLinkProgram(program)
-            val linkStatus = IntArray(1)
-            GLES30.glGetProgramiv(program, GLES30.GL_LINK_STATUS, linkStatus, 0)
-            if (linkStatus[0] != GLES30.GL_TRUE) {
-                LibLog.e(TAG, "Could not link program: ")
-                LibLog.e(TAG, GLES30.glGetProgramInfoLog(program))
-                GLES30.glDeleteProgram(program)
-                program = UNKNOWN_PROGRAM
-                return false
-            }
-            bindParams()
+            checkGlError("glAttachShader: pixel")
+            return linkProgram()
+        }
+        return true
+    }
+
+    private fun linkProgram(): Boolean {
+        if (program == UNKNOWN_PROGRAM) {
+            return false
+        }
+        GLES30.glLinkProgram(program)
+        val linkStatus = IntArray(1)
+        GLES30.glGetProgramiv(program, GLES30.GL_LINK_STATUS, linkStatus, 0)
+        if (linkStatus[0] != GLES30.GL_TRUE) {
+            LibLog.e(TAG, "Could not link program: ")
+            LibLog.e(TAG, GLES30.glGetProgramInfoLog(program))
+            GLES30.glDeleteProgram(program)
+            program = UNKNOWN_PROGRAM
+            return false
         }
         return true
     }
@@ -63,16 +68,31 @@ class GLShader {
     }
 
     fun release() {
+        if (program != UNKNOWN_PROGRAM) {
+            GLES30.glDeleteProgram(program)
+            program = UNKNOWN_PROGRAM
+        }
         params.release()
     }
 
     fun newBuilder() = Builder(this)
 
-    private fun bindParams() {
+    /**
+     * Bind params to shaders, (when you just set ShaderParams to the shaders)
+     *
+     * Do not forget to apply parameters for shaders before render
+     * Call it when shader program is created
+     *
+     * This method gets the location of uniform params and upload textures to GPU
+     *
+     * @param resources - we need to upload textures from resources
+     * if you don't need to load textures from android resources, you may omit such parameter
+     */
+    fun bindParams(resources: Resources? = null) {
         if (program == UNKNOWN_PROGRAM) {
             return
         }
-        params.bindParams(program)
+        params.bindParams(program, resources)
     }
 
     private fun pushValuesToProgram() {

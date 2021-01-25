@@ -26,26 +26,41 @@ class ShaderView @JvmOverloads constructor(
     SurfaceTextureListener,
     View.OnLayoutChangeListener {
 
-    companion object {
-        /**
-         * Enable or disable logging for all of ShaderView globally
-         */
-        var debugMode = false
-            set(value) {
-                field = value
-                LibLog.isEnabled = value
-            }
-    }
-
     @RawRes
     var vertexShaderRawResId: Int? = null
+        set(value) {
+            needToRecreateShaders = true
+            field = value
+        }
 
     @RawRes
     var fragmentShaderRawResId: Int? = null
+        set(value) {
+            needToRecreateShaders = true
+            field = value
+        }
 
     var shaderParams: ShaderParams? = null
     var onViewReadyListener: ((shader: GLShader) -> Unit)? = null
     var onDrawFrameListener: ((shaderParams: ShaderParams) -> Unit)? = null
+
+    private var needToRecreateShaders = false
+
+    /**
+     * Enable or disable logging for all of ShaderView globally
+     * TODO it need to enable logs for this view only
+     */
+    var debugMode = false
+        set(value) {
+            field = value
+            LibLog.isEnabled = value // TODO should be enabled for particular view only
+            if (value) {
+                setDebugFlags(DEBUG_CHECK_GL_ERROR.and(DEBUG_LOG_GL_CALLS))
+                enableLogPauseResume = true
+                enableLogEgl = true
+                enableLogSurface = true
+            }
+        }
 
     /**
      * should we re-render this view all the time
@@ -103,30 +118,36 @@ class ShaderView @JvmOverloads constructor(
     }
 
     private fun initShaders() {
-        fragmentShaderRawResId?.let { fragmentShader ->
-            renderer.shader = renderer.shader.newBuilder()
-                .create(
-                    context = context,
-                    vertexShaderRawResId = vertexShaderRawResId ?: DEFAULT_VERTEX_SHADER_RESOURCE,
-                    fragmentShaderRawResId = fragmentShader
-                )
-                .apply { shaderParams?.apply { params(this) } }
-                .build()
+        if (needToRecreateShaders) {
+            fragmentShaderRawResId?.also { fragmentShader ->
+                // delete existing shader is we have some
+                renderer.shader.release()
+
+                // create a new shader
+                renderer.shader = renderer.shader.newBuilder()
+                    .create(
+                        context = context,
+                        vertexShaderRawResId = vertexShaderRawResId ?: DEFAULT_VERTEX_SHADER_RESOURCE,
+                        fragmentShaderRawResId = fragmentShader
+                    )
+                    .apply {
+                        // if we have some ShaderParams to set
+                        shaderParams?.apply { params(this) }
+                    }
+                    .build()
+                    .also {
+                        needToRecreateShaders = true
+                    }
+            }
         }
+
+        // bind shader params.
+        // note: we have to pass [android.content.res.Resources] to be able to load textures from Resources
+        renderer.shader.bindParams(resources)
     }
 
     override fun onSurfaceTextureDestroyed(surface: SurfaceTexture): Boolean {
         renderer.shader.release()
         return super.onSurfaceTextureDestroyed(surface)
-    }
-
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-        renderer.isActive = true
-    }
-
-    override fun onDetachedFromWindow() {
-        super.onDetachedFromWindow()
-        renderer.isActive = false
     }
 }
