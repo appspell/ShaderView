@@ -45,6 +45,10 @@ class ShaderView @JvmOverloads constructor(
         }
 
     var shaderParams: ShaderParams? = null
+        set(value) {
+            field = value
+            updateShaderParams()
+        }
     var onViewReadyListener: ((shader: GLShader) -> Unit)? = null
     var onDrawFrameListener: ((shaderParams: ShaderParams) -> Unit)? = null
 
@@ -120,6 +124,13 @@ class ShaderView @JvmOverloads constructor(
                     recycle()
                 }
             }
+    }
+
+    private fun updateShaderParams() {
+        if (needToRecreateShaders) {
+            return
+        }
+        shaderParams?.apply { renderer.shader.params = this }
     }
 
     private fun initShaders() {
