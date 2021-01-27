@@ -6,7 +6,9 @@ import android.opengl.GLSurfaceView
 import android.util.AttributeSet
 import android.view.TextureView.SurfaceTextureListener
 import android.view.View
+import androidx.annotation.AttrRes
 import androidx.annotation.RawRes
+import androidx.annotation.StyleRes
 import com.appspell.shaderview.gl.GLQuadRender
 import com.appspell.shaderview.gl.GLShader
 import com.appspell.shaderview.gl.GLTextureView
@@ -23,8 +25,8 @@ private val DEFAULT_FRAGMENT_SHADER_RESOURCE = R.raw.default_frag
 
 class ShaderView @JvmOverloads constructor(
     context: Context,
-    attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0
+    @AttrRes attrs: AttributeSet? = null,
+    @StyleRes defStyleAttr: Int = 0
 ) :
     GLTextureView(context, attrs, defStyleAttr),
     SurfaceTextureListener,

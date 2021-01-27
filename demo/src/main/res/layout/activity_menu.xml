@@ -9,42 +9,42 @@
     <Button
         android:id="@+id/simpleShader"
         android:layout_width="match_parent"
-        android:layout_margin="@dimen/marging"
+        android:layout_margin="@dimen/margin"
         android:layout_height="wrap_content"
         android:text="@string/button_simple_shader"/>
 
     <Button
         android:id="@+id/simpleXmlOnlyShader"
         android:layout_width="match_parent"
-        android:layout_margin="@dimen/marging"
+        android:layout_margin="@dimen/margin"
         android:layout_height="wrap_content"
         android:text="@string/button_simple_XML_only_shader"/>
 
     <Button
         android:id="@+id/customUi"
         android:layout_width="match_parent"
-        android:layout_margin="@dimen/marging"
+        android:layout_margin="@dimen/margin"
         android:layout_height="wrap_content"
         android:text="@string/button_custom_ui"/>
 
     <Button
         android:id="@+id/shaderList"
         android:layout_width="match_parent"
-        android:layout_margin="@dimen/marging"
+        android:layout_margin="@dimen/margin"
         android:layout_height="wrap_content"
         android:text="@string/button_shader_list"/>
 
     <Button
         android:id="@+id/simpleVideo"
         android:layout_width="match_parent"
-        android:layout_margin="@dimen/marging"
+        android:layout_margin="@dimen/margin"
         android:layout_height="wrap_content"
         android:text="@string/button_simple_video_playback_shader"/>
 
     <Button
         android:id="@+id/advancedVideo"
         android:layout_width="match_parent"
-        android:layout_margin="@dimen/marging"
+        android:layout_margin="@dimen/margin"
         android:layout_height="wrap_content"
         android:text="@string/button_advanced_video_playback_shader"/>
 </LinearLayout>

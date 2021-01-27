@@ -3,14 +3,59 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:background="#cccccc"
     android:layout_height="match_parent"
+    android:background="@color/background"
     tools:context=".ui.UiActivity">
 
-    <com.appspell.shaderview.ShaderView
-        android:id="@+id/ui"
-        android:layout_width="200dp"
+    <com.appspell.shaderview.ui.ShapeFrameLayout
+        android:id="@+id/shapeLayout1"
+        android:layout_width="@dimen/shape_size"
+        android:layout_height="@dimen/shape_size"
+        android:layout_margin="20dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_height="200dp"/>
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/test_text"
+            android:textSize="24sp" />
+    </com.appspell.shaderview.ui.ShapeFrameLayout>
+
+    <com.appspell.shaderview.ui.ShapeFrameLayout
+        android:id="@+id/shapeLayout2"
+        android:layout_width="@dimen/shape_size"
+        android:layout_height="@dimen/shape_size"
+        android:layout_margin="20dp"
+        app:layout_constraintStart_toEndOf="@+id/shapeLayout1"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/test_text"
+            android:textSize="24sp" />
+    </com.appspell.shaderview.ui.ShapeFrameLayout>
+
+    <com.appspell.shaderview.ui.ShapeFrameLayout
+        android:id="@+id/shapeLayout3"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_margin="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/shapeLayout2">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|start"
+            android:text="@string/test_text"
+            android:textSize="24sp" />
+    </com.appspell.shaderview.ui.ShapeFrameLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
