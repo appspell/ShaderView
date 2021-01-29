@@ -107,6 +107,7 @@ class ShaderView @JvmOverloads constructor(
         setEGLContextClientVersion(OPENGL_VERSION)
         renderer.listener = rendererListener
         setEGLConfigChooser(BIT_PER_CHANEL, BIT_PER_CHANEL, BIT_PER_CHANEL, BIT_PER_CHANEL, DEPTH_BIT_PER_CHANEL, 0)
+
         setRenderer(renderer)
         setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY)
     }

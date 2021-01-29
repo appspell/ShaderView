@@ -8,7 +8,6 @@ import android.widget.FrameLayout
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorRes
 import androidx.annotation.StyleRes
-import androidx.core.view.children
 import com.appspell.shaderview.R
 import com.appspell.shaderview.ShaderView
 import com.appspell.shaderview.gl.ShaderParams
@@ -47,7 +46,7 @@ class ShapeFrameLayout @JvmOverloads constructor(
             invalidate()
         }
 
-    var smoothness: Float = 3.0f
+    var smoothness: Float = 1.5f
         set(value) {
             field = value
             shape?.shaderParams = shape?.shaderParams
@@ -73,7 +72,6 @@ class ShapeFrameLayout @JvmOverloads constructor(
     }
 
     private fun createBackground(attrs: AttributeSet?) {
-
         shape = ShaderView(context, attrs).apply {
             layoutParams = ViewGroup.LayoutParams(MATCH_PARENT, MATCH_PARENT)
 
@@ -101,17 +99,6 @@ class ShapeFrameLayout @JvmOverloads constructor(
                 ?.addVec2f(SHADER_UNIFORM_VIEW_SIZE, floatArrayOf(width.toFloat(), height.toFloat()))
                 ?.build()
             requestRender()
-        }
-
-        val offset = radius.toInt()
-        children.forEach { view ->
-            if (view != shape) {
-                // just small correction to show that this approach can work
-                view.left += offset
-                view.top += offset
-
-//                view.measure(view.measuredWidth - offset, view.measuredHeight - offset)
-            }
         }
     }
 }

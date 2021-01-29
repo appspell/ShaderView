@@ -57,5 +57,4 @@
             android:text="@string/test_text"
             android:textSize="24sp" />
     </com.appspell.shaderview.ui.ShapeFrameLayout>
-
 </androidx.constraintlayout.widget.ConstraintLayout>
