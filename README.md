@@ -5,7 +5,7 @@ The advantage of this library that you can use ShaderView in your hierarchy as a
 
 ### Use cases:
 - Shaders for video
-- Advanced UI components (blur, shadow, lighting)
+- Advanced UI components (blur, shadow, lighting, etc.)
 - UI effects and animation
 - Realtime image animation
 
@@ -67,7 +67,7 @@ with(shaderView) {
 
 `onDrawFrameListener` - called each frame
 
-`updateContinuously` -  should we render the view each frame only when it's really needed by the system (default is "false")
+`updateContinuously` -  should we render the view each frame (default is "false")
 
 `debugMode` - enable or disable debug logs
 
