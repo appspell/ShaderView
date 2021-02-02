@@ -13,7 +13,7 @@ import com.appspell.shaderview.BuildConfig
 import com.appspell.shaderview.R
 import com.appspell.shaderview.databinding.ActivityVideoBinding
 import com.appspell.shaderview.ext.getTexture2dOESSurface
-import com.appspell.shaderview.gl.ShaderParams
+import com.appspell.shaderview.gl.params.ShaderParamsBuilder
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.MediaSource
@@ -41,7 +41,7 @@ class VideoAdvancedActivity : AppCompatActivity() {
             // [ configure shaders ]
             updateContinuously = true // update the view each frame (do not forget set it "true")
             fragmentShaderRawResId = R.raw.video_advanced_shader // fragment shader for video frame processing
-            shaderParams = ShaderParams.Builder()
+            shaderParams = ShaderParamsBuilder()
                 .addFloat("progress", 0.5f)
                 .addFloat("fps", 30f)
                 .addVec2f("resolution", floatArrayOf(1f, 1f))

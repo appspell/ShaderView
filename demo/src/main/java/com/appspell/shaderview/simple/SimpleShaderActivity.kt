@@ -1,10 +1,10 @@
 package com.appspell.shaderview.simple
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import com.appspell.shaderview.R
 import com.appspell.shaderview.databinding.ActivitySimpleShaderBinding
-import com.appspell.shaderview.gl.ShaderParams
+import com.appspell.shaderview.gl.params.ShaderParamsBuilder
 
 class SimpleShaderActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -15,7 +15,7 @@ class SimpleShaderActivity : AppCompatActivity() {
         binding.shaderView.apply {
             fragmentShaderRawResId = R.raw.color_frag // fragment shader file
 
-            shaderParams = ShaderParams.Builder()
+            shaderParams = ShaderParamsBuilder()
                 // send parameter (uniform) to shader
                 .addColor("diffuseColor", R.color.teal_200, resources)
                 .build()

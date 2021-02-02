@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.appspell.shaderview.R
 import com.appspell.shaderview.databinding.ItemShaderBinding
-import com.appspell.shaderview.gl.ShaderParams
+import com.appspell.shaderview.gl.params.ShaderParamsBuilder
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -39,7 +39,6 @@ class ShaderListAdapter : RecyclerView.Adapter<ShaderListAdapter.BaseShaderView>
             ItemType.COLOR_ANIMATED -> ColorAnimatedShaderViewHolder(view)
             ItemType.ANIMATED_TEXTURES -> AnimatedTexturesShaderViewHolder(view)
             ItemType.BLUR -> BlurShaderViewHolder(view)
-            else -> throw RuntimeException("view holder type is not available")
         }
     }
 
@@ -58,7 +57,7 @@ class ShaderListAdapter : RecyclerView.Adapter<ShaderListAdapter.BaseShaderView>
             binding.shaderView.apply {
                 updateContinuously = false // DO NOT update each frame
                 fragmentShaderRawResId = R.raw.color_frag
-                shaderParams = ShaderParams.Builder()
+                shaderParams = ShaderParamsBuilder()
                     .addColor("diffuseColor", R.color.teal_200, resources)
                     .build()
             }
@@ -71,7 +70,7 @@ class ShaderListAdapter : RecyclerView.Adapter<ShaderListAdapter.BaseShaderView>
             binding.shaderView.apply {
                 updateContinuously = false // DO NOT update each frame
                 fragmentShaderRawResId = R.raw.multiple_textures_frag
-                shaderParams = ShaderParams.Builder()
+                shaderParams = ShaderParamsBuilder()
                     .addTexture2D(
                         "uTextureSampler1",
                         R.drawable.bokeh,
@@ -99,7 +98,7 @@ class ShaderListAdapter : RecyclerView.Adapter<ShaderListAdapter.BaseShaderView>
                 updateContinuously = true // update each frame
                 vertexShaderRawResId = R.raw.quad_tangent_space_vert
                 fragmentShaderRawResId = R.raw.nomral_map
-                shaderParams = ShaderParams.Builder()
+                shaderParams = ShaderParamsBuilder()
                     .addTexture2D(
                         "uNormalTexture",
                         R.drawable.normal_button,
@@ -125,7 +124,7 @@ class ShaderListAdapter : RecyclerView.Adapter<ShaderListAdapter.BaseShaderView>
                 updateContinuously = true // update each frame
                 vertexShaderRawResId = R.raw.quad_tangent_space_vert
                 fragmentShaderRawResId = R.raw.nomral_map
-                shaderParams = ShaderParams.Builder()
+                shaderParams = ShaderParamsBuilder()
                     .addTexture2D(
                         "uNormalTexture",
                         R.drawable.normal_sphere,
@@ -157,7 +156,7 @@ class ShaderListAdapter : RecyclerView.Adapter<ShaderListAdapter.BaseShaderView>
             binding.shaderView.apply {
                 updateContinuously = true // update each frame
                 fragmentShaderRawResId = R.raw.simple_animation_frag
-                shaderParams = ShaderParams.Builder()
+                shaderParams = ShaderParamsBuilder()
                     .addFloat("time", 1.0f)
                     .build()
                 onDrawFrameListener = { shaderParams ->
@@ -174,7 +173,7 @@ class ShaderListAdapter : RecyclerView.Adapter<ShaderListAdapter.BaseShaderView>
             binding.shaderView.apply {
                 updateContinuously = true // update each frame
                 fragmentShaderRawResId = R.raw.color_frag
-                shaderParams = ShaderParams.Builder()
+                shaderParams = ShaderParamsBuilder()
                     .addVec4f("diffuseColor", floatArrayOf(1.0f, 1.0f, 1.0f, 1.0f))
                     .build()
 
@@ -196,7 +195,7 @@ class ShaderListAdapter : RecyclerView.Adapter<ShaderListAdapter.BaseShaderView>
             binding.shaderView.apply {
                 updateContinuously = true // update each frame
                 fragmentShaderRawResId = R.raw.animated_texture
-                shaderParams = ShaderParams.Builder()
+                shaderParams = ShaderParamsBuilder()
                     .addTexture2D(
                         "uTexture",
                         R.drawable.normal_sphere,
@@ -220,7 +219,7 @@ class ShaderListAdapter : RecyclerView.Adapter<ShaderListAdapter.BaseShaderView>
             binding.shaderView.apply {
                 updateContinuously = true // update each frame
                 fragmentShaderRawResId = R.raw.blur
-                shaderParams = ShaderParams.Builder()
+                shaderParams = ShaderParamsBuilder()
                     .addTexture2D(
                         "uTexture",
                         R.drawable.test_texture,

@@ -1,4 +1,4 @@
-package com.appspell.shaderview.gl
+package com.appspell.shaderview.gl.view
 
 import android.content.Context
 import android.graphics.SurfaceTexture
