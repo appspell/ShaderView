@@ -3,7 +3,6 @@ package com.appspell.shaderview.video
 import android.os.Bundle
 import android.view.Surface
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Lifecycle.*
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
@@ -11,7 +10,7 @@ import com.appspell.shaderview.BuildConfig
 import com.appspell.shaderview.R
 import com.appspell.shaderview.databinding.ActivityVideoBinding
 import com.appspell.shaderview.ext.getTexture2dOESSurface
-import com.appspell.shaderview.gl.ShaderParams
+import com.appspell.shaderview.gl.params.ShaderParamsBuilder
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.MediaSource
@@ -31,7 +30,7 @@ class VideoActivity : AppCompatActivity() {
         binding.shaderView.apply {
             updateContinuously = true // update the view each frame (do not forget set it "true")
             fragmentShaderRawResId = R.raw.video_shader // fragment shader for video frame processing
-            shaderParams = ShaderParams.Builder()
+            shaderParams = ShaderParamsBuilder()
                 .addTextureOES("uVideoTexture") // video texture input/output
                 .build()
             onViewReadyListener = { shader ->

@@ -1,4 +1,4 @@
-package com.appspell.shaderview.gl
+package com.appspell.shaderview.gl.view
 
 import android.content.Context
 import android.graphics.SurfaceTexture
@@ -12,7 +12,6 @@ import androidx.annotation.CallSuper
 import com.appspell.shaderview.log.LibLog
 import java.io.Writer
 import java.lang.ref.WeakReference
-import java.util.*
 import java.util.concurrent.locks.ReentrantLock
 import javax.microedition.khronos.egl.*
 import javax.microedition.khronos.opengles.GL
@@ -100,7 +99,7 @@ open class GLTextureView @JvmOverloads constructor(
     private val threadLock = ReentrantLock()
     private val threadLockCondition = threadLock.newCondition()
 
-    private val mThisWeakRef = WeakReference<GLTextureView?>(this)
+    private val mThisWeakRef = WeakReference(this)
 
     private var mGLThread: GLThread? = null
 
@@ -340,14 +339,15 @@ open class GLTextureView @JvmOverloads constructor(
      *
      */
     fun setEGLConfigChooser(
-        redSize: Int, greenSize: Int, blueSize: Int,
-        alphaSize: Int, depthSize: Int, stencilSize: Int
+        redSize: Int,
+        greenSize: Int,
+        blueSize: Int,
+        alphaSize: Int,
+        depthSize: Int,
+        stencilSize: Int
     ) {
         setEGLConfigChooser(
-            ComponentSizeChooser(
-                redSize, greenSize,
-                blueSize, alphaSize, depthSize, stencilSize
-            )
+            ComponentSizeChooser(redSize, greenSize, blueSize, alphaSize, depthSize, stencilSize)
         )
     }
 
@@ -476,7 +476,6 @@ open class GLTextureView @JvmOverloads constructor(
         // Since we are part of the framework we know only surfaceRedrawNeededAsync
         // will be called.
     }
-
 
     /**
      * Pause the rendering thread, optionally tearing down the EGL context
@@ -723,13 +722,13 @@ open class GLTextureView @JvmOverloads constructor(
             display: EGLDisplay?,
             config: EGLConfig?
         ): EGLContext? {
-            val attrib_list = intArrayOf(
+            val attribList = intArrayOf(
                 EGL_CONTEXT_CLIENT_VERSION, mEGLContextClientVersion,
                 EGL10.EGL_NONE
             )
             return egl?.eglCreateContext(
                 display, config, EGL10.EGL_NO_CONTEXT,
-                if (mEGLContextClientVersion != 0) attrib_list else null
+                if (mEGLContextClientVersion != 0) attribList else null
             )
         }
 
@@ -811,20 +810,20 @@ open class GLTextureView @JvmOverloads constructor(
     private abstract inner class BaseConfigChooser(configSpec: IntArray) :
         EGLConfigChooser {
         override fun chooseConfig(egl: EGL10?, display: EGLDisplay?): EGLConfig? {
-            val num_config = IntArray(1)
+            val numConfig = IntArray(1)
             require(
                 egl?.eglChooseConfig(
                     display, mConfigSpec, null, 0,
-                    num_config
+                    numConfig
                 ) == true
             ) { "eglChooseConfig failed" }
-            val numConfigs = num_config[0]
+            val numConfigs = numConfig[0]
             require(numConfigs > 0) { "No configs match configSpec" }
             val configs = arrayOfNulls<EGLConfig>(numConfigs)
             require(
                 egl?.eglChooseConfig(
                     display, mConfigSpec, configs, numConfigs,
-                    num_config
+                    numConfig
                 ) == true
             ) { "eglChooseConfig#2 failed" }
             return chooseConfig(egl, display, configs)
@@ -1333,7 +1332,7 @@ open class GLTextureView @JvmOverloads constructor(
                             if (pausing && mHaveEglContext) {
                                 val view = mGLTextureViewWeakRef.get()
                                 val preserveEglContextOnPause =
-                                    if (view == null) false else view.mPreserveEGLContextOnPause
+                                    view?.mPreserveEGLContextOnPause ?: false
                                 if (!preserveEglContextOnPause) {
                                     stopEglContextLocked()
                                     if (enableLogSurface) {
@@ -1892,12 +1891,12 @@ open class GLTextureView @JvmOverloads constructor(
     }
 
     override fun onSurfaceTextureAvailable(surface: SurfaceTexture, width: Int, height: Int) {
-        surfaceCreated(surface);
-        surfaceChanged(surface, 0, width, height);
+        surfaceCreated(surface)
+        surfaceChanged(surface, 0, width, height)
     }
 
     override fun onSurfaceTextureSizeChanged(surface: SurfaceTexture, width: Int, height: Int) {
-        surfaceChanged(surface, 0, width, height);
+        surfaceChanged(surface, 0, width, height)
     }
 
     override fun onSurfaceTextureDestroyed(surface: SurfaceTexture): Boolean {

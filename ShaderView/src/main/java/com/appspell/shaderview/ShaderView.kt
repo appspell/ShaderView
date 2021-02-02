@@ -8,9 +8,12 @@ import android.view.TextureView.SurfaceTextureListener
 import android.view.View
 import androidx.annotation.RawRes
 import com.appspell.shaderview.gl.GLQuadRender
-import com.appspell.shaderview.gl.GLShader
-import com.appspell.shaderview.gl.GLTextureView
-import com.appspell.shaderview.gl.ShaderParams
+import com.appspell.shaderview.gl.GLQuadRenderImpl
+import com.appspell.shaderview.gl.params.ShaderParams
+import com.appspell.shaderview.gl.params.ShaderParamsImpl
+import com.appspell.shaderview.gl.shader.GLShader
+import com.appspell.shaderview.gl.shader.GLShaderImpl
+import com.appspell.shaderview.gl.view.GLTextureView
 import com.appspell.shaderview.log.LibLog
 
 private const val OPENGL_VERSION = 3
@@ -78,18 +81,18 @@ class ShaderView @JvmOverloads constructor(
             }
         }
 
-    private val renderer = GLQuadRender()
-
     private val rendererListener = object : GLQuadRender.ShaderViewListener {
-        override fun onSurfaceCreated() {
+        override fun onSurfaceCreated(shader: GLShader) {
             initShaders()
-            onViewReadyListener?.invoke(renderer.shader)
+            onViewReadyListener?.invoke(shader)
         }
 
         override fun onDrawFrame(shaderParams: ShaderParams) {
             onDrawFrameListener?.invoke(shaderParams)
         }
     }
+
+    private val renderer: GLQuadRender = GLQuadRenderImpl(shader = GLShaderImpl(params = ShaderParamsImpl()))
 
     init {
         initAttr(attrs)

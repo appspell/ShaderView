@@ -3,7 +3,9 @@ package com.appspell.shaderview.gl
 import android.opengl.GLES20
 import android.opengl.GLES30
 import android.opengl.Matrix
-import android.util.Log
+import com.appspell.shaderview.gl.params.ShaderParams
+import com.appspell.shaderview.gl.shader.GLShader
+import com.appspell.shaderview.gl.view.GLTextureView
 import com.appspell.shaderview.log.LibLog
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -20,10 +22,25 @@ private const val TRIANGLE_VERTICES_DATA_UV_OFFSET = 3
 
 private const val UNKNOWN_ATTRIBUTE = -1
 
+interface GLQuadRender : GLTextureView.Renderer {
+
+    var shader: GLShader
+
+    var listener: ShaderViewListener?
+
+    interface ShaderViewListener {
+        fun onSurfaceCreated(shader: GLShader)
+
+        fun onDrawFrame(shaderParams: ShaderParams)
+    }
+}
+
 /**
  * Render full-screen quad render
  */
-internal class GLQuadRender : GLTextureView.Renderer {
+internal class GLQuadRenderImpl(
+    override var shader: GLShader
+) : GLQuadRender {
 
     companion object {
         const val VERTEX_SHADER_IN_POSITION = "inPosition"
@@ -33,18 +50,9 @@ internal class GLQuadRender : GLTextureView.Renderer {
         const val VERTEX_SHADER_UNIFORM_MATRIX_STM = "uSTMatrix"
     }
 
-    interface ShaderViewListener {
-        fun onSurfaceCreated()
-
-        fun onDrawFrame(shaderParams: ShaderParams)
-    }
-
-    internal var shader = GLShader()
-
-    internal var listener: ShaderViewListener? = null
+    override var listener: GLQuadRender.ShaderViewListener? = null
 
     private val quadVertices: FloatBuffer
-
     private val matrixMVP = FloatArray(16)
     private val matrixSTM = FloatArray(16)
 
@@ -79,7 +87,7 @@ internal class GLQuadRender : GLTextureView.Renderer {
     }
 
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
-        listener?.onSurfaceCreated()
+        listener?.onSurfaceCreated(shader)
         if (!shader.isReady) {
             return
         }
@@ -155,8 +163,12 @@ internal class GLQuadRender : GLTextureView.Renderer {
         }
         quadVertices.position(offset)
         GLES30.glVertexAttribPointer(
-            attrLocation, size, GLES30.GL_FLOAT, false,
-            TRIANGLE_VERTICES_DATA_STRIDE_BYTES, quadVertices
+            attrLocation,
+            size,
+            GLES30.GL_FLOAT,
+            false,
+            TRIANGLE_VERTICES_DATA_STRIDE_BYTES,
+            quadVertices
         )
         checkGlError("glVertexAttribPointer $attrName")
         GLES30.glEnableVertexAttribArray(attrLocation)

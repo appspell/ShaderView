@@ -1,17 +1,9 @@
 package com.appspell.shaderview.list
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.appspell.shaderview.ShaderView
+import androidx.appcompat.app.AppCompatActivity
 import com.appspell.shaderview.databinding.ActivityShaderListBinding
-import com.appspell.shaderview.list.ItemType.COLOR
-import com.appspell.shaderview.list.ItemType.COLOR_ANIMATED
-import com.appspell.shaderview.list.ItemType.MULTIPLE_TEXTURES
-import com.appspell.shaderview.list.ItemType.NORMAL_MAP
-import com.appspell.shaderview.list.ItemType.NORMAL_MAP_2
-import com.appspell.shaderview.list.ItemType.SIMPLE_ANIMATION
-import com.appspell.shaderview.list.ItemType.ANIMATED_TEXTURES
-import com.appspell.shaderview.list.ItemType.BLUR
+import com.appspell.shaderview.list.ItemType.*
 
 class ShaderListActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
