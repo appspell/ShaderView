@@ -12,7 +12,6 @@ import androidx.annotation.CallSuper
 import com.appspell.shaderview.log.LibLog
 import java.io.Writer
 import java.lang.ref.WeakReference
-import java.util.*
 import java.util.concurrent.locks.ReentrantLock
 import javax.microedition.khronos.egl.*
 import javax.microedition.khronos.opengles.GL
@@ -340,14 +339,15 @@ open class GLTextureView @JvmOverloads constructor(
      *
      */
     fun setEGLConfigChooser(
-        redSize: Int, greenSize: Int, blueSize: Int,
-        alphaSize: Int, depthSize: Int, stencilSize: Int
+        redSize: Int,
+        greenSize: Int,
+        blueSize: Int,
+        alphaSize: Int,
+        depthSize: Int,
+        stencilSize: Int
     ) {
         setEGLConfigChooser(
-            ComponentSizeChooser(
-                redSize, greenSize,
-                blueSize, alphaSize, depthSize, stencilSize
-            )
+            ComponentSizeChooser(redSize, greenSize, blueSize, alphaSize, depthSize, stencilSize)
         )
     }
 
@@ -476,7 +476,6 @@ open class GLTextureView @JvmOverloads constructor(
         // Since we are part of the framework we know only surfaceRedrawNeededAsync
         // will be called.
     }
-
 
     /**
      * Pause the rendering thread, optionally tearing down the EGL context

@@ -163,8 +163,12 @@ internal class GLQuadRenderImpl(
         }
         quadVertices.position(offset)
         GLES30.glVertexAttribPointer(
-            attrLocation, size, GLES30.GL_FLOAT, false,
-            TRIANGLE_VERTICES_DATA_STRIDE_BYTES, quadVertices
+            attrLocation,
+            size,
+            GLES30.GL_FLOAT,
+            false,
+            TRIANGLE_VERTICES_DATA_STRIDE_BYTES,
+            quadVertices
         )
         checkGlError("glVertexAttribPointer $attrName")
         GLES30.glEnableVertexAttribArray(attrLocation)

@@ -59,7 +59,8 @@ class ShaderParamsBuilder {
      */
     fun addColor(paramName: String, @ColorInt color: Int): ShaderParamsBuilder {
         addVec4f(
-            paramName, floatArrayOf(
+            paramName,
+            floatArrayOf(
                 Color.red(color) / 255f,
                 Color.green(color) / 255f,
                 Color.blue(color) / 255f,

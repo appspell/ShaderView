@@ -7,7 +7,6 @@ import android.view.Surface
 import com.appspell.shaderview.ext.createExternalTexture
 import com.appspell.shaderview.ext.loadBitmapForTexture
 import com.appspell.shaderview.ext.toGlTexture
-import java.util.*
 import kotlin.concurrent.withLock
 
 class ShaderParamsImpl : ShaderParams {
