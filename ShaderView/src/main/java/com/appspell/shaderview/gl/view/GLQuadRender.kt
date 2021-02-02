@@ -29,7 +29,7 @@ interface GLQuadRender : GLTextureView.Renderer {
     var listener: ShaderViewListener?
 
     interface ShaderViewListener {
-        fun onSurfaceCreated(shader: GLShader)
+        fun onSurfaceCreated()
 
         fun onDrawFrame(shaderParams: ShaderParams)
     }
@@ -87,7 +87,7 @@ internal class GLQuadRenderImpl(
     }
 
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
-        listener?.onSurfaceCreated(shader)
+        listener?.onSurfaceCreated()
         if (!shader.isReady) {
             return
         }
