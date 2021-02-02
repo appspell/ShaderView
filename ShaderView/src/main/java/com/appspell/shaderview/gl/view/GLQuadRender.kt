@@ -178,7 +178,7 @@ internal class GLQuadRenderImpl(
     private fun checkGlError(op: String) {
         var error: Int
         while (GLES30.glGetError().also { error = it } != GLES30.GL_NO_ERROR) {
-            LibLog.e(com.appspell.shaderview.gl.shader.TAG, "$op: glError $error")
+            LibLog.e(TAG, "$op: glError $error")
             throw RuntimeException("$op: glError $error")
         }
     }
