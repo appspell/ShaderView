@@ -5,14 +5,14 @@ import androidx.annotation.RawRes
 import com.appspell.shaderview.R
 import com.appspell.shaderview.ext.getRawTextFile
 import com.appspell.shaderview.gl.params.ShaderParams
-import com.appspell.shaderview.gl.params.ShaderParamsImpl
+import com.appspell.shaderview.gl.params.ShaderParamsBuilder
 import com.appspell.shaderview.log.LibLog
 
 class ShaderBuilder {
-    private var shader: GLShader = GLShaderImpl(params = ShaderParamsImpl())
+    private var shader: GLShader
 
     constructor() {
-        this.shader = GLShaderImpl(params = ShaderParamsImpl())
+        this.shader = GLShaderImpl(params = ShaderParamsBuilder().build())
     }
 
     internal constructor(shader: GLShader) {

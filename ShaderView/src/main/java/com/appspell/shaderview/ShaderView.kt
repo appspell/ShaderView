@@ -81,8 +81,6 @@ class ShaderView @JvmOverloads constructor(
             }
         }
 
-    private val renderer: GLQuadRender = GLQuadRenderImpl(shader = GLShaderImpl(params = ShaderParamsImpl()))
-
     private val rendererListener = object : GLQuadRender.ShaderViewListener {
         override fun onSurfaceCreated(shader: GLShader) {
             initShaders()
@@ -93,6 +91,8 @@ class ShaderView @JvmOverloads constructor(
             onDrawFrameListener?.invoke(shaderParams)
         }
     }
+
+    private val renderer: GLQuadRender = GLQuadRenderImpl(shader = GLShaderImpl(params = ShaderParamsImpl()))
 
     init {
         initAttr(attrs)
