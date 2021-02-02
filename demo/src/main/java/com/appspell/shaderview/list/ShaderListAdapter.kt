@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.appspell.shaderview.R
 import com.appspell.shaderview.databinding.ItemShaderBinding
 import com.appspell.shaderview.gl.ShaderParams
-import java.lang.RuntimeException
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -55,7 +54,7 @@ class ShaderListAdapter : RecyclerView.Adapter<ShaderListAdapter.BaseShaderView>
 
     class ColorShaderViewHolder(binding: ItemShaderBinding) : BaseShaderView(binding.root) {
         init {
-            binding.name.text = "color_frag" // I'm sorry but it's too boring to move it to strings for such a demo
+            binding.name.setText(R.string.shader_name_color_frag)
             binding.shaderView.apply {
                 updateContinuously = false // DO NOT update each frame
                 fragmentShaderRawResId = R.raw.color_frag
@@ -68,8 +67,7 @@ class ShaderListAdapter : RecyclerView.Adapter<ShaderListAdapter.BaseShaderView>
 
     class MultipleTexturesShaderViewHolder(binding: ItemShaderBinding) : BaseShaderView(binding.root) {
         init {
-            binding.name.text =
-                "multiple_textures_frag" // I'm sorry but it's too boring to move it to strings for such a demo
+            binding.name.setText(R.string.shader_name_multiple_textures_frag)
             binding.shaderView.apply {
                 updateContinuously = false // DO NOT update each frame
                 fragmentShaderRawResId = R.raw.multiple_textures_frag
@@ -96,8 +94,7 @@ class ShaderListAdapter : RecyclerView.Adapter<ShaderListAdapter.BaseShaderView>
 
     class NormalMapShaderViewHolder(binding: ItemShaderBinding) : BaseShaderView(binding.root) {
         init {
-            binding.name.text =
-                "nomral_map" // I'm sorry but it's too boring to move it to strings for such a demo
+            binding.name.setText(R.string.shader_name_nomral_map)
             binding.shaderView.apply {
                 updateContinuously = true // update each frame
                 vertexShaderRawResId = R.raw.quad_tangent_space_vert
@@ -110,12 +107,12 @@ class ShaderListAdapter : RecyclerView.Adapter<ShaderListAdapter.BaseShaderView>
                     )
                     .addColor("uColor", R.color.grey, resources)
                     .addVec3f("uVaryingColor", floatArrayOf(0.5f, 0.5f, 0.5f))
-                    .addVec3f("uLightDirection", floatArrayOf(-1.0f, 1.0f, 0.0f))
+                    .addVec3f("uLightDirection", floatArrayOf(1.0f, 1.0f, 0.0f))
                     .addVec3f("uEyeDirection", floatArrayOf(0.0f, 0.0f, 0.0f))
                     .build()
                 onDrawFrameListener = { shaderParams ->
-                    val pos = (System.currentTimeMillis() % 2500L) / 500f
-                    shaderParams.updateValue("uLightDirection", floatArrayOf(-1.0f + pos, 1.0f, 0.0f))
+                    val pos = (System.currentTimeMillis() % 5000L) / 1000f
+                    shaderParams.updateValue("uLightDirection", floatArrayOf(0.0f + pos, 1.0f, 0.0f))
                 }
             }
         }
@@ -123,8 +120,7 @@ class ShaderListAdapter : RecyclerView.Adapter<ShaderListAdapter.BaseShaderView>
 
     class NormalMapShaderViewHolder2(binding: ItemShaderBinding) : BaseShaderView(binding.root) {
         init {
-            binding.name.text =
-                "nomral_map v2" // I'm sorry but it's too boring to move it to strings for such a demo
+            binding.name.setText(R.string.shader_name_nomral_map_v2)
             binding.shaderView.apply {
                 updateContinuously = true // update each frame
                 vertexShaderRawResId = R.raw.quad_tangent_space_vert
@@ -135,19 +131,19 @@ class ShaderListAdapter : RecyclerView.Adapter<ShaderListAdapter.BaseShaderView>
                         R.drawable.normal_sphere,
                         GLES30.GL_TEXTURE0
                     )
-                    .addVec4f("uColor", floatArrayOf(0.2f, 0.2f, 0.2f, 1f))
-                    .addVec3f("uVaryingColor", floatArrayOf(0.6f, 0.6f, 0.6f))
-                    .addVec3f("uLightDirection", floatArrayOf(0.0f, 1.0f, 0.0f))
+                    .addVec4f("uColor", floatArrayOf(0.5f, 0.5f, 0.5f, 1f))
+                    .addVec3f("uVaryingColor", floatArrayOf(0.4f, 0.4f, 0.5f))
+                    .addVec3f("uLightDirection", floatArrayOf(1.0f, 1.0f, 0.0f))
                     .addVec3f("uEyeDirection", floatArrayOf(0.0f, 0.0f, 0.0f))
                     .build()
                 onDrawFrameListener = { shaderParams ->
-                    val pos = (System.currentTimeMillis() % 1500.0) / 1500.0
+                    val pos = (System.currentTimeMillis() % 3000.0) / 300.0
                     shaderParams.updateValue(
                         "uLightDirection",
                         floatArrayOf(
-                            cos(pos * 10).toFloat(),
-                            1.0f + sin(pos).toFloat(),
-                            sin(pos * 10).toFloat()
+                            0.5f + cos(pos).toFloat(),
+                            1.0f,
+                            sin(pos).toFloat()
                         )
                     )
                 }
@@ -157,8 +153,7 @@ class ShaderListAdapter : RecyclerView.Adapter<ShaderListAdapter.BaseShaderView>
 
     class SimpleAnimationShaderViewHolder(binding: ItemShaderBinding) : BaseShaderView(binding.root) {
         init {
-            binding.name.text =
-                "simple_animation_frag" // I'm sorry but it's too boring to move it to strings for such a demo
+            binding.name.setText(R.string.shader_name_simple_animation_frag)
             binding.shaderView.apply {
                 updateContinuously = true // update each frame
                 fragmentShaderRawResId = R.raw.simple_animation_frag
@@ -175,8 +170,7 @@ class ShaderListAdapter : RecyclerView.Adapter<ShaderListAdapter.BaseShaderView>
 
     class ColorAnimatedShaderViewHolder(binding: ItemShaderBinding) : BaseShaderView(binding.root) {
         init {
-            binding.name.text =
-                "color animated" // I'm sorry but it's too boring to move it to strings for such a demo
+            binding.name.setText(R.string.shader_name_color_animated)
             binding.shaderView.apply {
                 updateContinuously = true // update each frame
                 fragmentShaderRawResId = R.raw.color_frag
@@ -196,10 +190,9 @@ class ShaderListAdapter : RecyclerView.Adapter<ShaderListAdapter.BaseShaderView>
         }
     }
 
-    class AnimatedTexturesShaderViewHolder(val binding: ItemShaderBinding) : BaseShaderView(binding.root) {
+    class AnimatedTexturesShaderViewHolder(binding: ItemShaderBinding) : BaseShaderView(binding.root) {
         init {
-            binding.name.text =
-                "animated_texture" // I'm sorry but it's too boring to move it to strings for such a demo
+            binding.name.setText(R.string.shader_name_animated_texture)
             binding.shaderView.apply {
                 updateContinuously = true // update each frame
                 fragmentShaderRawResId = R.raw.animated_texture
@@ -223,7 +216,7 @@ class ShaderListAdapter : RecyclerView.Adapter<ShaderListAdapter.BaseShaderView>
 
     class BlurShaderViewHolder(binding: ItemShaderBinding) : ShaderListAdapter.BaseShaderView(binding.root) {
         init {
-            binding.name.text = "blur" // I'm sorry but it's too boring to move it to strings for such a demo
+            binding.name.setText(R.string.shader_name_blur)
             binding.shaderView.apply {
                 updateContinuously = true // update each frame
                 fragmentShaderRawResId = R.raw.blur

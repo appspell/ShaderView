@@ -5,4 +5,13 @@
     <string name="button_simple_shader">simple shader</string>
     <string name="button_simple_video_playback_shader">simple video playback shader</string>
     <string name="button_advanced_video_playback_shader">advanced video playback shader (Old-style video)</string>
+
+    <string name="shader_name_color_frag">color_frag</string>
+    <string name="shader_name_multiple_textures_frag">multiple_textures_frag</string>
+    <string name="shader_name_nomral_map">nomral_map</string>
+    <string name="shader_name_nomral_map_v2">nomral_map_v2</string>
+    <string name="shader_name_simple_animation_frag">simple_animation_frag</string>
+    <string name="shader_name_color_animated">" color animated"</string>
+    <string name="shader_name_animated_texture">animated_texture</string>
+    <string name="shader_name_blur">blur</string>
 </resources>

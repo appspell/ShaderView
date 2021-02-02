@@ -3,7 +3,6 @@ package com.appspell.shaderview.video
 import android.os.Bundle
 import android.view.Surface
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Lifecycle.*
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent

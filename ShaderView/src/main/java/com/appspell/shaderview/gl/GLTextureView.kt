@@ -100,7 +100,7 @@ open class GLTextureView @JvmOverloads constructor(
     private val threadLock = ReentrantLock()
     private val threadLockCondition = threadLock.newCondition()
 
-    private val mThisWeakRef = WeakReference<GLTextureView?>(this)
+    private val mThisWeakRef = WeakReference(this)
 
     private var mGLThread: GLThread? = null
 
@@ -723,13 +723,13 @@ open class GLTextureView @JvmOverloads constructor(
             display: EGLDisplay?,
             config: EGLConfig?
         ): EGLContext? {
-            val attrib_list = intArrayOf(
+            val attribList = intArrayOf(
                 EGL_CONTEXT_CLIENT_VERSION, mEGLContextClientVersion,
                 EGL10.EGL_NONE
             )
             return egl?.eglCreateContext(
                 display, config, EGL10.EGL_NO_CONTEXT,
-                if (mEGLContextClientVersion != 0) attrib_list else null
+                if (mEGLContextClientVersion != 0) attribList else null
             )
         }
 
@@ -811,20 +811,20 @@ open class GLTextureView @JvmOverloads constructor(
     private abstract inner class BaseConfigChooser(configSpec: IntArray) :
         EGLConfigChooser {
         override fun chooseConfig(egl: EGL10?, display: EGLDisplay?): EGLConfig? {
-            val num_config = IntArray(1)
+            val numConfig = IntArray(1)
             require(
                 egl?.eglChooseConfig(
                     display, mConfigSpec, null, 0,
-                    num_config
+                    numConfig
                 ) == true
             ) { "eglChooseConfig failed" }
-            val numConfigs = num_config[0]
+            val numConfigs = numConfig[0]
             require(numConfigs > 0) { "No configs match configSpec" }
             val configs = arrayOfNulls<EGLConfig>(numConfigs)
             require(
                 egl?.eglChooseConfig(
                     display, mConfigSpec, configs, numConfigs,
-                    num_config
+                    numConfig
                 ) == true
             ) { "eglChooseConfig#2 failed" }
             return chooseConfig(egl, display, configs)
@@ -1333,7 +1333,7 @@ open class GLTextureView @JvmOverloads constructor(
                             if (pausing && mHaveEglContext) {
                                 val view = mGLTextureViewWeakRef.get()
                                 val preserveEglContextOnPause =
-                                    if (view == null) false else view.mPreserveEGLContextOnPause
+                                    view?.mPreserveEGLContextOnPause ?: false
                                 if (!preserveEglContextOnPause) {
                                     stopEglContextLocked()
                                     if (enableLogSurface) {
@@ -1892,12 +1892,12 @@ open class GLTextureView @JvmOverloads constructor(
     }
 
     override fun onSurfaceTextureAvailable(surface: SurfaceTexture, width: Int, height: Int) {
-        surfaceCreated(surface);
-        surfaceChanged(surface, 0, width, height);
+        surfaceCreated(surface)
+        surfaceChanged(surface, 0, width, height)
     }
 
     override fun onSurfaceTextureSizeChanged(surface: SurfaceTexture, width: Int, height: Int) {
-        surfaceChanged(surface, 0, width, height);
+        surfaceChanged(surface, 0, width, height)
     }
 
     override fun onSurfaceTextureDestroyed(surface: SurfaceTexture): Boolean {
