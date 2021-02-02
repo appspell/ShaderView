@@ -15,6 +15,14 @@ The advantage of this library that you can use ShaderView in your hierarchy as a
 
 ## How to use it?
 
+- [Add ShaderView to XML layout](https://github.com/appspell/ShaderView#option-1-add-shaderview-to-xml-layout)
+- [Add ShaderView programmatically](https://github.com/appspell/ShaderView#option-2-add-shaderview-programmatically-or-configure-programmatically)
+- [The full list of ShaderView properties](https://github.com/appspell/ShaderView#the-full-list-of-shaderview-properties)
+- [How to send custom data to the shader](https://github.com/appspell/ShaderView#how-to-send-custom-data-to-the-shader)
+- [How to add custom fragment shader using build-in vector shader](https://github.com/appspell/ShaderView#how-to-add-custom-fragment-shader-using-build-in-vector-shader)
+- [How to add shaders for video playback](https://github.com/appspell/ShaderView#how-to-add-shaders-for-video-playback)
+- [Example of shaders](https://github.com/appspell/ShaderView#example-of-shaders)
+
 ### Option #1. Add ShaderView to XML layout
 
 1. Add ShaderView to the XML layout
@@ -63,7 +71,7 @@ with(shaderView) {
 
 `debugMode` - enable or disable debug logs
 
-## How to send custom data to the shader.
+## How to send custom data to the shader
 
 1. Create ShaderParams instance using ShaderParamsBuilder
 
@@ -93,7 +101,7 @@ vec2f, vec3f, vec4f, vec2i, vec3i, vec4i,
 mat3, mat4, mat3x4,
 sampler2D, samplerExternalOES*
 
-## How to add custom *fragment shader* using build-in vector shader
+## How to add custom **fragment shader** using build-in vector shader
 
 1. Set up version
 2. Configure input and output. Buy default vertex shader sends texture coordinates using this field `in vec2 textureCoord`
@@ -112,7 +120,7 @@ void main() {
 }
 ```
 
-## How to add shaders for *video playback*
+## How to add shaders for **video playback**
 
 Full code of example using [ExoPlayer](https://github.com/google/ExoPlayer) you may find [here](https://github.com/appspell/ShaderView/blob/main/demo/src/main/java/com/appspell/shaderview/video/VideoActivity.kt) and [here](https://github.com/appspell/ShaderView/blob/main/demo/src/main/java/com/appspell/shaderview/video/VideoAdvancedActivity.kt)
 
