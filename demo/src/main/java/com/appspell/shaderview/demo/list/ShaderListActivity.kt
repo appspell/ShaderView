@@ -1,9 +1,9 @@
-package com.appspell.shaderview.list
+package com.appspell.shaderview.demo.list
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.appspell.shaderview.databinding.ActivityShaderListBinding
-import com.appspell.shaderview.list.ItemType.*
+import com.appspell.shaderview.demo.databinding.ActivityShaderListBinding
+import com.appspell.shaderview.demo.list.ItemType.*
 
 class ShaderListActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

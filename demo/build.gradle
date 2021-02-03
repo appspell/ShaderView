@@ -8,11 +8,11 @@ android {
     buildToolsVersion "30.0.3"
 
     defaultConfig {
-        applicationId "com.appspell.shaderview"
+        applicationId "com.appspell.shaderview.demo"
         minSdkVersion 21
         targetSdkVersion 30
         versionCode 1
-        versionName "0.8"
+        versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

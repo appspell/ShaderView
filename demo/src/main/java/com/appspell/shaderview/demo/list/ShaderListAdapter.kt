@@ -1,12 +1,12 @@
-package com.appspell.shaderview.list
+package com.appspell.shaderview.demo.list
 
 import android.opengl.GLES30
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.appspell.shaderview.R
-import com.appspell.shaderview.databinding.ItemShaderBinding
+import com.appspell.shaderview.demo.R
+import com.appspell.shaderview.demo.databinding.ItemShaderBinding
 import com.appspell.shaderview.gl.params.ShaderParamsBuilder
 import kotlin.math.cos
 import kotlin.math.sin

@@ -1,14 +1,14 @@
-package com.appspell.shaderview
+package com.appspell.shaderview.demo
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.appspell.shaderview.databinding.ActivityMenuBinding
-import com.appspell.shaderview.list.ShaderListActivity
-import com.appspell.shaderview.simple.SimpleOnlyXMLShaderActivity
-import com.appspell.shaderview.simple.SimpleShaderActivity
-import com.appspell.shaderview.video.VideoActivity
-import com.appspell.shaderview.video.VideoAdvancedActivity
+import androidx.appcompat.app.AppCompatActivity
+import com.appspell.shaderview.demo.databinding.ActivityMenuBinding
+import com.appspell.shaderview.demo.list.ShaderListActivity
+import com.appspell.shaderview.demo.simple.SimpleOnlyXMLShaderActivity
+import com.appspell.shaderview.demo.simple.SimpleShaderActivity
+import com.appspell.shaderview.demo.video.VideoActivity
+import com.appspell.shaderview.demo.video.VideoAdvancedActivity
 
 class MenuActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

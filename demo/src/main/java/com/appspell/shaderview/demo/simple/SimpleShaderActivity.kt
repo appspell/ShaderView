@@ -1,9 +1,9 @@
-package com.appspell.shaderview.simple
+package com.appspell.shaderview.demo.simple
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.appspell.shaderview.R
-import com.appspell.shaderview.databinding.ActivitySimpleShaderBinding
+import com.appspell.shaderview.demo.R
+import com.appspell.shaderview.demo.databinding.ActivitySimpleShaderBinding
 import com.appspell.shaderview.gl.params.ShaderParamsBuilder
 
 class SimpleShaderActivity : AppCompatActivity() {
