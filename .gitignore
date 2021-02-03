@@ -27,3 +27,5 @@ Thumbs.db
 
 .gradle
 build/
+
+local.properties
