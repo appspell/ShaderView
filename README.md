@@ -122,7 +122,7 @@ void main() {
 
 ## How to add shaders for **video playback**
 
-Full code of example using [ExoPlayer](https://github.com/google/ExoPlayer) you may find [here](https://github.com/appspell/ShaderView/blob/main/demo/src/main/java/com/appspell/shaderview/video/VideoActivity.kt) and [here](https://github.com/appspell/ShaderView/blob/main/demo/src/main/java/com/appspell/shaderview/video/VideoAdvancedActivity.kt)
+Full code of example using [ExoPlayer](https://github.com/google/ExoPlayer) you may find [here](https://github.com/appspell/ShaderView/blob/main/demo/src/main/java/com/appspell/shaderview/demo/video/VideoActivity.kt) and [here](https://github.com/appspell/ShaderView/blob/main/demo/src/main/java/com/appspell/shaderview/demo/video/VideoAdvancedActivity.kt)
 
 1. Setup [OES texture](https://www.khronos.org/registry/OpenGL/extensions/OES/OES_EGL_image_external_essl3.txt) in [fragment shader](https://github.com/appspell/ShaderView/blob/main/demo/src/main/res/raw/video_shader.fsh):
 ```glsl
@@ -158,7 +158,7 @@ shaderView.onViewReadyListener = { shader ->
 - [video](https://github.com/appspell/ShaderView/blob/main/demo/src/main/res/raw/video_shader.fsh)
 - [advanced video shader](https://github.com/appspell/ShaderView/blob/main/demo/src/main/res/raw/video_advanced_shader.fsh)
 
-In Android Demo Project code you may found it in ViewHolders [here](https://github.com/appspell/ShaderView/blob/main/demo/src/main/java/com/appspell/shaderview/list/ShaderListAdapter.kt)
+In Android Demo Project code you may found it in ViewHolders [here](https://github.com/appspell/ShaderView/blob/main/demo/src/main/java/com/appspell/shaderview/demo/list/ShaderListAdapter.kt)
 
 ## Additional information
 
