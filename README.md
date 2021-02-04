@@ -1,4 +1,5 @@
 # ShaderView
+[![last version](https://api.bintray.com/packages/appspell/ShaderView/ShaderView/images/download.svg)](https://bintray.com/appspell/ShaderView/ShaderView/_latestVersion)
 
 This library is the easiest way to use **OpenGL shaders** as an **[Android View](https://developer.android.com/reference/android/view/View)**. You just simply need to add **ShaderView** in your layout and set up shaders.
 The advantage of this library that you can use ShaderView in your hierarchy as a regular View.
@@ -164,4 +165,4 @@ In Android Demo Project code you may found it in ViewHolders [here](https://gith
 
 Why we use [TextureView](https://developer.android.com/reference/android/view/TextureView) instead of [SurfaceView](https://developer.android.com/reference/android/view/SurfaceView) you can read [here](https://github.com/crosswalk-project/crosswalk-website/wiki/Android-SurfaceView-vs-TextureView). 
 
-To be able to use OpenGL rendering for Android TextureView, we've created [GLTextureView.kt](https://github.com/appspell/ShaderView/blob/main/ShaderView/src/main/java/com/appspell/shaderview/gl/GLTextureView.kt)
+To be able to use OpenGL rendering for Android TextureView, we've created [GLTextureView.kt](https://github.com/appspell/ShaderView/blob/main/ShaderView/src/main/java/com/appspell/shaderview/gl/view/GLTextureView.kt)
