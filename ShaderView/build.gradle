@@ -1,8 +1,7 @@
 plugins {
     id 'com.android.library'
     id 'kotlin-android'
-    id "org.jlleitschuh.gradle.ktlint" version "9.4.1"
-    id "com.jfrog.bintray" version "1.8.5"
+//    id "org.jlleitschuh.gradle.ktlint" version "9.4.1"
 }
 
 android {
@@ -46,19 +45,4 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 }
 
-bintray {
-    Properties properties = new Properties()
-    properties.load(project.rootProject.file('local.properties').newDataInputStream())
-    def BINTRAY_API_KEY = properties.getProperty('BINTRAY_API_KEY')
-
-    user = "appspell"
-    key = BINTRAY_API_KEY
-
-    pkg {
-        repo = 'ShaderView'
-        name = 'ShaderView'
-        userOrg = 'appspell'
-        licenses = ['MIT']
-        vcsUrl = 'https://github.com/appspell/ShaderView.git'
-    }
-}
+apply from: 'publish.gradle'
