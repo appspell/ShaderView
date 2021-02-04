@@ -13,11 +13,12 @@ The advantage of this library that you can use ShaderView in your hierarchy as a
 
 <img src="https://i.imgur.com/Iv1FLrg.gif" width="30%"><img src="https://i.imgur.com/znnJsQp.gif" width="30%"><img src="https://i.imgur.com/XAqSmP7.png" width="30%">
 
-## How to use it?
+## How to use it
 
-- [Add to the project](https://github.com/appspell/ShaderView#add-to-the-project)
-- [Add ShaderView to XML layout](https://github.com/appspell/ShaderView#option-1-add-shaderview-to-xml-layout)
-- [Add ShaderView programmatically](https://github.com/appspell/ShaderView#option-2-add-shaderview-programmatically-or-configure-programmatically)
+- How to use it
+   - [Add to the project](https://github.com/appspell/ShaderView#add-to-the-project)
+   - [Add ShaderView to XML layout](https://github.com/appspell/ShaderView#option-1-add-shaderview-to-xml-layout)
+   - [Add ShaderView programmatically](https://github.com/appspell/ShaderView#option-2-add-shaderview-programmatically-or-configure-programmatically)
 - [The full list of ShaderView properties](https://github.com/appspell/ShaderView#the-full-list-of-shaderview-properties)
 - [How to send custom data to the shader](https://github.com/appspell/ShaderView#how-to-send-custom-data-to-the-shader)
 - [How to add custom fragment shader using build-in vector shader](https://github.com/appspell/ShaderView#how-to-add-custom-fragment-shader-using-build-in-vector-shader)
@@ -44,7 +45,7 @@ implementation 'com.appspell:ShaderView:[last-version]'
 <dependency>
 	<groupId>com.appspell</groupId>
 	<artifactId>ShaderView</artifactId>
-	<version>0.8.0</version>
+	<version>last-version</version>
 	<type>pom</type>
 </dependency>
 ```
@@ -80,7 +81,7 @@ with(shaderView) {
 }
 ```
 
-### The full list of ShaderView properties:
+## The full list of ShaderView properties:
 
 `fragmentShaderRawResId` - reference to the vertex shader file in RAW resource solder [example]
 
