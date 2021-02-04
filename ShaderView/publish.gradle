@@ -19,9 +19,9 @@ afterEvaluate {
                 artifact(sourceJar)
                 artifact("$buildDir/outputs/aar/ShaderView-release.aar")
 
-                groupId 'com.appspell'
-                artifactId 'shaderview'
-                version '0.8.0'
+                groupId this.group
+                artifactId 'ShaderView'
+                version this.version
 
                 pom {
                     name = "ShaderView"
