@@ -9,6 +9,7 @@ The advantage of this library that you can use ShaderView in your hierarchy as a
 - Advanced UI components (blur, shadow, lighting, etc.)
 - UI effects and animation
 - Realtime image animation
+- Shaders for a camera
 
 ![shaders in RecyclerView](https://i.imgur.com/Iv1FLrg.gif)
 ![shader for video](https://i.imgur.com/znnJsQp.gif)
@@ -16,6 +17,7 @@ The advantage of this library that you can use ShaderView in your hierarchy as a
 
 ## How to use it?
 
+- [Add to the project](https://github.com/appspell/ShaderView#add-to-the-project)
 - [Add ShaderView to XML layout](https://github.com/appspell/ShaderView#option-1-add-shaderview-to-xml-layout)
 - [Add ShaderView programmatically](https://github.com/appspell/ShaderView#option-2-add-shaderview-programmatically-or-configure-programmatically)
 - [The full list of ShaderView properties](https://github.com/appspell/ShaderView#the-full-list-of-shaderview-properties)
@@ -24,17 +26,41 @@ The advantage of this library that you can use ShaderView in your hierarchy as a
 - [How to add shaders for video playback](https://github.com/appspell/ShaderView#how-to-add-shaders-for-video-playback)
 - [Example of shaders](https://github.com/appspell/ShaderView#example-of-shaders)
 
+### Add to the project
+
+**Gradle**
+
+```gralde
+repositories {
+        jcenter()
+    }
+```
+
+```gradle
+implementation 'com.appspell:ShaderView:[last-version]'
+```
+
+**Maven**
+
+```maven
+<dependency>
+	<groupId>com.appspell</groupId>
+	<artifactId>ShaderView</artifactId>
+	<version>0.8.0</version>
+	<type>pom</type>
+</dependency>
+```
+
 ### Option #1. Add ShaderView to XML layout
 
 1. Add ShaderView to the XML layout
 
 ```xml
-<com.appspell.shaderview.ShaderView
+    <com.appspell.shaderview.ShaderView
         android:id="@+id/shaderView"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:layout_gravity="center"
-        app:fragment_shader_raw_res_id="@raw/simple_frag" />
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:fragment_shader_raw_res_id="@raw/fragment_shader" />
 ```
 
 2. Set your fragment and vertex (if needed) shaders using the following attributes:
