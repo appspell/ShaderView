@@ -125,7 +125,7 @@ void main() {
 
 Full code of example using [ExoPlayer](https://github.com/google/ExoPlayer) you may find [here](https://github.com/appspell/ShaderView/blob/main/demo/src/main/java/com/appspell/shaderview/video/VideoActivity.kt) and [here](https://github.com/appspell/ShaderView/blob/main/demo/src/main/java/com/appspell/shaderview/video/VideoAdvancedActivity.kt)
 
-1. Setup OES texture in fragment shader:
+1. Setup OES texture in [fragment shader](https://github.com/appspell/ShaderView/blob/main/demo/src/main/res/raw/video_shader.fsh):
 ```glsl
 #version 300 es
 #extension GL_OES_EGL_image_external_essl3 : require
