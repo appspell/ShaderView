@@ -11,9 +11,7 @@ The advantage of this library that you can use ShaderView in your hierarchy as a
 - Realtime image animation
 - Shaders for a camera
 
-![shaders in RecyclerView](https://i.imgur.com/Iv1FLrg.gif)
-![shader for video](https://i.imgur.com/znnJsQp.gif)
-![custom UI](https://i.imgur.com/XAqSmP7.png)
+<img src="https://i.imgur.com/Iv1FLrg.gif" width="30%"><img src="https://i.imgur.com/znnJsQp.gif" width="30%"><img src="https://i.imgur.com/XAqSmP7.png" width="30%">
 
 ## How to use it?
 
