@@ -4,7 +4,9 @@
 This library is the easiest way to use **OpenGL shaders** as an **[Android View](https://developer.android.com/reference/android/view/View)**. You just simply need to add **ShaderView** in your layout and set up shaders.
 The advantage of this library that you can use ShaderView in your hierarchy as a regular View.
 
+
 ### Use cases:
+
 - Shaders for video
 - Advanced UI components (blur, shadow, lighting, etc.)
 - UI effects and animation
@@ -13,19 +15,22 @@ The advantage of this library that you can use ShaderView in your hierarchy as a
 
 <img src="https://i.imgur.com/Iv1FLrg.gif" width="30%"><img src="https://i.imgur.com/znnJsQp.gif" width="30%"><img src="https://i.imgur.com/XAqSmP7.png" width="30%">
 
-## How to use it
+## Table of content
 
-- How to use it
-   - [Add to the project](https://github.com/appspell/ShaderView#add-to-the-project)
-   - [Add ShaderView to XML layout](https://github.com/appspell/ShaderView#option-1-add-shaderview-to-xml-layout)
-   - [Add ShaderView programmatically](https://github.com/appspell/ShaderView#option-2-add-shaderview-programmatically-or-configure-programmatically)
+- [How to use it](https://github.com/appspell/ShaderView#how-to-use-it)
+   - [Add to the project](https://github.com/appspell/ShaderView#add-dependency-to-the-project)
+   - [Add ShaderView to XML layout](https://github.com/appspell/ShaderView#add-shaderview-to-xml-layout)
+   - [Add ShaderView programmatically](https://github.com/appspell/ShaderView#add-shaderview-programmatically-or-configure-programmatically)
 - [The full list of ShaderView properties](https://github.com/appspell/ShaderView#the-full-list-of-shaderview-properties)
 - [How to send custom data to the shader](https://github.com/appspell/ShaderView#how-to-send-custom-data-to-the-shader)
 - [How to add custom fragment shader using build-in vector shader](https://github.com/appspell/ShaderView#how-to-add-custom-fragment-shader-using-build-in-vector-shader)
 - [How to add shaders for video playback](https://github.com/appspell/ShaderView#how-to-add-shaders-for-video-playback)
 - [Example of shaders](https://github.com/appspell/ShaderView#example-of-shaders)
 
-### Add to the project
+
+## How to use it
+
+### Add dependency to the project
 
 **Gradle**
 
@@ -50,7 +55,7 @@ implementation 'com.appspell:ShaderView:[last-version]'
 </dependency>
 ```
 
-### Option #1. Add ShaderView to XML layout
+### Add ShaderView to XML layout
 
 1. Add ShaderView to the XML layout
 
@@ -68,7 +73,7 @@ implementation 'com.appspell:ShaderView:[last-version]'
 
 `app:vertex_shader_raw_res_id` - reference to the vertex shader file in RAW resource solder [example](https://github.com/appspell/ShaderView/blob/main/ShaderView/src/main/res/raw/quad_vert.vsh)
 
-### Option #2. Add ShaderView programmatically (or configure programmatically)
+### Add ShaderView programmatically (or configure programmatically)
 
 ```kotlin
 val shaderView = ShaderView(this)
@@ -80,6 +85,7 @@ with(shaderView) {
                 .build()
 }
 ```
+
 
 ## The full list of ShaderView properties:
 
@@ -97,12 +103,13 @@ with(shaderView) {
 
 `debugMode` - enable or disable debug logs
 
+
 ## How to send custom data to the shader
 
-1. Create ShaderParams instance using ShaderParamsBuilder
+Pass `ShaderParams` to the `ShaderView` if you need to set up some `uniform` attributes.
 
 ```kotlin
-ShaderParamsBuilder()
+shaderView.shaderParams = ShaderParamsBuilder()
                     .addTexture2D(
                         "uNormalTexture", // name of `sampler2D` in the fragment shader
                         R.drawable.normal_button, // drawable that we use for such texture
@@ -115,10 +122,18 @@ ShaderParamsBuilder()
                     .build()
 ```
 
-2. Set ShaderParams from the previous step to the ShaderView
+During execution, you may update this param:
 
 ```kotlin
-shaderView.shaderParams = shaderParams
+shaderParams.updateValue("time", System.currentTimeMillis())
+```
+
+If you need to update `uniform` each frame, you may use `onDrawFrameListener`.
+
+```kotlin
+shaderView.onDrawFrameListener = { shaderParams ->
+                    shaderParams.updateValue("time", System.currentTimeMillis())
+                }
 ```
 
 *The full list of supported uniform types:
@@ -126,6 +141,7 @@ float, int, bool,
 vec2f, vec3f, vec4f, vec2i, vec3i, vec4i,
 mat3, mat4, mat3x4,
 sampler2D, samplerExternalOES*
+
 
 ## How to add custom **fragment shader** using build-in vector shader
 
@@ -144,6 +160,7 @@ void main() {
     fragColor = vec4(textureCoord.x, textureCoord.y, textureCoord.y, 1.0);
 }
 ```
+
 
 ## How to add shaders for **video playback**
 
@@ -174,6 +191,7 @@ shaderView.onViewReadyListener = { shader ->
             }
 ```
 
+
 ## Example of shaders
 - [simple shader](https://github.com/appspell/ShaderView/blob/main/demo/src/main/res/raw/simple_frag.fsh)
 - [blur](https://github.com/appspell/ShaderView/blob/main/demo/src/main/res/raw/blur.fsh)
@@ -184,6 +202,7 @@ shaderView.onViewReadyListener = { shader ->
 - [advanced video shader](https://github.com/appspell/ShaderView/blob/main/demo/src/main/res/raw/video_advanced_shader.fsh)
 
 In Android Demo Project code you may found it in ViewHolders [here](https://github.com/appspell/ShaderView/blob/main/demo/src/main/java/com/appspell/shaderview/demo/list/ShaderListAdapter.kt)
+
 
 ## Additional information
 
