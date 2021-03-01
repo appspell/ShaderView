@@ -198,7 +198,7 @@ class ShaderListAdapter : RecyclerView.Adapter<ShaderListAdapter.BaseShaderView>
                 shaderParams = ShaderParamsBuilder()
                     .addTexture2D(
                         "uTexture",
-                        R.drawable.normal_sphere,
+                        R.drawable.android,
                         GLES30.GL_TEXTURE0
                     )
                     .addVec2f("uOffset")

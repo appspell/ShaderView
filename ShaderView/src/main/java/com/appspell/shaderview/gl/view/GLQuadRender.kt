@@ -112,7 +112,7 @@ internal class GLQuadRenderImpl(
             return
         }
 
-        GLES30.glClearColor(1.0f, 1.0f, 1.0f, 1.0f)
+        GLES30.glClearColor(0.0f, 0.0f, 0.0f, 0.0f)
         GLES30.glClear(GLES30.GL_DEPTH_BUFFER_BIT or GLES30.GL_COLOR_BUFFER_BIT)
 
         GLES30.glUseProgram(shader.program)
@@ -122,15 +122,15 @@ internal class GLQuadRenderImpl(
         setAttribute(inPositionHandle, VERTEX_SHADER_IN_POSITION, 3, TRIANGLE_VERTICES_DATA_POS_OFFSET)
         setAttribute(inTextureHandle, VERTEX_SHADER_IN_TEXTURE_COORD, 2, TRIANGLE_VERTICES_DATA_UV_OFFSET)
 
-        // callback if we need to update some custom parameters
-        listener?.onDrawFrame(shaderParams = shader.params)
-
         // build-in uniforms
         Matrix.setIdentityM(matrixMVP, 0)
         shader.params.updateValue(VERTEX_SHADER_UNIFORM_MATRIX_MVP, matrixMVP)
         shader.params.updateValue(VERTEX_SHADER_UNIFORM_MATRIX_STM, matrixSTM)
 
-        // send params to shaders
+        // callback if we need to update some custom parameters
+        listener?.onDrawFrame(shaderParams = shader.params)
+
+        // send params to the shader
         shader.onDrawFrame()
 
         // activate blending for textures

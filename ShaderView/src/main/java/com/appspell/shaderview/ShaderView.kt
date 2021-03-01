@@ -4,8 +4,6 @@ import android.content.Context
 import android.graphics.SurfaceTexture
 import android.opengl.GLSurfaceView
 import android.util.AttributeSet
-import android.view.TextureView.SurfaceTextureListener
-import android.view.View
 import androidx.annotation.RawRes
 import com.appspell.shaderview.gl.GLQuadRender
 import com.appspell.shaderview.gl.GLQuadRenderImpl
@@ -17,6 +15,11 @@ import com.appspell.shaderview.gl.view.GLTextureView
 import com.appspell.shaderview.log.LibLog
 
 private const val OPENGL_VERSION = 3
+
+private const val BIT_PER_CHANEL = 8
+private const val DEPTH_BIT_PER_CHANEL = 16
+private const val STENCIL_BIT_PER_CHANEL = 0
+
 private val DEFAULT_VERTEX_SHADER_RESOURCE = R.raw.quad_vert
 private val DEFAULT_FRAGMENT_SHADER_RESOURCE = R.raw.default_frag
 
@@ -24,10 +27,7 @@ class ShaderView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
-) :
-    GLTextureView(context, attrs, defStyleAttr),
-    SurfaceTextureListener,
-    View.OnLayoutChangeListener {
+) : GLTextureView(context, attrs, defStyleAttr) {
 
     @RawRes
     var vertexShaderRawResId: Int? = null
@@ -99,7 +99,22 @@ class ShaderView @JvmOverloads constructor(
 
         setEGLContextClientVersion(OPENGL_VERSION)
         renderer.listener = rendererListener
+
+        // use RGBA_8888 buffer to support transparency
+        setEGLConfigChooser(
+            BIT_PER_CHANEL,
+            BIT_PER_CHANEL,
+            BIT_PER_CHANEL,
+            BIT_PER_CHANEL,
+            DEPTH_BIT_PER_CHANEL,
+            STENCIL_BIT_PER_CHANEL
+        )
+
         setRenderer(renderer)
+
+        // make this view transparent
+        isOpaque = false
+
         setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY)
     }
 
@@ -123,7 +138,7 @@ class ShaderView @JvmOverloads constructor(
     private fun initShaders() {
         if (needToRecreateShaders) {
             fragmentShaderRawResId?.also { fragmentShader ->
-                // delete existing shader is we have some
+                // delete existing shader if we have some
                 renderer.shader.release()
 
                 // create a new shader
