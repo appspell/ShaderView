@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".MenuActivity">
+    android:orientation="vertical">
 
     <Button
         android:id="@+id/simpleShader"
@@ -19,6 +17,13 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/margin"
         android:text="@string/button_simple_XML_only_shader" />
+
+    <Button
+        android:id="@+id/customUi"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin"
+        android:text="@string/button_custom_ui" />
 
     <Button
         android:id="@+id/shaderList"

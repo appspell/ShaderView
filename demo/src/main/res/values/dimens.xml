@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="margin">8dp</dimen>
+    <dimen name="corner_radius">32dp</dimen>
+    <dimen name="shape_size">80dp</dimen>
+    <dimen name="shape_radius">40dp</dimen>
 </resources>

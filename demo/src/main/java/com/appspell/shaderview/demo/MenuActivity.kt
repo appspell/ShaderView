@@ -7,6 +7,7 @@ import com.appspell.shaderview.demo.databinding.ActivityMenuBinding
 import com.appspell.shaderview.demo.list.ShaderListActivity
 import com.appspell.shaderview.demo.simple.SimpleOnlyXMLShaderActivity
 import com.appspell.shaderview.demo.simple.SimpleShaderActivity
+import com.appspell.shaderview.demo.ui.UiActivity
 import com.appspell.shaderview.demo.video.VideoActivity
 import com.appspell.shaderview.demo.video.VideoAdvancedActivity
 
@@ -18,6 +19,7 @@ class MenuActivity : AppCompatActivity() {
 
         binding.simpleShader.setOnClickListener { open(SimpleShaderActivity::class.java) }
         binding.simpleXmlOnlyShader.setOnClickListener { open(SimpleOnlyXMLShaderActivity::class.java) }
+        binding.customUi.setOnClickListener { open(UiActivity::class.java) }
         binding.shaderList.setOnClickListener { open(ShaderListActivity::class.java) }
         binding.simpleVideo.setOnClickListener { open(VideoActivity::class.java) }
         binding.advancedVideo.setOnClickListener { open(VideoAdvancedActivity::class.java) }

@@ -4,7 +4,9 @@ import android.content.Context
 import android.graphics.SurfaceTexture
 import android.opengl.GLSurfaceView
 import android.util.AttributeSet
+import androidx.annotation.AttrRes
 import androidx.annotation.RawRes
+import androidx.annotation.StyleRes
 import com.appspell.shaderview.gl.params.ShaderParams
 import com.appspell.shaderview.gl.params.ShaderParamsImpl
 import com.appspell.shaderview.gl.render.GLQuadRender
@@ -25,8 +27,8 @@ private val DEFAULT_FRAGMENT_SHADER_RESOURCE = R.raw.default_frag
 
 class ShaderView @JvmOverloads constructor(
     context: Context,
-    attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0
+    @AttrRes attrs: AttributeSet? = null,
+    @StyleRes defStyleAttr: Int = 0
 ) : GLTextureView(context, attrs, defStyleAttr) {
 
     @RawRes
@@ -44,6 +46,10 @@ class ShaderView @JvmOverloads constructor(
         }
 
     var shaderParams: ShaderParams? = null
+        set(value) {
+            field = value
+            updateShaderParams()
+        }
     var onViewReadyListener: ((shader: GLShader) -> Unit)? = null
     var onDrawFrameListener: ((shaderParams: ShaderParams) -> Unit)? = null
 
@@ -133,6 +139,13 @@ class ShaderView @JvmOverloads constructor(
                     recycle()
                 }
             }
+    }
+
+    private fun updateShaderParams() {
+        if (needToRecreateShaders) {
+            return
+        }
+        shaderParams?.apply { renderer.shader.params = this }
     }
 
     private fun initShaders() {

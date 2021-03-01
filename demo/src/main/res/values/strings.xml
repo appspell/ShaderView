@@ -5,6 +5,8 @@
     <string name="button_simple_shader">simple shader</string>
     <string name="button_simple_video_playback_shader">simple video playback shader</string>
     <string name="button_advanced_video_playback_shader">advanced video playback shader (Old-style video)</string>
+    <string name="button_custom_ui">custom UI</string>
+    <string name="test_text">some text for testing</string>
 
     <string name="shader_name_color_frag">color_frag</string>
     <string name="shader_name_multiple_textures_frag">multiple_textures_frag</string>
