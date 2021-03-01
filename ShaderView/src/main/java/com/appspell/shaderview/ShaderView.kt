@@ -5,10 +5,10 @@ import android.graphics.SurfaceTexture
 import android.opengl.GLSurfaceView
 import android.util.AttributeSet
 import androidx.annotation.RawRes
-import com.appspell.shaderview.gl.GLQuadRender
-import com.appspell.shaderview.gl.GLQuadRenderImpl
 import com.appspell.shaderview.gl.params.ShaderParams
 import com.appspell.shaderview.gl.params.ShaderParamsImpl
+import com.appspell.shaderview.gl.render.GLQuadRender
+import com.appspell.shaderview.gl.render.GLQuadRenderImpl
 import com.appspell.shaderview.gl.shader.GLShader
 import com.appspell.shaderview.gl.shader.GLShaderImpl
 import com.appspell.shaderview.gl.view.GLTextureView
