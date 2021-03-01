@@ -4,21 +4,22 @@ import android.content.Context
 import android.graphics.SurfaceTexture
 import android.opengl.GLSurfaceView
 import android.util.AttributeSet
-import android.view.TextureView.SurfaceTextureListener
-import android.view.View
-import androidx.annotation.AttrRes
 import androidx.annotation.RawRes
 import androidx.annotation.StyleRes
-import com.appspell.shaderview.gl.GLQuadRender
-import com.appspell.shaderview.gl.GLShader
-import com.appspell.shaderview.gl.GLTextureView
-import com.appspell.shaderview.gl.ShaderParams
+import com.appspell.shaderview.gl.params.ShaderParams
+import com.appspell.shaderview.gl.params.ShaderParamsImpl
+import com.appspell.shaderview.gl.render.GLQuadRender
+import com.appspell.shaderview.gl.render.GLQuadRenderImpl
+import com.appspell.shaderview.gl.shader.GLShader
+import com.appspell.shaderview.gl.shader.GLShaderImpl
+import com.appspell.shaderview.gl.view.GLTextureView
 import com.appspell.shaderview.log.LibLog
 
 private const val OPENGL_VERSION = 3
 
 private const val BIT_PER_CHANEL = 8
 private const val DEPTH_BIT_PER_CHANEL = 16
+private const val STENCIL_BIT_PER_CHANEL = 0
 
 private val DEFAULT_VERTEX_SHADER_RESOURCE = R.raw.quad_vert
 private val DEFAULT_FRAGMENT_SHADER_RESOURCE = R.raw.default_frag
@@ -27,10 +28,7 @@ class ShaderView @JvmOverloads constructor(
     context: Context,
     @AttrRes attrs: AttributeSet? = null,
     @StyleRes defStyleAttr: Int = 0
-) :
-    GLTextureView(context, attrs, defStyleAttr),
-    SurfaceTextureListener,
-    View.OnLayoutChangeListener {
+) : GLTextureView(context, attrs, defStyleAttr) {
 
     @RawRes
     var vertexShaderRawResId: Int? = null
@@ -88,8 +86,6 @@ class ShaderView @JvmOverloads constructor(
             }
         }
 
-    private val renderer = GLQuadRender()
-
     private val rendererListener = object : GLQuadRender.ShaderViewListener {
         override fun onSurfaceCreated() {
             initShaders()
@@ -101,14 +97,29 @@ class ShaderView @JvmOverloads constructor(
         }
     }
 
+    private val renderer: GLQuadRender = GLQuadRenderImpl(shader = GLShaderImpl(params = ShaderParamsImpl()))
+
     init {
         initAttr(attrs)
 
         setEGLContextClientVersion(OPENGL_VERSION)
         renderer.listener = rendererListener
-        setEGLConfigChooser(BIT_PER_CHANEL, BIT_PER_CHANEL, BIT_PER_CHANEL, BIT_PER_CHANEL, DEPTH_BIT_PER_CHANEL, 0)
+
+        // use RGBA_8888 buffer to support transparency
+        setEGLConfigChooser(
+            BIT_PER_CHANEL,
+            BIT_PER_CHANEL,
+            BIT_PER_CHANEL,
+            BIT_PER_CHANEL,
+            DEPTH_BIT_PER_CHANEL,
+            STENCIL_BIT_PER_CHANEL
+        )
 
         setRenderer(renderer)
+
+        // make this view transparent
+        isOpaque = false
+
         setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY)
     }
 
@@ -139,7 +150,7 @@ class ShaderView @JvmOverloads constructor(
     private fun initShaders() {
         if (needToRecreateShaders) {
             fragmentShaderRawResId?.also { fragmentShader ->
-                // delete existing shader is we have some
+                // delete existing shader if we have some
                 renderer.shader.release()
 
                 // create a new shader

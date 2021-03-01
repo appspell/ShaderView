@@ -8,7 +8,7 @@ android {
     buildToolsVersion "30.0.3"
 
     defaultConfig {
-        applicationId "com.appspell.shaderview"
+        applicationId "com.appspell.shaderview.demo"
         minSdkVersion 21
         targetSdkVersion 30
         versionCode 1
@@ -49,7 +49,7 @@ dependencies {
     implementation 'com.google.android.exoplayer:exoplayer-ui:2.11.4'
 
     // tests
-    testImplementation 'junit:junit:4.+'
+    testImplementation 'junit:junit:4.13.1'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 }

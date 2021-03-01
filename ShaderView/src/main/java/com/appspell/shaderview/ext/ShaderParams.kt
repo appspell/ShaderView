@@ -1,6 +1,6 @@
 package com.appspell.shaderview.ext
 
-import com.appspell.shaderview.gl.ShaderParams
+import com.appspell.shaderview.gl.params.ShaderParams
 import com.appspell.shaderview.gl.params.TextureOESParam
 
 fun ShaderParams.getTexture2dOESSurfaceTexture(parameterName: String) =

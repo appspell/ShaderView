@@ -1,8 +1,11 @@
-package com.appspell.shaderview.gl
+package com.appspell.shaderview.gl.render
 
 import android.opengl.GLES20
 import android.opengl.GLES30
 import android.opengl.Matrix
+import com.appspell.shaderview.gl.params.ShaderParams
+import com.appspell.shaderview.gl.shader.GLShader
+import com.appspell.shaderview.gl.view.GLTextureView
 import com.appspell.shaderview.log.LibLog
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -19,10 +22,25 @@ private const val TRIANGLE_VERTICES_DATA_UV_OFFSET = 3
 
 private const val UNKNOWN_ATTRIBUTE = -1
 
+interface GLQuadRender : GLTextureView.Renderer {
+
+    var shader: GLShader
+
+    var listener: ShaderViewListener?
+
+    interface ShaderViewListener {
+        fun onSurfaceCreated()
+
+        fun onDrawFrame(shaderParams: ShaderParams)
+    }
+}
+
 /**
  * Render full-screen quad render
  */
-internal class GLQuadRender : GLTextureView.Renderer {
+internal class GLQuadRenderImpl(
+    override var shader: GLShader
+) : GLQuadRender {
 
     companion object {
         const val VERTEX_SHADER_IN_POSITION = "inPosition"
@@ -32,18 +50,9 @@ internal class GLQuadRender : GLTextureView.Renderer {
         const val VERTEX_SHADER_UNIFORM_MATRIX_STM = "uSTMatrix"
     }
 
-    interface ShaderViewListener {
-        fun onSurfaceCreated()
-
-        fun onDrawFrame(shaderParams: ShaderParams)
-    }
-
-    internal var shader = GLShader()
-
-    internal var listener: ShaderViewListener? = null
+    override var listener: GLQuadRender.ShaderViewListener? = null
 
     private val quadVertices: FloatBuffer
-
     private val matrixMVP = FloatArray(16)
     private val matrixSTM = FloatArray(16)
 
@@ -103,7 +112,7 @@ internal class GLQuadRender : GLTextureView.Renderer {
             return
         }
 
-        GLES30.glClearColor(0.0f, 0.0f, 0.0f, 0.0f)
+        GLES30.glClearColor(1.0f, 1.0f, 1.0f, 0.0f)
         GLES30.glClear(GLES30.GL_DEPTH_BUFFER_BIT or GLES30.GL_COLOR_BUFFER_BIT)
 
         GLES30.glUseProgram(shader.program)
@@ -113,15 +122,15 @@ internal class GLQuadRender : GLTextureView.Renderer {
         setAttribute(inPositionHandle, VERTEX_SHADER_IN_POSITION, 3, TRIANGLE_VERTICES_DATA_POS_OFFSET)
         setAttribute(inTextureHandle, VERTEX_SHADER_IN_TEXTURE_COORD, 2, TRIANGLE_VERTICES_DATA_UV_OFFSET)
 
-        // callback if we need to update some custom parameters
-        listener?.onDrawFrame(shaderParams = shader.params)
-
         // build-in uniforms
         Matrix.setIdentityM(matrixMVP, 0)
         shader.params.updateValue(VERTEX_SHADER_UNIFORM_MATRIX_MVP, matrixMVP)
         shader.params.updateValue(VERTEX_SHADER_UNIFORM_MATRIX_STM, matrixSTM)
 
-        // send params to shaders
+        // callback if we need to update some custom parameters
+        listener?.onDrawFrame(shaderParams = shader.params)
+
+        // send params to the shader
         shader.onDrawFrame()
 
         // activate blending for textures
@@ -154,8 +163,12 @@ internal class GLQuadRender : GLTextureView.Renderer {
         }
         quadVertices.position(offset)
         GLES30.glVertexAttribPointer(
-            attrLocation, size, GLES30.GL_FLOAT, false,
-            TRIANGLE_VERTICES_DATA_STRIDE_BYTES, quadVertices
+            attrLocation,
+            size,
+            GLES30.GL_FLOAT,
+            false,
+            TRIANGLE_VERTICES_DATA_STRIDE_BYTES,
+            quadVertices
         )
         checkGlError("glVertexAttribPointer $attrName")
         GLES30.glEnableVertexAttribArray(attrLocation)

@@ -3,13 +3,12 @@ package com.appspell.shaderview
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.appspell.shaderview.databinding.ActivityMenuBinding
-import com.appspell.shaderview.list.ShaderListActivity
-import com.appspell.shaderview.simple.SimpleOnlyXMLShaderActivity
-import com.appspell.shaderview.simple.SimpleShaderActivity
-import com.appspell.shaderview.ui.UiActivity
-import com.appspell.shaderview.video.VideoActivity
-import com.appspell.shaderview.video.VideoAdvancedActivity
+import com.appspell.shaderview.demo.databinding.ActivityMenuBinding
+import com.appspell.shaderview.demo.list.ShaderListActivity
+import com.appspell.shaderview.demo.simple.SimpleOnlyXMLShaderActivity
+import com.appspell.shaderview.demo.simple.SimpleShaderActivity
+import com.appspell.shaderview.demo.video.VideoActivity
+import com.appspell.shaderview.demo.video.VideoAdvancedActivity
 
 class MenuActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,7 +21,6 @@ class MenuActivity : AppCompatActivity() {
         binding.customUi.setOnClickListener { open(UiActivity::class.java) }
         binding.shaderList.setOnClickListener { open(ShaderListActivity::class.java) }
         binding.simpleVideo.setOnClickListener { open(VideoActivity::class.java) }
-        binding.advancedVideo.setOnClickListener { open(VideoAdvancedActivity::class.java) }
         binding.advancedVideo.setOnClickListener { open(VideoAdvancedActivity::class.java) }
     }
 

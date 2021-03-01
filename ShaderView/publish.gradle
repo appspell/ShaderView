@@ -1,0 +1,72 @@
+apply plugin: 'maven-publish'
+apply plugin: 'com.jfrog.bintray'
+
+version '0.8.0'
+group 'com.appspell'
+
+task sourceJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier "source"
+}
+
+afterEvaluate {
+    publishing {
+        repositories {
+            mavenCentral()
+        }
+        publications {
+            release(MavenPublication) {
+                artifact(sourceJar)
+                artifact("$buildDir/outputs/aar/ShaderView-release.aar")
+
+                groupId this.group
+                artifactId 'ShaderView'
+                version this.version
+
+                pom {
+                    name = "ShaderView"
+                    description = "This library is the easiest way to use OpenGL shaders as an Android View. You just simply need to add ShaderView in your layout and set up shaders."
+                    url.set("https://github.com/appspell/ShaderView")
+
+                    licenses {
+                        license {
+                            name.set("MIT")
+                            url.set("https://github.com/appspell/ShaderView/blob/main/LICENSE")
+                        }
+                    }
+
+                    scm {
+                        connection.set("scm:git:https://github.com/appspell/ShaderView.git")
+                        developerConnection.set("scm:git:https://github.com/appspell/ShaderView.git")
+                        url.set("https://github.com/appspell/ShaderView")
+                    }
+                }
+            }
+        }
+    }
+}
+
+bintray {
+    user = project.hasProperty('bintrayUser') ? project.getProperty('bintrayUser') : System.getenv('BINTRAY_USER')
+    key = project.hasProperty('bintrayKey') ? project.getProperty('bintrayKey') : System.getenv('BINTRAY_API_KEY')
+
+    publications = ['release']
+    configurations = ['archives']
+    override = true
+    pkg {
+        repo = 'ShaderView'
+        name = 'ShaderView'
+        description = "This library is the easiest way to use OpenGL shaders as an Android View. You just simply need to add ShaderView in your layout and set up shaders."
+        publish = true
+        publicDownloadNumbers = false
+        dryRun = false
+        licenses = ['MIT']
+        vcsUrl = 'https://github.com/appspell/ShaderView.git'
+        version {
+            name = this.version
+            description = "First public version of the library."
+            released = new Date()
+            vcsTag = this.version
+        }
+    }
+}
