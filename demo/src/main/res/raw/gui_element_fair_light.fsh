@@ -1,10 +1,11 @@
 #version 300 es
 
-precision mediump float;
+precision highp float;
 
 uniform vec2 uViewSize; // size of view or screen
 uniform float uCornerRadius;
 uniform float uSmoothness;
+uniform float uScale;
 uniform vec4 uColor; // diffuse color
 
 uniform vec3 uLightDirection;
@@ -54,14 +55,14 @@ void main() {
     vec2 uv = gl_FragCoord.xy / uViewSize.xy;
     vec2 angularity = uViewSize.xy / uCornerRadius;
 
-    vec4 normalMap = heightMapToNormalMap(uv, angularity, 0.05);
+    vec4 normalMap = heightMapToNormalMap(uv, angularity, uScale);
 
     // process input parameters (better move it to vertex shader)
     vec3 inverseLightDirection = uLightDirection * matrixTBN;
 
     // diffuse component
-    float normalDotLight = max(0.0, dot(normalMap.rgb, inverseLightDirection));
-    vec3 diffuseColor = uColor.rgb * normalDotLight;
+    float normalDotLight = max(0.0, dot(normalMap.rgb, inverseLightDirection) * 0.5 + 0.5);
+    vec3 diffuseColor = clamp(uColor.rgb * normalDotLight, 0.0, 1.0);
 
     fragColor = vec4(diffuseColor, normalMap.a);
 }

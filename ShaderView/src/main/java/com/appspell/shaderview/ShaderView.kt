@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.SurfaceTexture
 import android.opengl.GLSurfaceView
 import android.util.AttributeSet
+import androidx.annotation.AttrRes
 import androidx.annotation.RawRes
 import androidx.annotation.StyleRes
 import com.appspell.shaderview.gl.params.ShaderParams

@@ -1,4 +1,4 @@
-package com.appspell.shaderview
+package com.appspell.shaderview.demo
 
 import android.content.Intent
 import android.os.Bundle
@@ -7,6 +7,7 @@ import com.appspell.shaderview.demo.databinding.ActivityMenuBinding
 import com.appspell.shaderview.demo.list.ShaderListActivity
 import com.appspell.shaderview.demo.simple.SimpleOnlyXMLShaderActivity
 import com.appspell.shaderview.demo.simple.SimpleShaderActivity
+import com.appspell.shaderview.demo.ui.UiActivity
 import com.appspell.shaderview.demo.video.VideoActivity
 import com.appspell.shaderview.demo.video.VideoAdvancedActivity
 
