@@ -13,7 +13,7 @@ The advantage of this library that you can use ShaderView in your hierarchy as a
 - Realtime image animation
 - Shaders for a camera
 
-<img src="https://i.imgur.com/Iv1FLrg.gif" width="30%"><img src="https://i.imgur.com/znnJsQp.gif" width="30%"><img src="https://i.imgur.com/qrzyst2.png" width="30%">
+<img src="https://i.imgur.com/bV8im18.gif" width="30%"><img src="https://i.imgur.com/zQa1uas.gif" width="30%">
 
 ## Table of content
 
