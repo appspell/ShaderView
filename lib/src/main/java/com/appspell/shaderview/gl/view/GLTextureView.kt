@@ -1277,7 +1277,7 @@ open class GLTextureView @JvmOverloads constructor(
                             if (mShouldExit) {
                                 return
                             }
-                            if (!mEventQueue.isEmpty()) {
+                            if (mEventQueue.isNotEmpty()) {
                                 event = mEventQueue.removeAt(0)
                                 break
                             }
@@ -1291,7 +1291,7 @@ open class GLTextureView @JvmOverloads constructor(
                                 if (enableLogPauseResume) {
                                     LibLog.i(
                                         "GLThread",
-                                        "mPaused is now " + mPaused + " tid=" + id
+                                        "mPaused is now $mPaused tid=$id"
                                     )
                                 }
                             }
@@ -1301,7 +1301,7 @@ open class GLTextureView @JvmOverloads constructor(
                                 if (enableLogSurface) {
                                     LibLog.i(
                                         "GLThread",
-                                        "releasing EGL context because asked to tid=" + id
+                                        "releasing EGL context because asked to tid=$id"
                                     )
                                 }
                                 stopEglSurfaceLocked()
@@ -1322,7 +1322,7 @@ open class GLTextureView @JvmOverloads constructor(
                                 if (enableLogSurface) {
                                     LibLog.i(
                                         "GLThread",
-                                        "releasing EGL surface because paused tid=" + id
+                                        "releasing EGL surface because paused tid=$id"
                                     )
                                 }
                                 stopEglSurfaceLocked()
@@ -1338,7 +1338,7 @@ open class GLTextureView @JvmOverloads constructor(
                                     if (enableLogSurface) {
                                         LibLog.i(
                                             "GLThread",
-                                            "releasing EGL context because paused tid=" + id
+                                            "releasing EGL context because paused tid=$id"
                                         )
                                     }
                                 }
@@ -1349,7 +1349,7 @@ open class GLTextureView @JvmOverloads constructor(
                                 if (enableLogSurface) {
                                     LibLog.i(
                                         "GLThread",
-                                        "noticed surfaceView surface lost tid=" + id
+                                        "noticed surfaceView surface lost tid=$id"
                                     )
                                 }
                                 if (mHaveEglSurface) {
@@ -1365,7 +1365,7 @@ open class GLTextureView @JvmOverloads constructor(
                                 if (enableLogSurface) {
                                     LibLog.i(
                                         "GLThread",
-                                        "noticed surfaceView surface acquired tid=" + id
+                                        "noticed surfaceView surface acquired tid=$id"
                                     )
                                 }
                                 mWaitingForSurface = false
@@ -1375,7 +1375,7 @@ open class GLTextureView @JvmOverloads constructor(
                                 if (enableLogSurface) {
                                     LibLog.i(
                                         "GLThread",
-                                        "sending render notification tid=" + id
+                                        "sending render notification tid=$id"
                                     )
                                 }
                                 mWantRenderNotification = false
@@ -1422,8 +1422,7 @@ open class GLTextureView @JvmOverloads constructor(
                                         if (enableLogSurface) {
                                             LibLog.i(
                                                 "GLThread",
-                                                "noticing that we want render notification tid="
-                                                        + id
+                                                "noticing that we want render notification tid=$id"
                                             )
                                         }
 
@@ -1600,7 +1599,7 @@ open class GLTextureView @JvmOverloads constructor(
                 threadLock.withLock { return mRenderMode }
             }
             set(renderMode) {
-                require((RENDERMODE_WHEN_DIRTY <= renderMode && renderMode <= RENDERMODE_CONTINUOUSLY)) { "renderMode" }
+                require(renderMode in RENDERMODE_WHEN_DIRTY..RENDERMODE_CONTINUOUSLY) { "renderMode" }
                 threadLock.withLock {
                     mRenderMode = renderMode
                     threadLockCondition.signalAll()
@@ -1635,7 +1634,7 @@ open class GLTextureView @JvmOverloads constructor(
         fun surfaceCreated() {
             threadLock.withLock {
                 if (enableLogThreads) {
-                    LibLog.i("GLThread", "surfaceCreated tid=" + id)
+                    LibLog.i("GLThread", "surfaceCreated tid=$id")
                 }
                 mHasSurface = true
                 mFinishedCreatingEglSurface = false
@@ -1656,7 +1655,7 @@ open class GLTextureView @JvmOverloads constructor(
         fun surfaceDestroyed() {
             threadLock.withLock {
                 if (enableLogThreads) {
-                    LibLog.i("GLThread", "surfaceDestroyed tid=" + id)
+                    LibLog.i("GLThread", "surfaceDestroyed tid=$id")
                 }
                 mHasSurface = false
                 threadLockCondition.signalAll()
@@ -1673,7 +1672,7 @@ open class GLTextureView @JvmOverloads constructor(
         fun onPause() {
             threadLock.withLock {
                 if (enableLogPauseResume) {
-                    LibLog.i("GLThread", "onPause tid=" + id)
+                    LibLog.i("GLThread", "onPause tid=$id")
                 }
                 mRequestPaused = true
                 threadLockCondition.signalAll()
@@ -1693,7 +1692,7 @@ open class GLTextureView @JvmOverloads constructor(
         fun onResume() {
             threadLock.withLock {
                 if (enableLogPauseResume) {
-                    LibLog.i("GLThread", "onResume tid=" + id)
+                    LibLog.i("GLThread", "onResume tid=$id")
                 }
                 mRequestPaused = false
                 mRequestRender = true
