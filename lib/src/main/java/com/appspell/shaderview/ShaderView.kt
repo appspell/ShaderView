@@ -27,7 +27,7 @@ private val DEFAULT_FRAGMENT_SHADER_RESOURCE = R.raw.default_frag
 
 class ShaderView @JvmOverloads constructor(
     context: Context,
-    @AttrRes attrs: AttributeSet? = null,
+    attrs: AttributeSet? = null,
     @StyleRes defStyleAttr: Int = 0
 ) : GLTextureView(context, attrs, defStyleAttr) {
 
