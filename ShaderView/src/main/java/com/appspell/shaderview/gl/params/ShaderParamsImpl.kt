@@ -1,6 +1,7 @@
 package com.appspell.shaderview.gl.params
 
 import android.content.res.Resources
+import android.graphics.Bitmap
 import android.graphics.SurfaceTexture
 import android.opengl.GLES30
 import android.view.Surface
@@ -35,6 +36,13 @@ class ShaderParamsImpl : ShaderParams {
 
     override fun updateValue(paramName: String, value: IntArray) {
         map[paramName]?.value = value
+    }
+
+    override fun updateValue(paramName: String, value: Bitmap?, textureSlot: Int) {
+        map[paramName]?.value = TextureParam(
+            bitmap = value,
+            textureSlot = textureSlot
+        )
     }
 
     /**
@@ -150,7 +158,7 @@ class ShaderParamsImpl : ShaderParams {
                         }
 
                         // upload bitmap to GPU
-                        bitmap?.toGlTexture(needToRecycle = true, textureParam.textureSlot)
+                        bitmap?.toGlTexture(needToRecycle = textureParam.needToRecycle, textureParam.textureSlot)
                     }.also { textureId ->
                         value = (value as? TextureParam)?.copy(
                             textureId = textureId
