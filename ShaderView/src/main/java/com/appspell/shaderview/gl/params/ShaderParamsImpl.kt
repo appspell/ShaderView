@@ -38,10 +38,11 @@ class ShaderParamsImpl : ShaderParams {
         map[paramName]?.value = value
     }
 
-    override fun updateValue(paramName: String, value: Bitmap?, textureSlot: Int) {
+    override fun updateValue(paramName: String, value: Bitmap?, textureSlot: Int, needToRecycle: Boolean) {
         map[paramName]?.value = TextureParam(
             bitmap = value,
-            textureSlot = textureSlot
+            textureSlot = textureSlot,
+            needToRecycle = needToRecycle
         )
     }
 

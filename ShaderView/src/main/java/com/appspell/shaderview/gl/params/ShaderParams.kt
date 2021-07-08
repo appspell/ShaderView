@@ -17,7 +17,8 @@ interface ShaderParams {
     fun updateValue(
         paramName: String,
         value: Bitmap?,
-        textureSlot: Int = GLES30.GL_TEXTURE0
+        textureSlot: Int = GLES30.GL_TEXTURE0,
+        needToRecycle: Boolean = true
     )
 
     fun getParamShaderLocation(paramName: String): Int?
