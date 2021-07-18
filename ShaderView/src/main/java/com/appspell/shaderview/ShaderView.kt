@@ -90,11 +90,15 @@ class ShaderView @JvmOverloads constructor(
     private val rendererListener = object : GLQuadRender.ShaderViewListener {
         override fun onSurfaceCreated() {
             initShaders()
-            onViewReadyListener?.invoke(renderer.shader)
+            post {
+                onViewReadyListener?.invoke(renderer.shader)
+            }
         }
 
         override fun onDrawFrame(shaderParams: ShaderParams) {
-            onDrawFrameListener?.invoke(shaderParams)
+            post {
+                onDrawFrameListener?.invoke(shaderParams)
+            }
         }
     }
 

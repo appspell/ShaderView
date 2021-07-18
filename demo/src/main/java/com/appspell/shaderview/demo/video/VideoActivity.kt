@@ -11,6 +11,7 @@ import com.appspell.shaderview.demo.R
 import com.appspell.shaderview.demo.databinding.ActivityVideoBinding
 import com.appspell.shaderview.ext.getTexture2dOESSurface
 import com.appspell.shaderview.gl.params.ShaderParamsBuilder
+import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.MediaSource
@@ -52,16 +53,20 @@ class VideoActivity : AppCompatActivity() {
         val uri = RawResourceDataSource.buildRawResourceUri(R.raw.video)
 
         val userAgent: String = Util.getUserAgent(this, BuildConfig.APPLICATION_ID)
+        val mediaItem: MediaItem = MediaItem.fromUri(uri)
         val defDataSourceFactory = DefaultDataSourceFactory(this, userAgent)
         val mediaSource: MediaSource = ProgressiveMediaSource
             .Factory(defDataSourceFactory)
-            .createMediaSource(uri)
+            .createMediaSource(mediaItem)
 
         val player = SimpleExoPlayer.Builder(this@VideoActivity).build()
-        player.prepare(mediaSource)
-        player.setVideoSurface(surface)
-        player.playWhenReady = true
-        player.repeatMode = Player.REPEAT_MODE_ALL
+            .apply {
+                setMediaSource(mediaSource)
+                prepare()
+                setVideoSurface(surface)
+                playWhenReady = true
+                repeatMode = Player.REPEAT_MODE_ALL
+            }
 
         lifecycle.addObserver(object : LifecycleObserver {
             @OnLifecycleEvent(Event.ON_PAUSE)
