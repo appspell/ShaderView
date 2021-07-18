@@ -1,9 +1,11 @@
 package com.appspell.shaderview.gl.params
 
 import android.content.res.Resources
+import android.graphics.Bitmap
 import android.graphics.SurfaceTexture
 import android.opengl.GLES30
 import android.view.Surface
+import com.appspell.shaderview.annotations.ShaderExperimentalApi
 import com.appspell.shaderview.ext.createExternalTexture
 import com.appspell.shaderview.ext.loadBitmapForTexture
 import com.appspell.shaderview.ext.toGlTexture
@@ -35,6 +37,22 @@ class ShaderParamsImpl : ShaderParams {
 
     override fun updateValue(paramName: String, value: IntArray) {
         map[paramName]?.value = value
+    }
+
+    @ShaderExperimentalApi
+    override fun updateValue2D(paramName: String, value: Bitmap?, needToRecycleWhenUploaded: Boolean) {
+        map[paramName]?.value = (map[paramName]?.value as? TextureParam)?.copy(
+            bitmap = value,
+            needToRecycleWhenUploaded = needToRecycleWhenUploaded
+        )
+    }
+
+    @ShaderExperimentalApi
+    override fun updateValue2D(paramName: String, res: Int) {
+        map[paramName]?.value = (map[paramName]?.value as? TextureParam)?.copy(
+            textureResourceId = res,
+            needToRecycleWhenUploaded = true
+        )
     }
 
     /**
@@ -150,7 +168,10 @@ class ShaderParamsImpl : ShaderParams {
                         }
 
                         // upload bitmap to GPU
-                        bitmap?.toGlTexture(needToRecycle = true, textureParam.textureSlot)
+                        bitmap?.toGlTexture(
+                            needToRecycle = textureParam.needToRecycleWhenUploaded,
+                            textureSlot = textureParam.textureSlot
+                        )
                     }.also { textureId ->
                         value = (value as? TextureParam)?.copy(
                             textureId = textureId

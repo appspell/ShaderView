@@ -131,7 +131,8 @@ class ShaderParamsBuilder {
             valeType = Param.ValueType.SAMPLER_2D,
             value = TextureParam(
                 bitmap = bitmap,
-                textureSlot = textureSlot
+                textureSlot = textureSlot,
+                needToRecycleWhenUploaded = false
             )
         )
         result.updateParam(paramName = paramName, param = param)
@@ -151,7 +152,8 @@ class ShaderParamsBuilder {
             valeType = Param.ValueType.SAMPLER_2D,
             value = TextureParam(
                 textureResourceId = textureResourceId,
-                textureSlot = textureSlot
+                textureSlot = textureSlot,
+                needToRecycleWhenUploaded = true
             )
         )
         result.updateParam(paramName = paramName, param = param)
