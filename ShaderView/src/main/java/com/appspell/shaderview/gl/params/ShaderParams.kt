@@ -1,6 +1,9 @@
 package com.appspell.shaderview.gl.params
 
 import android.content.res.Resources
+import android.graphics.Bitmap
+import androidx.annotation.DrawableRes
+import com.appspell.shaderview.annotations.ShaderExperimentalApi
 
 const val UNKNOWN_LOCATION = -1
 
@@ -12,6 +15,16 @@ interface ShaderParams {
     fun updateValue(paramName: String, value: Boolean)
     fun updateValue(paramName: String, value: FloatArray)
     fun updateValue(paramName: String, value: IntArray)
+
+    /**
+     * Update Sample2D with particular Bitmap
+     * Note: don't forget to recycle Bitmap manually
+     */
+    @ShaderExperimentalApi
+    fun updateValue2D(paramName: String, value: Bitmap?, needToRecycleWhenUploaded: Boolean = false)
+
+    @ShaderExperimentalApi
+    fun updateValue2D(paramName: String, @DrawableRes res: Int)
 
     fun getParamShaderLocation(paramName: String): Int?
     fun getParamValue(paramName: String): Any?

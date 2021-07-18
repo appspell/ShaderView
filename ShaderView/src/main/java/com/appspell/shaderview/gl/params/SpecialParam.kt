@@ -19,5 +19,6 @@ data class TextureParam(
     @DrawableRes val textureResourceId: Int? = null,
     val bitmap: Bitmap? = null,
     var textureId: Int? = null,
+    val needToRecycleWhenUploaded: Boolean = true,
     val textureSlot: Int = GLES30.GL_TEXTURE0
 )
