@@ -44,6 +44,8 @@ dependencies {
     implementation 'com.google.android.material:material:1.4.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
 
+    implementation 'androidx.viewpager2:viewpager2:1.0.0'
+
     // for video demo
     implementation 'com.google.android.exoplayer:exoplayer-core:2.14.1'
     implementation 'com.google.android.exoplayer:exoplayer-ui:2.14.1'

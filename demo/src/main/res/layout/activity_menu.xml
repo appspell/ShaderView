@@ -33,6 +33,13 @@
         android:text="@string/button_shader_list" />
 
     <Button
+        android:id="@+id/viewPager"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin"
+        android:text="@string/button_view_pager" />
+
+    <Button
         android:id="@+id/simpleVideo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

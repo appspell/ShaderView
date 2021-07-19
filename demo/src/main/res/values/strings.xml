@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">ShaderView</string>
     <string name="button_shader_list">shader list</string>
+    <string name="button_view_pager">view pager</string>
     <string name="button_simple_XML_only_shader">simple XML only shader</string>
     <string name="button_simple_shader">simple shader</string>
     <string name="button_simple_video_playback_shader">simple video playback shader</string>

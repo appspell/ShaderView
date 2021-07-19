@@ -9,7 +9,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ShaderView">
-        <activity android:name=".ui.UiActivity"></activity>
+        <activity android:name=".ui.UiActivity" />
         <activity android:name=".MenuActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -22,6 +22,7 @@
         <activity android:name=".simple.SimpleShaderActivity" />
         <activity android:name=".simple.SimpleOnlyXMLShaderActivity" />
         <activity android:name=".list.ShaderListActivity" />
+        <activity android:name=".viewpager.ViewPagerActivity" />
     </application>
 
 </manifest>
