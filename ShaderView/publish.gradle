@@ -1,7 +1,7 @@
 apply plugin: 'maven-publish'
 apply plugin: 'com.jfrog.bintray'
 
-version '0.8.1'
+version '0.8.3'
 group 'com.appspell'
 
 task sourceJar(type: Jar) {
