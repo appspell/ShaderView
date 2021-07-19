@@ -1,20 +1,35 @@
 package com.appspell.shaderview.demo.viewpager
 
-import android.opengl.GLES30
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Surface
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.OnLifecycleEvent
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.appspell.shaderview.ShaderView
+import com.appspell.shaderview.demo.BuildConfig
 import com.appspell.shaderview.demo.R
 import com.appspell.shaderview.demo.databinding.ActivityViewPagerBinding
+import com.appspell.shaderview.ext.getTexture2dOESSurface
 import com.appspell.shaderview.gl.params.ShaderParamsBuilder
-import kotlin.random.Random
+import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.exoplayer2.source.MediaSource
+import com.google.android.exoplayer2.source.ProgressiveMediaSource
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import com.google.android.exoplayer2.upstream.RawResourceDataSource
+import com.google.android.exoplayer2.util.Util
 
+/**
+ * Test example for this issue https://github.com/appspell/ShaderView/issues/7
+ */
 class ViewPagerActivity : AppCompatActivity() {
     lateinit var bindings: ActivityViewPagerBinding
 
@@ -34,34 +49,60 @@ class ViewPagerActivity : AppCompatActivity() {
 
     class PageFragment : Fragment() {
         override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-            return ShaderView(inflater.context).apply {
-                updateContinuously = true // update each frame
-                debugMode = true // to see logs
+            return ShaderView(inflater.context)
+                .apply {
+                    updateContinuously = true // update the view each frame (do not forget set it "true")
+                    debugMode = true
+                    fragmentShaderRawResId = R.raw.video_shader // fragment shader for video frame processing
+                    shaderParams = ShaderParamsBuilder()
+                        .addTextureOES("uVideoTexture") // video texture input/output
+                        .build()
+                    onViewReadyListener = { shader ->
+                        // get surface from shader params
+                        val surface = shader.params.getTexture2dOESSurface("uVideoTexture")
 
-                fragmentShaderRawResId = R.raw.animated_texture
+                        // initialize video player when shader is ready
+                        initVideoPlayer(surface)
+                    }
+                }
+        }
 
-                val texture = when (Random.nextInt(5)) {
-                    1 -> R.drawable.android
-                    2 -> R.drawable.normal_button
-                    3 -> R.drawable.bokeh
-                    4 -> R.drawable.test_texture
-                    else -> R.drawable.normal_sphere
+        /**
+         * Initialize ExoPlayer
+         *
+         * example: https://exoplayer.dev/hello-world.html
+         */
+        private fun initVideoPlayer(surface: Surface?) {
+            val userAgent: String = Util.getUserAgent(requireContext(), BuildConfig.APPLICATION_ID)
+            val defDataSourceFactory = DefaultDataSourceFactory(requireContext(), userAgent)
+
+            val uri = RawResourceDataSource.buildRawResourceUri(R.raw.video)
+            val mediaItem: MediaItem = MediaItem.fromUri(uri)
+
+            val mediaSource: MediaSource = ProgressiveMediaSource
+                .Factory(defDataSourceFactory)
+                .createMediaSource(mediaItem)
+
+            val player = SimpleExoPlayer.Builder(requireContext()).build()
+                .apply {
+                    setMediaSource(mediaSource)
+                    prepare()
+                    setVideoSurface(surface)
+                    playWhenReady = true
+                    repeatMode = Player.REPEAT_MODE_ALL
                 }
 
-                shaderParams = ShaderParamsBuilder()
-                    .addTexture2D(
-                        "uTexture",
-                        texture,
-                        GLES30.GL_TEXTURE0
-                    )
-                    .addVec2f("uOffset")
-                    .build()
-                onDrawFrameListener = { shaderParams ->
-                    val u = (System.currentTimeMillis() % 5000L) / 5000f
-                    val v = (System.currentTimeMillis() % 1000L) / 1000f
-                    shaderParams.updateValue("uOffset", floatArrayOf(u, v))
+            lifecycle.addObserver(object : LifecycleObserver {
+                @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+                fun onPause() {
+                    player.pause()
                 }
-            }
+
+                @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+                fun onResume() {
+                    player.playWhenReady = true
+                }
+            })
         }
     }
 }
