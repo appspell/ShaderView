@@ -72,10 +72,11 @@ class VideoAdvancedActivity : AppCompatActivity() {
      */
     private fun initVideoPlayer(surface: Surface?) {
         val uri = RawResourceDataSource.buildRawResourceUri(R.raw.video)
+        val mediaItem: MediaItem = MediaItem.fromUri(uri)
 
         val userAgent: String = Util.getUserAgent(this, BuildConfig.APPLICATION_ID)
-        val mediaItem: MediaItem = MediaItem.fromUri(uri)
         val defDataSourceFactory = DefaultDataSourceFactory(this, userAgent)
+
         val mediaSource: MediaSource = ProgressiveMediaSource
             .Factory(defDataSourceFactory)
             .createMediaSource(mediaItem)
@@ -92,7 +93,7 @@ class VideoAdvancedActivity : AppCompatActivity() {
         lifecycle.addObserver(object : LifecycleObserver {
             @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
             fun onPause() {
-                player.stop()
+                player.pause()
             }
 
             @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
