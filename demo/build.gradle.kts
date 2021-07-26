@@ -38,8 +38,8 @@ android {
 }
 
 dependencies {
-    implementation(project(":ShaderView"))
 
+    implementation(project(":lib"))
     implementation("org.jetbrains.kotlin:kotlin-stdlib:${getKotlinPluginVersion()}")
     implementation("androidx.core:core-ktx:1.6.0")
     implementation("androidx.appcompat:appcompat:1.3.0")
