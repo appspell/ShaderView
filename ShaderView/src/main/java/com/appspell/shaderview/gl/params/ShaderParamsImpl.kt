@@ -74,17 +74,10 @@ class ShaderParamsImpl : ShaderParams {
                 when (valeType) {
                     Param.ValueType.SAMPLER_OES -> {
                         (value as? TextureOESParam)?.apply {
-                            // delete texture
-                            if (location != UNKNOWN_LOCATION) {
-                                GLES30.glDeleteTextures(1, IntArray(location), 0)
-                                location = UNKNOWN_LOCATION
+                            lock.withLock {
+                                surfaceTexture.release()
+                                surface.release()
                             }
-
-                            // unlock
-                            (value as? TextureOESParam)?.lock?.apply { if (isLocked) unlock() }
-
-                            surfaceTexture.release()
-                            surface.release()
                         }
                         value = null
                     }
