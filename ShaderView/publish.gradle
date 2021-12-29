@@ -1,6 +1,7 @@
 apply plugin: 'maven-publish'
 
-version '0.8.5'
+version '0.8.7'
+name 'ShaderView'
 group 'com.github.appspell'
 
 // ./gradlew publishReleasePublicationToMavenLocal

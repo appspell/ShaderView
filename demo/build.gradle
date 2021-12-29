@@ -4,6 +4,7 @@ plugins {
 }
 
 group 'com.github.appspell.demo'
+name 'ShaderView-demo'
 
 android {
     compileSdkVersion 31
