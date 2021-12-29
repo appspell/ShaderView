@@ -1,6 +1,6 @@
 apply plugin: 'maven-publish'
 
-version '0.8.3'
+version '0.8.4'
 group 'com.appspell'
 
 // ./gradlew publishReleasePublicationToMavenLocal
