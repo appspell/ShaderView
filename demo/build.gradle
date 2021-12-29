@@ -3,6 +3,8 @@ plugins {
     id 'kotlin-android'
 }
 
+group 'com.github.appspell.demo'
+
 android {
     compileSdkVersion 31
     buildToolsVersion "30.0.3"
