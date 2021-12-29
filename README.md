@@ -35,13 +35,16 @@ The advantage of this library that you can use ShaderView in your hierarchy as a
 **Gradle**
 
 ```gralde
-repositories {
-        jcenter()
-    }
+allprojects {
+	repositories {
+		...
+		maven { url 'https://jitpack.io' }
+	}
+}
 ```
 
 ```gradle
-implementation 'com.appspell:ShaderView:[last-version]'
+implementation 'com.github.appspell:ShaderView:[last-version]'
 ```
 
 **Maven**
