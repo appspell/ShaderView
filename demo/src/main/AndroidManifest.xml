@@ -9,20 +9,36 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ShaderView">
-        <activity android:name=".ui.UiActivity" />
-        <activity android:name=".MenuActivity">
+        <activity
+            android:name=".ui.UiActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MenuActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".video.VideoActivity" />
-        <activity android:name=".video.VideoAdvancedActivity" />
-        <activity android:name=".simple.SimpleShaderActivity" />
-        <activity android:name=".simple.SimpleOnlyXMLShaderActivity" />
-        <activity android:name=".list.ShaderListActivity" />
-        <activity android:name=".viewpager.ViewPagerActivity" />
+        <activity
+            android:name=".video.VideoActivity"
+            android:exported="false" />
+        <activity
+            android:name=".video.VideoAdvancedActivity"
+            android:exported="false" />
+        <activity
+            android:name=".simple.SimpleShaderActivity"
+            android:exported="false" />
+        <activity
+            android:name=".simple.SimpleOnlyXMLShaderActivity"
+            android:exported="false" />
+        <activity
+            android:name=".list.ShaderListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".viewpager.ViewPagerActivity"
+            android:exported="false" />
     </application>
 
 </manifest>
