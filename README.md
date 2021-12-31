@@ -47,17 +47,6 @@ allprojects {
 implementation 'com.github.appspell:ShaderView:[last-version]'
 ```
 
-**Maven**
-
-```maven
-<dependency>
-	<groupId>com.appspell</groupId>
-	<artifactId>ShaderView</artifactId>
-	<version>last-version</version>
-	<type>pom</type>
-</dependency>
-```
-
 ### Add ShaderView to XML layout
 
 1. Add ShaderView to the XML layout

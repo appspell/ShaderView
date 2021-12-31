@@ -3,9 +3,6 @@ plugins {
     id 'kotlin-android'
 }
 
-group 'com.github.appspell.demo'
-name 'ShaderView-demo'
-
 android {
     compileSdkVersion 31
     buildToolsVersion "30.0.3"
@@ -42,7 +39,7 @@ android {
 }
 
 dependencies {
-    implementation project(":ShaderView")
+    implementation project(':lib')
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation 'androidx.core:core-ktx:1.7.0'

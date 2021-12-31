@@ -1,7 +1,6 @@
 apply plugin: 'maven-publish'
 
 version '0.8.7'
-name 'ShaderView'
 group 'com.github.appspell'
 
 // ./gradlew publishReleasePublicationToMavenLocal
@@ -22,7 +21,7 @@ afterEvaluate {
                 artifact("$buildDir/outputs/aar/ShaderView-release.aar")
 
                 groupId this.group
-                artifactId 'ShaderView'
+                artifactId 'lib'
                 version this.version
 
                 pom {

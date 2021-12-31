@@ -1,7 +1,6 @@
 package com.appspell.shaderview.log
 
 import android.util.Log
-import java.lang.Exception
 
 object LibLog {
     var isEnabled: Boolean = false
