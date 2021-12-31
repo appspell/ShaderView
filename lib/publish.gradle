@@ -1,6 +1,6 @@
 apply plugin: 'maven-publish'
 
-version '0.8.7'
+version '0.8.8'
 
 task sourceJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs
