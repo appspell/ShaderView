@@ -2,8 +2,6 @@ apply plugin: 'maven-publish'
 
 version '0.8.7'
 
-// ./gradlew publishReleasePublicationToMavenLocal
-
 task sourceJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs
     classifier "source"
@@ -13,9 +11,9 @@ afterEvaluate {
     publishing {
         publications {
             release(MavenPublication) {
+                from components.release
 
                 artifact(sourceJar)
-                artifact("$buildDir/outputs/aar/ShaderView-release.aar")
 
                 groupId 'com.github.appspell'
                 artifactId 'ShaderView'
