@@ -1,7 +1,6 @@
 apply plugin: 'maven-publish'
 
 version '0.8.7'
-group 'com.github.appspell'
 
 // ./gradlew publishReleasePublicationToMavenLocal
 
@@ -12,16 +11,14 @@ task sourceJar(type: Jar) {
 
 afterEvaluate {
     publishing {
-        repositories {
-            mavenCentral()
-        }
         publications {
             release(MavenPublication) {
+
                 artifact(sourceJar)
                 artifact("$buildDir/outputs/aar/ShaderView-release.aar")
 
-                groupId this.group
-                artifactId 'lib'
+                groupId 'com.github.appspell'
+                artifactId 'ShaderView'
                 version this.version
 
                 pom {
