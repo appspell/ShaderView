@@ -61,9 +61,9 @@ implementation 'com.github.appspell:ShaderView:[last-version]'
 
 2. Set your fragment and vertex (if needed) shaders using the following attributes:
 
-`app:fragment_shader_raw_res_id` - reference to the fragment shader file in RAW resource solder [example](https://github.com/appspell/ShaderView/blob/main/ShaderView/src/main/res/raw/default_frag.fsh)
+`app:fragment_shader_raw_res_id` - reference to the fragment shader file in RAW resource solder [example](https://github.com/appspell/ShaderView/blob/main/lib/src/main/res/raw/default_frag.fsh)
 
-`app:vertex_shader_raw_res_id` - reference to the vertex shader file in RAW resource solder [example](https://github.com/appspell/ShaderView/blob/main/ShaderView/src/main/res/raw/quad_vert.vsh)
+`app:vertex_shader_raw_res_id` - reference to the vertex shader file in RAW resource solder [example](https://github.com/appspell/ShaderView/blob/main/lib/src/main/res/raw/quad_vert.vsh)
 
 ### Add ShaderView programmatically (or configure programmatically)
 
@@ -200,4 +200,4 @@ In Android Demo Project code you may found it in ViewHolders [here](https://gith
 
 Why we use [TextureView](https://developer.android.com/reference/android/view/TextureView) instead of [SurfaceView](https://developer.android.com/reference/android/view/SurfaceView) you can read [here](https://github.com/crosswalk-project/crosswalk-website/wiki/Android-SurfaceView-vs-TextureView). 
 
-To be able to use OpenGL rendering for Android TextureView, we've created [GLTextureView.kt](https://github.com/appspell/ShaderView/blob/main/ShaderView/src/main/java/com/appspell/shaderview/gl/view/GLTextureView.kt)
+To be able to use OpenGL rendering for Android TextureView, we've created [GLTextureView.kt](https://github.com/appspell/ShaderView/blob/main/lib/src/main/java/com/appspell/shaderview/gl/view/GLTextureView.kt)
