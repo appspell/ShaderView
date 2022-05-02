@@ -82,8 +82,12 @@ with(shaderView) {
 ## The full list of ShaderView properties:
 
 `fragmentShaderRawResId` - reference to the vertex shader file in RAW resource solder [example]
+OR
+`fragmentShader` - a string of the fragment shader code
 
 `vertexShaderRawResId` - reference to the fragment shader file in RAW resource solder [example]
+OR
+`vertexShader` - a string of the vertex shader code
 
 `shaderParams` - custom parameters that we're going to send to the shader (uniform)
 

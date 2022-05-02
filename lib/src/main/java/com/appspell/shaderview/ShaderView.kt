@@ -45,6 +45,17 @@ class ShaderView @JvmOverloads constructor(
             field = value
         }
 
+    var vertexShader: String? = null
+        set(value) {
+            needToRecreateShaders = true
+            field = value
+        }
+    var fragmentShader: String? = null
+        set(value) {
+            needToRecreateShaders = true
+            field = value
+        }
+
     var shaderParams: ShaderParams? = null
         set(value) {
             field = value
@@ -158,21 +169,39 @@ class ShaderView @JvmOverloads constructor(
                 // delete existing shader if we have some
                 renderer.shader.release()
 
-                // create a new shader
-                renderer.shader = renderer.shader.newBuilder()
-                    .create(
-                        context = context,
-                        vertexShaderRawResId = vertexShaderRawResId ?: DEFAULT_VERTEX_SHADER_RESOURCE,
-                        fragmentShaderRawResId = fragmentShader
-                    )
-                    .apply {
-                        // if we have some ShaderParams to set
-                        shaderParams?.apply { params(this) }
-                    }
-                    .build()
-                    .also {
-                        needToRecreateShaders = true
-                    }
+                vertexShader?.let {
+                    // create a new shader from text
+                    renderer.shader = renderer.shader.newBuilder()
+                        .create(
+                            vertexShader = this.vertexShader!!,
+                            fragmentShader = this.fragmentShader!!
+                        )
+                        .apply {
+                            // if we have some ShaderParams to set
+                            shaderParams?.apply { params(this) }
+                        }
+                        .build()
+                        .also {
+                            needToRecreateShaders = true
+                        }
+                } ?: run {
+                    // create a new shader from resources
+                    renderer.shader = renderer.shader.newBuilder()
+                        .create(
+                            context = context,
+                            vertexShaderRawResId = vertexShaderRawResId
+                                ?: DEFAULT_VERTEX_SHADER_RESOURCE,
+                            fragmentShaderRawResId = fragmentShader
+                        )
+                        .apply {
+                            // if we have some ShaderParams to set
+                            shaderParams?.apply { params(this) }
+                        }
+                        .build()
+                        .also {
+                            needToRecreateShaders = true
+                        }
+                }
             }
         }
 
