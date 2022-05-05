@@ -1480,10 +1480,8 @@ open class GLTextureView @JvmOverloads constructor(
                                             + " mRenderMode: " + mRenderMode)
                                 )
                             }
-                            if (mFPS > 0)
-                                threadLockCondition.await((1000.0 / mFPS).toLong(), TimeUnit.MILLISECONDS)
-                            else
-                                threadLockCondition.await()
+
+                            threadLockCondition.await()
                         }
                     } // end of synchronized(sGLThreadManager)
                     if (event != null) {
@@ -1591,6 +1589,9 @@ open class GLTextureView @JvmOverloads constructor(
                         doRenderNotification = true
                         wantRenderNotification = false
                     }
+
+                    if (mFPS > 0)
+                        threadLockCondition.await((1000f / mFPS).toLong(), TimeUnit.MILLISECONDS)
                 }
             } finally {
                 /*
