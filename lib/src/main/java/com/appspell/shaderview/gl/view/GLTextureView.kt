@@ -1546,9 +1546,9 @@ open class GLTextureView @JvmOverloads constructor(
                         LibLog.w("GLThread", "onDrawFrame tid=$id")
                     }
 
-                    if (mFPS > 0) {
-                        threadLockCondition.await((1000f / mFPS).toLong(), TimeUnit.MILLISECONDS)
-                    }
+                    //if (mFPS > 0) {
+                    //    threadLockCondition.await((1000f / mFPS).toLong(), TimeUnit.MILLISECONDS)
+                    //}
                     run {
                         val view = mGLTextureViewWeakRef.get()
                         if (view != null) {
