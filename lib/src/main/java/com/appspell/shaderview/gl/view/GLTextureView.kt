@@ -1546,30 +1546,31 @@ open class GLTextureView @JvmOverloads constructor(
                         LibLog.w("GLThread", "onDrawFrame tid=$id")
                     }
 
-                    val secondsPerFrame = 1f / mFPS
-                    val deltaTime = (System.currentTimeMillis() - mPrevDrawTime) / 1000f
-                    if (deltaTime >= secondsPerFrame) {
-                        mPrevDrawTime = System.currentTimeMillis()
-                        run {
-                            val view = mGLTextureViewWeakRef.get()
-                            if (view != null) {
-                                try {
-                                    Trace.traceBegin(
-                                        Trace.TRACE_TAG_VIEW,
-                                        "onDrawFrame"
-                                    )
+
+                    run {
+                        val view = mGLTextureViewWeakRef.get()
+                        if (view != null) {
+                            try {
+                                Trace.traceBegin(
+                                    Trace.TRACE_TAG_VIEW,
+                                    "onDrawFrame"
+                                )
+                                val secondsPerFrame = 1f / mFPS
+                                val deltaTime = (System.currentTimeMillis() - mPrevDrawTime) / 1000f
+                                if (mFPS < 0 || deltaTime >= secondsPerFrame) {
+                                    mPrevDrawTime = System.currentTimeMillis()
                                     view.mRenderer?.onDrawFrame(gl)
-                                    if (finishDrawingRunnable != null) {
-                                        finishDrawingRunnable!!.run()
-                                        finishDrawingRunnable = null
-                                    }
-                                } finally {
-                                    Trace.traceEnd(Trace.TRACE_TAG_VIEW)
                                 }
+                                if (finishDrawingRunnable != null) {
+                                    finishDrawingRunnable!!.run()
+                                    finishDrawingRunnable = null
+                                }
+                            } finally {
+                                Trace.traceEnd(Trace.TRACE_TAG_VIEW)
                             }
                         }
                     }
-                    
+
                     val swapError = mEglHelper!!.swap()
                     when (swapError) {
                         EGL10.EGL_SUCCESS -> {
