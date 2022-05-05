@@ -1545,24 +1545,31 @@ open class GLTextureView @JvmOverloads constructor(
                     if (enableLogRendererDrawFrame) {
                         LibLog.w("GLThread", "onDrawFrame tid=$id")
                     }
-                    run {
-                        val view = mGLTextureViewWeakRef.get()
-                        if (view != null) {
-                            try {
-                                Trace.traceBegin(
-                                    Trace.TRACE_TAG_VIEW,
-                                    "onDrawFrame"
-                                )
-                                view.mRenderer?.onDrawFrame(gl)
-                                if (finishDrawingRunnable != null) {
-                                    finishDrawingRunnable!!.run()
-                                    finishDrawingRunnable = null
+
+                    val secondsPerFrame = 1f / mFPS
+                    val deltaTime = (System.currentTimeMillis() - mPrevDrawTime) / 1000f
+                    if (deltaTime >= secondsPerFrame) {
+                        mPrevDrawTime = System.currentTimeMillis()
+                        run {
+                            val view = mGLTextureViewWeakRef.get()
+                            if (view != null) {
+                                try {
+                                    Trace.traceBegin(
+                                        Trace.TRACE_TAG_VIEW,
+                                        "onDrawFrame"
+                                    )
+                                    view.mRenderer?.onDrawFrame(gl)
+                                    if (finishDrawingRunnable != null) {
+                                        finishDrawingRunnable!!.run()
+                                        finishDrawingRunnable = null
+                                    }
+                                } finally {
+                                    Trace.traceEnd(Trace.TRACE_TAG_VIEW)
                                 }
-                            } finally {
-                                Trace.traceEnd(Trace.TRACE_TAG_VIEW)
                             }
                         }
                     }
+                    
                     val swapError = mEglHelper!!.swap()
                     when (swapError) {
                         EGL10.EGL_SUCCESS -> {
@@ -1589,9 +1596,6 @@ open class GLTextureView @JvmOverloads constructor(
                         doRenderNotification = true
                         wantRenderNotification = false
                     }
-
-                    if (mFPS > 0)
-                        threadLockCondition.await((1000f / mFPS).toLong(), TimeUnit.MILLISECONDS)
                 }
             } finally {
                 /*
@@ -1826,6 +1830,7 @@ open class GLTextureView @JvmOverloads constructor(
         private var mShouldReleaseEglContext = false
         private var mWidth = 0
         private var mHeight = 0
+        private var mPrevDrawTime: Long = Long.MIN_VALUE
         private var mFPS = 0
         private var mRenderMode: Int
         private var mRequestRender = true
