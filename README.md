@@ -97,7 +97,7 @@ OR
 
 `updateContinuously` -  should we render the view each frame (default is "false")
 
-`fps` - At what framerate should the shader be drawn if updateContinuously set to true
+`fps` - At what framerate should the shader be drawn if updateContinuously set to true (0 or below means as quickly as the device can handle)
 
 `debugMode` - enable or disable debug logs
 
