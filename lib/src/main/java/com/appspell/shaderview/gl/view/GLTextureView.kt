@@ -422,6 +422,20 @@ open class GLTextureView @JvmOverloads constructor(
     }
 
     /**
+     * Set how often RENDERMODE_CONTINUOUSLY draws the shader
+     */
+    fun setFPS(fps: Int) {
+        mGLThread!!.fps = fps
+    }
+
+    /**
+     * Get the current framerate of RENDERMODE_CONTINUOUSLY
+     */
+    fun getFPS(): Int {
+        return mGLThread!!.fps
+    }
+
+    /**
      * Request that the renderer render a frame.
      * This method is typically used when the render mode has been set to
      * [.RENDERMODE_WHEN_DIRTY], so that frames are only rendered on demand.
@@ -1590,9 +1604,16 @@ open class GLTextureView @JvmOverloads constructor(
         }
 
         private fun readyToDraw(): Boolean {
-            return (!mPaused && mHasSurface && !mSurfaceIsBad
-                    && mWidth > 0 && mHeight > 0
-                    && (mRequestRender || mRenderMode == RENDERMODE_CONTINUOUSLY))
+            val canDraw = !mPaused && mHasSurface && !mSurfaceIsBad && mWidth > 0 && mHeight > 0
+            return if (canDraw) {
+                val secondsPerFrame = 1.0 / mFPS
+                val secondsPassed = (System.currentTimeMillis() - mPrevDrawTime) / 1000.0
+                val isDrawFrame = mRequestRender || (mRenderMode == RENDERMODE_CONTINUOUSLY && secondsPassed >= secondsPerFrame)
+                if (isDrawFrame)
+                    mPrevDrawTime = System.currentTimeMillis()
+                isDrawFrame
+            } else
+                false
         }
 
         var renderMode: Int
@@ -1604,6 +1625,16 @@ open class GLTextureView @JvmOverloads constructor(
                 threadLock.withLock {
                     mRenderMode = renderMode
                     threadLockCondition.signalAll()
+                }
+            }
+
+        var fps: Int
+            get() {
+                threadLock.withLock { return mFPS }
+            }
+            set(fps) {
+                threadLock.withLock {
+                    mRenderMode = fps
                 }
             }
 
@@ -1797,6 +1828,8 @@ open class GLTextureView @JvmOverloads constructor(
         private var mShouldReleaseEglContext = false
         private var mWidth = 0
         private var mHeight = 0
+        private var mPrevDrawTime: Long = Long.MIN_VALUE
+        private var mFPS = 0
         private var mRenderMode: Int
         private var mRequestRender = true
         private var mWantRenderNotification: Boolean

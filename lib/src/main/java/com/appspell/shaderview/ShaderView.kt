@@ -98,6 +98,14 @@ class ShaderView @JvmOverloads constructor(
             }
         }
 
+    var fps: Int
+        set(value) {
+            setFPS(fps)
+        }
+        get(): Int {
+            return getFPS()
+        }
+
     private val rendererListener = object : GLQuadRender.ShaderViewListener {
         override fun onSurfaceCreated() {
             initShaders()
