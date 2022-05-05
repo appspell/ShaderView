@@ -12,6 +12,7 @@ import androidx.annotation.CallSuper
 import com.appspell.shaderview.log.LibLog
 import java.io.Writer
 import java.lang.ref.WeakReference
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.locks.ReentrantLock
 import javax.microedition.khronos.egl.*
 import javax.microedition.khronos.opengles.GL
@@ -1479,7 +1480,7 @@ open class GLTextureView @JvmOverloads constructor(
                                             + " mRenderMode: " + mRenderMode)
                                 )
                             }
-                            threadLockCondition.await()
+                            threadLockCondition.await((1.0 / mFPS).toLong(), TimeUnit.SECONDS)
                         }
                     } // end of synchronized(sGLThreadManager)
                     if (event != null) {
@@ -1604,16 +1605,9 @@ open class GLTextureView @JvmOverloads constructor(
         }
 
         private fun readyToDraw(): Boolean {
-            val canDraw = !mPaused && mHasSurface && !mSurfaceIsBad && mWidth > 0 && mHeight > 0
-            return if (canDraw) {
-                val secondsPerFrame = 1.0 / mFPS
-                val secondsPassed = (System.currentTimeMillis() - mPrevDrawTime) / 1000.0
-                val isDrawFrame = mRequestRender || (mRenderMode == RENDERMODE_CONTINUOUSLY && secondsPassed >= secondsPerFrame)
-                if (isDrawFrame)
-                    mPrevDrawTime = System.currentTimeMillis()
-                isDrawFrame
-            } else
-                false
+            return (!mPaused && mHasSurface && !mSurfaceIsBad
+                    && mWidth > 0 && mHeight > 0
+                    && (mRequestRender || mRenderMode == RENDERMODE_CONTINUOUSLY))
         }
 
         var renderMode: Int
@@ -1828,7 +1822,6 @@ open class GLTextureView @JvmOverloads constructor(
         private var mShouldReleaseEglContext = false
         private var mWidth = 0
         private var mHeight = 0
-        private var mPrevDrawTime: Long = Long.MIN_VALUE
         private var mFPS = 0
         private var mRenderMode: Int
         private var mRequestRender = true
