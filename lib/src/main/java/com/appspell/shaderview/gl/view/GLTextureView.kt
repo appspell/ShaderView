@@ -1546,7 +1546,8 @@ open class GLTextureView @JvmOverloads constructor(
                         LibLog.w("GLThread", "onDrawFrame tid=$id")
                     }
 
-
+                    if (mFPS > 0)
+                        threadLockCondition.await((1000f / mFPS).toLong(), TimeUnit.MILLISECONDS);
                     run {
                         val view = mGLTextureViewWeakRef.get()
                         if (view != null) {
@@ -1555,12 +1556,7 @@ open class GLTextureView @JvmOverloads constructor(
                                     Trace.TRACE_TAG_VIEW,
                                     "onDrawFrame"
                                 )
-                                val secondsPerFrame = 1f / mFPS
-                                val deltaTime = (System.currentTimeMillis() - mPrevDrawTime) / 1000f
-                                if (mFPS < 0 || deltaTime >= secondsPerFrame) {
-                                    mPrevDrawTime = System.currentTimeMillis()
-                                    view.mRenderer?.onDrawFrame(gl)
-                                }
+                                view.mRenderer?.onDrawFrame(gl)
                                 if (finishDrawingRunnable != null) {
                                     finishDrawingRunnable!!.run()
                                     finishDrawingRunnable = null
@@ -1831,7 +1827,6 @@ open class GLTextureView @JvmOverloads constructor(
         private var mShouldReleaseEglContext = false
         private var mWidth = 0
         private var mHeight = 0
-        private var mPrevDrawTime: Long = Long.MIN_VALUE
         private var mFPS = 0
         private var mRenderMode: Int
         private var mRequestRender = true
