@@ -1548,9 +1548,9 @@ open class GLTextureView @JvmOverloads constructor(
                         LibLog.w("GLThread", "onDrawFrame tid=$id")
                     }
 
-                    val secondsPerFrame = 1f / mFPS
-                    val secondsPassed = (System.currentTimeMillis() - prevDrawTime) / 1000f
-                    val timeForNexFrame = secondsPassed >= secondsPerFrame
+                    val millisPerFrame = 1000.0 / mFPS
+                    val millisPassed = System.currentTimeMillis() - prevDrawTime
+                    val timeForNexFrame = millisPassed >= millisPerFrame
                     if (timeForNexFrame) {
                         prevDrawTime = System.currentTimeMillis()
                         run {
