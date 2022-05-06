@@ -98,6 +98,9 @@ class ShaderView @JvmOverloads constructor(
             }
         }
 
+    /**
+     * how many frames the shader should be drawn per second
+     */
     var framerate: Int
         set(value) {
             setFPS(value)
