@@ -6,6 +6,7 @@ import android.opengl.EGL14
 import android.opengl.EGLExt
 import android.opengl.GLDebugHelper
 import android.util.AttributeSet
+import android.util.Log
 import android.view.TextureView
 import android.view.View
 import androidx.annotation.CallSuper
@@ -1612,7 +1613,9 @@ open class GLTextureView @JvmOverloads constructor(
             return if (canDraw) {
                 val secondsPerFrame = 1f / mFPS
                 val secondsPassed = (System.currentTimeMillis() - mPrevDrawTime) / 1000f
-                val isDrawFrame = mRequestRender || (mRenderMode == RENDERMODE_CONTINUOUSLY && secondsPassed >= secondsPerFrame)
+                val timeForNexFrame = secondsPassed >= secondsPerFrame;
+                Log.d("GLTextureView", "$secondsPassed >= $secondsPerFrame ? $timeForNexFrame");
+                val isDrawFrame = mRequestRender || (mRenderMode == RENDERMODE_CONTINUOUSLY && timeForNexFrame)
                 if (isDrawFrame)
                     mPrevDrawTime = System.currentTimeMillis()
                 isDrawFrame
