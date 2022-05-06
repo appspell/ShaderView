@@ -12,6 +12,7 @@ import androidx.annotation.CallSuper
 import com.appspell.shaderview.log.LibLog
 import java.io.Writer
 import java.lang.ref.WeakReference
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.locks.ReentrantLock
 import javax.microedition.khronos.egl.*
 import javax.microedition.khronos.opengles.GL
@@ -1546,62 +1547,59 @@ open class GLTextureView @JvmOverloads constructor(
                         LibLog.w("GLThread", "onDrawFrame tid=$id")
                     }
 
-                    val millisPerFrame = (1000f / mFPS).toLong()
-                    val millisPassed = (System.currentTimeMillis()) - prevDrawTime
-                    val isTimeForNextFrame = millisPassed >= millisPerFrame
-                    if (isTimeForNextFrame) {
-                        prevDrawTime = System.currentTimeMillis()
-                        run {
-                            val view = mGLTextureViewWeakRef.get()
-                            if (view != null) {
-                                try {
-                                    Trace.traceBegin(
-                                        Trace.TRACE_TAG_VIEW,
-                                        "onDrawFrame"
-                                    )
-
-                                    view.mRenderer?.onDrawFrame(gl)
-                                    if (finishDrawingRunnable != null) {
-                                        finishDrawingRunnable!!.run()
-                                        finishDrawingRunnable = null
-                                    }
-                                } finally {
-                                    Trace.traceEnd(Trace.TRACE_TAG_VIEW)
-                                }
-                            }
-                        }
-
-                        val swapError = mEglHelper!!.swap()
-                        when (swapError) {
-                            EGL10.EGL_SUCCESS -> {
-                            }
-                            EGL11.EGL_CONTEXT_LOST -> {
-                                if (enableLogSurface) {
-                                    LibLog.i("GLThread", "egl context lost tid=$id")
-                                }
-                                lostEglContext = true
-                            }
-                            else -> {
-                                // Other errors typically mean that the current surface is bad,
-                                // probably because the SurfaceView surface has been destroyed,
-                                // but we haven't been notified yet.
-                                // Log the error to help developers understand why rendering stopped.
-                                LogHelper.logEglErrorAsWarning(
-                                    "GLThread",
-                                    "eglSwapBuffers",
-                                    swapError
+                    run {
+                        val view = mGLTextureViewWeakRef.get()
+                        if (view != null) {
+                            try {
+                                Trace.traceBegin(
+                                    Trace.TRACE_TAG_VIEW,
+                                    "onDrawFrame"
                                 )
-                                threadLock.withLock {
-                                    mSurfaceIsBad = true
-                                    threadLockCondition.signalAll()
+
+                                view.mRenderer?.onDrawFrame(gl)
+                                if (finishDrawingRunnable != null) {
+                                    finishDrawingRunnable!!.run()
+                                    finishDrawingRunnable = null
                                 }
+                            } finally {
+                                Trace.traceEnd(Trace.TRACE_TAG_VIEW)
                             }
-                        }
-                        if (wantRenderNotification) {
-                            doRenderNotification = true
-                            wantRenderNotification = false
                         }
                     }
+
+                    val swapError = mEglHelper!!.swap()
+                    when (swapError) {
+                        EGL10.EGL_SUCCESS -> {
+                        }
+                        EGL11.EGL_CONTEXT_LOST -> {
+                            if (enableLogSurface) {
+                                LibLog.i("GLThread", "egl context lost tid=$id")
+                            }
+                            lostEglContext = true
+                        }
+                        else -> {
+                            // Other errors typically mean that the current surface is bad,
+                            // probably because the SurfaceView surface has been destroyed,
+                            // but we haven't been notified yet.
+                            // Log the error to help developers understand why rendering stopped.
+                            LogHelper.logEglErrorAsWarning(
+                                "GLThread",
+                                "eglSwapBuffers",
+                                swapError
+                            )
+                            threadLock.withLock {
+                                mSurfaceIsBad = true
+                                threadLockCondition.signalAll()
+                            }
+                        }
+                    }
+                    if (wantRenderNotification) {
+                        doRenderNotification = true
+                        wantRenderNotification = false
+                    }
+
+                    val millisPerFrame = (1000f / mFPS).toLong()
+                    threadLockCondition.await(millisPerFrame, TimeUnit.MILLISECONDS);
                 }
             } finally {
                 /*

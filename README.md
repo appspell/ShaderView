@@ -97,7 +97,7 @@ OR
 
 `updateContinuously` -  should we render the view each frame (default is "false")
 
-`framerate` - The fps, or how many frames the shader should be drawn per second when update mode is set to continuously (-1 means every frame)
+`framerate` - how many frames the shader should be drawn per second when update mode is set to continuously (-1 means every frame)
 
 `debugMode` - enable or disable debug logs
 
