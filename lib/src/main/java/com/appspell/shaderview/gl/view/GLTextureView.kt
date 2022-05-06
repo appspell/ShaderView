@@ -1287,6 +1287,7 @@ open class GLTextureView @JvmOverloads constructor(
                 var h = 0
                 var event: Runnable? = null
                 var finishDrawingRunnable: Runnable? = null
+                var prevDrawTime = System.currentTimeMillis()
                 while (true) {
                     threadLock.withLock {
                         while (true) {
@@ -1548,11 +1549,10 @@ open class GLTextureView @JvmOverloads constructor(
                     }
 
                     val secondsPerFrame = 1f / mFPS
-                    val secondsPassed = (System.currentTimeMillis() - mPrevDrawTime) / 1000f
+                    val secondsPassed = (System.currentTimeMillis() - prevDrawTime) / 1000f
                     val timeForNexFrame = secondsPassed >= secondsPerFrame
-                    Log.d("GLTextureView", "$secondsPassed >= $secondsPerFrame ? $timeForNexFrame")
                     if (timeForNexFrame) {
-                        mPrevDrawTime = System.currentTimeMillis()
+                        prevDrawTime = System.currentTimeMillis()
                         run {
                             val view = mGLTextureViewWeakRef.get()
                             if (view != null) {
@@ -1833,7 +1833,6 @@ open class GLTextureView @JvmOverloads constructor(
         private var mShouldReleaseEglContext = false
         private var mWidth = 0
         private var mHeight = 0
-        private var mPrevDrawTime: Long = System.currentTimeMillis()
         private var mFPS = 0
         private var mRenderMode: Int
         private var mRequestRender = true
