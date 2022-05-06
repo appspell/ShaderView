@@ -1286,7 +1286,6 @@ open class GLTextureView @JvmOverloads constructor(
                 var h = 0
                 var event: Runnable? = null
                 var finishDrawingRunnable: Runnable? = null
-                var prevDrawTime = System.currentTimeMillis()
                 while (true) {
                     threadLock.withLock {
                         while (true) {
@@ -1598,8 +1597,10 @@ open class GLTextureView @JvmOverloads constructor(
                         wantRenderNotification = false
                     }
 
-                    val millisPerFrame = (1000f / mFPS).toLong()
-                    sleep(millisPerFrame);
+                    if (mFPS > 0) {
+                        val millisPerFrame = (1000f / mFPS).toLong()
+                        sleep(millisPerFrame);
+                    }
                 }
             } finally {
                 /*
