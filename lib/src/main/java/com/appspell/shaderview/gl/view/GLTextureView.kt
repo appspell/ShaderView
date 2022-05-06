@@ -1546,9 +1546,6 @@ open class GLTextureView @JvmOverloads constructor(
                         LibLog.w("GLThread", "onDrawFrame tid=$id")
                     }
 
-                    if (mFPS > 0) {
-                        threadLockCondition.await((1000f / mFPS).toLong(), TimeUnit.MILLISECONDS)
-                    }
                     run {
                         val view = mGLTextureViewWeakRef.get()
                         if (view != null) {
@@ -1611,9 +1608,16 @@ open class GLTextureView @JvmOverloads constructor(
         }
 
         private fun readyToDraw(): Boolean {
-            return (!mPaused && mHasSurface && !mSurfaceIsBad
-                    && mWidth > 0 && mHeight > 0
-                    && (mRequestRender || mRenderMode == RENDERMODE_CONTINUOUSLY))
+            val canDraw = !mPaused && mHasSurface && !mSurfaceIsBad && mWidth > 0 && mHeight > 0
+            return if (canDraw) {
+                val secondsPerFrame = 1f / mFPS
+                val secondsPassed = (System.currentTimeMillis() - mPrevDrawTime) / 1000f
+                val isDrawFrame = mRequestRender || (mRenderMode == RENDERMODE_CONTINUOUSLY && secondsPassed >= secondsPerFrame)
+                if (isDrawFrame)
+                    mPrevDrawTime = System.currentTimeMillis()
+                isDrawFrame
+            } else
+                false
         }
 
         var renderMode: Int
@@ -1828,6 +1832,7 @@ open class GLTextureView @JvmOverloads constructor(
         private var mShouldReleaseEglContext = false
         private var mWidth = 0
         private var mHeight = 0
+        private var mPrevDrawTime: Long = Long.MIN_VALUE
         private var mFPS = 0
         private var mRenderMode: Int
         private var mRequestRender = true
