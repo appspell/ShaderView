@@ -13,7 +13,6 @@ import androidx.annotation.CallSuper
 import com.appspell.shaderview.log.LibLog
 import java.io.Writer
 import java.lang.ref.WeakReference
-import java.util.concurrent.TimeUnit
 import java.util.concurrent.locks.ReentrantLock
 import javax.microedition.khronos.egl.*
 import javax.microedition.khronos.opengles.GL
@@ -1559,8 +1558,9 @@ open class GLTextureView @JvmOverloads constructor(
                                     )
                                     val microsPerFrame = (1000000.0 / mFPS).toLong()
                                     val microsPassed = (System.currentTimeMillis() * 1000) - prevDrawTime
-                                    val timeForNexFrame = microsPassed >= microsPerFrame
-                                    if (timeForNexFrame) {
+                                    val isTimeForNextFrame = microsPassed >= microsPerFrame
+                                    Log.d("GLTextureView", "$microsPassed >= $microsPerFrame ? $isTimeForNextFrame");
+                                    if (isTimeForNextFrame) {
                                         prevDrawTime = System.currentTimeMillis() * 1000
                                         Log.d("GLTextureView", "Draw frame");
                                         view.mRenderer?.onDrawFrame(gl)
