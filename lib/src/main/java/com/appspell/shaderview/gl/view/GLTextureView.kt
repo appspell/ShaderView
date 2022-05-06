@@ -1833,7 +1833,7 @@ open class GLTextureView @JvmOverloads constructor(
         private var mShouldReleaseEglContext = false
         private var mWidth = 0
         private var mHeight = 0
-        private var mPrevDrawTime: Long = Long.MIN_VALUE
+        private var mPrevDrawTime: Long = System.currentTimeMillis()
         private var mFPS = 0
         private var mRenderMode: Int
         private var mRequestRender = true
