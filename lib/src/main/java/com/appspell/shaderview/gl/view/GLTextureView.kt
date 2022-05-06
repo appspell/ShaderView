@@ -1547,7 +1547,14 @@ open class GLTextureView @JvmOverloads constructor(
                         LibLog.w("GLThread", "onDrawFrame tid=$id")
                     }
 
-
+                    val millisPerFrame = (1000f / mFPS).toLong()
+                    val millisPassed = (System.currentTimeMillis()) - prevDrawTime
+                    val isTimeForNextFrame = millisPassed >= millisPerFrame
+                    //Frames passed at a rate of 1 per millisecond
+                    //Log.d("GLTextureView", "$microsPassed >= $microsPerFrame ? $isTimeForNextFrame");
+                    if (isTimeForNextFrame) {
+                        prevDrawTime = System.currentTimeMillis()
+                        Log.d("GLTextureView", "Draw frame");
                         run {
                             val view = mGLTextureViewWeakRef.get()
                             if (view != null) {
@@ -1556,15 +1563,8 @@ open class GLTextureView @JvmOverloads constructor(
                                         Trace.TRACE_TAG_VIEW,
                                         "onDrawFrame"
                                     )
-                                    val microsPerFrame = (1000000.0 / mFPS).toLong()
-                                    val microsPassed = (System.currentTimeMillis() * 1000) - prevDrawTime
-                                    val isTimeForNextFrame = microsPassed >= microsPerFrame
-                                    Log.d("GLTextureView", "$microsPassed >= $microsPerFrame ? $isTimeForNextFrame");
-                                    if (isTimeForNextFrame) {
-                                        prevDrawTime = System.currentTimeMillis() * 1000
-                                        Log.d("GLTextureView", "Draw frame");
-                                        view.mRenderer?.onDrawFrame(gl)
-                                    }
+
+                                    view.mRenderer?.onDrawFrame(gl)
                                     if (finishDrawingRunnable != null) {
                                         finishDrawingRunnable!!.run()
                                         finishDrawingRunnable = null
@@ -1575,31 +1575,36 @@ open class GLTextureView @JvmOverloads constructor(
                             }
                         }
 
-                    val swapError = mEglHelper!!.swap()
-                    when (swapError) {
-                        EGL10.EGL_SUCCESS -> {
-                        }
-                        EGL11.EGL_CONTEXT_LOST -> {
-                            if (enableLogSurface) {
-                                LibLog.i("GLThread", "egl context lost tid=$id")
+                        val swapError = mEglHelper!!.swap()
+                        when (swapError) {
+                            EGL10.EGL_SUCCESS -> {
                             }
-                            lostEglContext = true
-                        }
-                        else -> {
-                            // Other errors typically mean that the current surface is bad,
-                            // probably because the SurfaceView surface has been destroyed,
-                            // but we haven't been notified yet.
-                            // Log the error to help developers understand why rendering stopped.
-                            LogHelper.logEglErrorAsWarning("GLThread", "eglSwapBuffers", swapError)
-                            threadLock.withLock {
-                                mSurfaceIsBad = true
-                                threadLockCondition.signalAll()
+                            EGL11.EGL_CONTEXT_LOST -> {
+                                if (enableLogSurface) {
+                                    LibLog.i("GLThread", "egl context lost tid=$id")
+                                }
+                                lostEglContext = true
+                            }
+                            else -> {
+                                // Other errors typically mean that the current surface is bad,
+                                // probably because the SurfaceView surface has been destroyed,
+                                // but we haven't been notified yet.
+                                // Log the error to help developers understand why rendering stopped.
+                                LogHelper.logEglErrorAsWarning(
+                                    "GLThread",
+                                    "eglSwapBuffers",
+                                    swapError
+                                )
+                                threadLock.withLock {
+                                    mSurfaceIsBad = true
+                                    threadLockCondition.signalAll()
+                                }
                             }
                         }
-                    }
-                    if (wantRenderNotification) {
-                        doRenderNotification = true
-                        wantRenderNotification = false
+                        if (wantRenderNotification) {
+                            doRenderNotification = true
+                            wantRenderNotification = false
+                        }
                     }
                 }
             } finally {
