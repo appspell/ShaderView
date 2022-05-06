@@ -1547,21 +1547,28 @@ open class GLTextureView @JvmOverloads constructor(
                         LibLog.w("GLThread", "onDrawFrame tid=$id")
                     }
 
-                    run {
-                        val view = mGLTextureViewWeakRef.get()
-                        if (view != null) {
-                            try {
-                                Trace.traceBegin(
-                                    Trace.TRACE_TAG_VIEW,
-                                    "onDrawFrame"
-                                )
-                                view.mRenderer?.onDrawFrame(gl)
-                                if (finishDrawingRunnable != null) {
-                                    finishDrawingRunnable!!.run()
-                                    finishDrawingRunnable = null
+                    val secondsPerFrame = 1f / mFPS
+                    val secondsPassed = (System.currentTimeMillis() - mPrevDrawTime) / 1000f
+                    val timeForNexFrame = secondsPassed >= secondsPerFrame
+                    Log.d("GLTextureView", "$secondsPassed >= $secondsPerFrame ? $timeForNexFrame")
+                    if (timeForNexFrame) {
+                        mPrevDrawTime = System.currentTimeMillis()
+                        run {
+                            val view = mGLTextureViewWeakRef.get()
+                            if (view != null) {
+                                try {
+                                    Trace.traceBegin(
+                                        Trace.TRACE_TAG_VIEW,
+                                        "onDrawFrame"
+                                    )
+                                    view.mRenderer?.onDrawFrame(gl)
+                                    if (finishDrawingRunnable != null) {
+                                        finishDrawingRunnable!!.run()
+                                        finishDrawingRunnable = null
+                                    }
+                                } finally {
+                                    Trace.traceEnd(Trace.TRACE_TAG_VIEW)
                                 }
-                            } finally {
-                                Trace.traceEnd(Trace.TRACE_TAG_VIEW)
                             }
                         }
                     }
@@ -1609,18 +1616,9 @@ open class GLTextureView @JvmOverloads constructor(
         }
 
         private fun readyToDraw(): Boolean {
-            val canDraw = !mPaused && mHasSurface && !mSurfaceIsBad && mWidth > 0 && mHeight > 0
-            return if (canDraw) {
-                val secondsPerFrame = 1f / mFPS
-                val secondsPassed = (System.currentTimeMillis() - mPrevDrawTime) / 1000f
-                val timeForNexFrame = secondsPassed >= secondsPerFrame;
-                Log.d("GLTextureView", "$secondsPassed >= $secondsPerFrame ? $timeForNexFrame");
-                val isDrawFrame = mRequestRender || (mRenderMode == RENDERMODE_CONTINUOUSLY && timeForNexFrame)
-                if (isDrawFrame)
-                    mPrevDrawTime = System.currentTimeMillis()
-                isDrawFrame
-            } else
-                false
+            return (!mPaused && mHasSurface && !mSurfaceIsBad
+                    && mWidth > 0 && mHeight > 0
+                    && (mRequestRender || mRenderMode == RENDERMODE_CONTINUOUSLY))
         }
 
         var renderMode: Int
