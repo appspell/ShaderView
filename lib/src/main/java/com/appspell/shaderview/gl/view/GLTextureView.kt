@@ -445,6 +445,7 @@ open class GLTextureView @JvmOverloads constructor(
      * from any thread. Must not be called before a renderer has been set.
      */
     fun requestRender() {
+        Log.d("GLTextureView", "Render requested")
         mGLThread!!.requestRender()
     }
 
@@ -453,6 +454,7 @@ open class GLTextureView @JvmOverloads constructor(
      * not normally called or subclassed by clients of GLTextureView.
      */
     fun surfaceCreated(holder: SurfaceTexture?) {
+        Log.d("GLTextureView", "Surface created")
         mGLThread!!.surfaceCreated()
     }
 
@@ -470,6 +472,7 @@ open class GLTextureView @JvmOverloads constructor(
      * not normally called or subclassed by clients of GLTextureView.
      */
     fun surfaceChanged(holder: SurfaceTexture?, format: Int, w: Int, h: Int) {
+        Log.d("GLTextureView", "Surface changed")
         mGLThread!!.onWindowResize(w, h)
     }
 
@@ -529,6 +532,7 @@ open class GLTextureView @JvmOverloads constructor(
      * @param r the runnable to be run on the GL rendering thread.
      */
     fun queueEvent(r: Runnable?) {
+        Log.d("GLTextureView", "Event queued")
         mGLThread!!.queueEvent(r)
     }
 
@@ -1522,7 +1526,6 @@ open class GLTextureView @JvmOverloads constructor(
                         if (view != null) {
                             try {
                                 Trace.traceBegin(Trace.TRACE_TAG_VIEW, "onSurfaceCreated")
-                                Log.d("GLTextureView", "Surface created");
                                 view.mRenderer?.onSurfaceCreated(gl, mEglHelper!!.mEglConfig)
                             } finally {
                                 Trace.traceEnd(Trace.TRACE_TAG_VIEW)
@@ -1538,7 +1541,6 @@ open class GLTextureView @JvmOverloads constructor(
                         if (view != null) {
                             try {
                                 Trace.traceBegin(Trace.TRACE_TAG_VIEW, "onSurfaceChanged")
-                                Log.d("GLTextureView", "Surface changed");
                                 view.mRenderer?.onSurfaceChanged(gl, w, h)
                             } finally {
                                 Trace.traceEnd(Trace.TRACE_TAG_VIEW)
@@ -1550,11 +1552,11 @@ open class GLTextureView @JvmOverloads constructor(
                         LibLog.w("GLThread", "onDrawFrame tid=$id")
                     }
 
-                    val millisPerFrame = 1000.0 / mFPS
-                    val millisPassed = System.currentTimeMillis() - prevDrawTime
-                    val timeForNexFrame = millisPassed >= millisPerFrame
+                    val microsPerFrame = 1000000.0 / mFPS
+                    val microsPassed = (System.currentTimeMillis() * 1000) - prevDrawTime
+                    val timeForNexFrame = microsPassed >= microsPerFrame
                     if (timeForNexFrame) {
-                        prevDrawTime = System.currentTimeMillis()
+                        prevDrawTime = System.currentTimeMillis() * 1000
                         run {
                             val view = mGLTextureViewWeakRef.get()
                             if (view != null) {
