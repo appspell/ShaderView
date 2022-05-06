@@ -81,12 +81,12 @@ with(shaderView) {
 
 ## The full list of ShaderView properties:
 
-`fragmentShaderRawResId` - reference to the vertex shader file in RAW resource solder [example]
-OR
+`fragmentShaderRawResId` - reference to the vertex shader file in RAW resource solder [example]  
+OR  
 `fragmentShader` - a string of the fragment shader code
 
-`vertexShaderRawResId` - reference to the fragment shader file in RAW resource solder [example]
-OR
+`vertexShaderRawResId` - reference to the fragment shader file in RAW resource solder [example]  
+OR  
 `vertexShader` - a string of the vertex shader code
 
 `shaderParams` - custom parameters that we're going to send to the shader (uniform)
@@ -96,6 +96,8 @@ OR
 `onDrawFrameListener` - called each frame
 
 `updateContinuously` -  should we render the view each frame (default is "false")
+
+`framerate` - The fps, or how many frames the shader should be drawn per second (-1 means every frame)
 
 `debugMode` - enable or disable debug logs
 

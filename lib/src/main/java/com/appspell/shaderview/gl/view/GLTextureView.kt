@@ -422,6 +422,20 @@ open class GLTextureView @JvmOverloads constructor(
     }
 
     /**
+     * Set how often RENDERMODE_CONTINUOUSLY draws the shader
+     */
+    fun setFPS(fps: Int) {
+        mGLThread!!.fps = fps
+    }
+
+    /**
+     * Get the current framerate of RENDERMODE_CONTINUOUSLY
+     */
+    fun getFPS(): Int {
+        return mGLThread!!.fps
+    }
+
+    /**
      * Request that the renderer render a frame.
      * This method is typically used when the render mode has been set to
      * [.RENDERMODE_WHEN_DIRTY], so that frames are only rendered on demand.
@@ -1271,6 +1285,7 @@ open class GLTextureView @JvmOverloads constructor(
                 var h = 0
                 var event: Runnable? = null
                 var finishDrawingRunnable: Runnable? = null
+                var prevDrawTime = System.currentTimeMillis()
                 while (true) {
                     threadLock.withLock {
                         while (true) {
@@ -1465,6 +1480,7 @@ open class GLTextureView @JvmOverloads constructor(
                                             + " mRenderMode: " + mRenderMode)
                                 )
                             }
+
                             threadLockCondition.await()
                         }
                     } // end of synchronized(sGLThreadManager)
@@ -1529,49 +1545,62 @@ open class GLTextureView @JvmOverloads constructor(
                     if (enableLogRendererDrawFrame) {
                         LibLog.w("GLThread", "onDrawFrame tid=$id")
                     }
-                    run {
-                        val view = mGLTextureViewWeakRef.get()
-                        if (view != null) {
-                            try {
-                                Trace.traceBegin(
-                                    Trace.TRACE_TAG_VIEW,
-                                    "onDrawFrame"
-                                )
-                                view.mRenderer?.onDrawFrame(gl)
-                                if (finishDrawingRunnable != null) {
-                                    finishDrawingRunnable!!.run()
-                                    finishDrawingRunnable = null
+
+                    val millisPerFrame = (1000f / mFPS).toLong()
+                    val millisPassed = (System.currentTimeMillis()) - prevDrawTime
+                    val isTimeForNextFrame = millisPassed >= millisPerFrame
+                    if (isTimeForNextFrame) {
+                        prevDrawTime = System.currentTimeMillis()
+                        run {
+                            val view = mGLTextureViewWeakRef.get()
+                            if (view != null) {
+                                try {
+                                    Trace.traceBegin(
+                                        Trace.TRACE_TAG_VIEW,
+                                        "onDrawFrame"
+                                    )
+
+                                    view.mRenderer?.onDrawFrame(gl)
+                                    if (finishDrawingRunnable != null) {
+                                        finishDrawingRunnable!!.run()
+                                        finishDrawingRunnable = null
+                                    }
+                                } finally {
+                                    Trace.traceEnd(Trace.TRACE_TAG_VIEW)
                                 }
-                            } finally {
-                                Trace.traceEnd(Trace.TRACE_TAG_VIEW)
                             }
                         }
-                    }
-                    val swapError = mEglHelper!!.swap()
-                    when (swapError) {
-                        EGL10.EGL_SUCCESS -> {
-                        }
-                        EGL11.EGL_CONTEXT_LOST -> {
-                            if (enableLogSurface) {
-                                LibLog.i("GLThread", "egl context lost tid=$id")
+
+                        val swapError = mEglHelper!!.swap()
+                        when (swapError) {
+                            EGL10.EGL_SUCCESS -> {
                             }
-                            lostEglContext = true
-                        }
-                        else -> {
-                            // Other errors typically mean that the current surface is bad,
-                            // probably because the SurfaceView surface has been destroyed,
-                            // but we haven't been notified yet.
-                            // Log the error to help developers understand why rendering stopped.
-                            LogHelper.logEglErrorAsWarning("GLThread", "eglSwapBuffers", swapError)
-                            threadLock.withLock {
-                                mSurfaceIsBad = true
-                                threadLockCondition.signalAll()
+                            EGL11.EGL_CONTEXT_LOST -> {
+                                if (enableLogSurface) {
+                                    LibLog.i("GLThread", "egl context lost tid=$id")
+                                }
+                                lostEglContext = true
+                            }
+                            else -> {
+                                // Other errors typically mean that the current surface is bad,
+                                // probably because the SurfaceView surface has been destroyed,
+                                // but we haven't been notified yet.
+                                // Log the error to help developers understand why rendering stopped.
+                                LogHelper.logEglErrorAsWarning(
+                                    "GLThread",
+                                    "eglSwapBuffers",
+                                    swapError
+                                )
+                                threadLock.withLock {
+                                    mSurfaceIsBad = true
+                                    threadLockCondition.signalAll()
+                                }
                             }
                         }
-                    }
-                    if (wantRenderNotification) {
-                        doRenderNotification = true
-                        wantRenderNotification = false
+                        if (wantRenderNotification) {
+                            doRenderNotification = true
+                            wantRenderNotification = false
+                        }
                     }
                 }
             } finally {
@@ -1604,6 +1633,16 @@ open class GLTextureView @JvmOverloads constructor(
                 threadLock.withLock {
                     mRenderMode = renderMode
                     threadLockCondition.signalAll()
+                }
+            }
+
+        var fps: Int
+            get() {
+                threadLock.withLock { return mFPS }
+            }
+            set(fps) {
+                threadLock.withLock {
+                    mFPS = fps
                 }
             }
 
@@ -1797,6 +1836,7 @@ open class GLTextureView @JvmOverloads constructor(
         private var mShouldReleaseEglContext = false
         private var mWidth = 0
         private var mHeight = 0
+        private var mFPS = 0
         private var mRenderMode: Int
         private var mRequestRender = true
         private var mWantRenderNotification: Boolean
