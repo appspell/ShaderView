@@ -3,7 +3,6 @@ package com.appspell.shaderview.gl.render
 import android.opengl.GLES20
 import android.opengl.GLES30
 import android.opengl.Matrix
-import android.util.Log
 import com.appspell.shaderview.gl.params.ShaderParams
 import com.appspell.shaderview.gl.shader.GLShader
 import com.appspell.shaderview.gl.view.GLTextureView
@@ -109,7 +108,6 @@ internal class GLQuadRenderImpl(
     }
 
     override fun onDrawFrame(gl: GL10?) {
-        Log.d("GLQuadRenderImpl", "Draw frame");
         if (!shader.isReady) {
             return
         }

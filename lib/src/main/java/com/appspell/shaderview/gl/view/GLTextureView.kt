@@ -6,7 +6,6 @@ import android.opengl.EGL14
 import android.opengl.EGLExt
 import android.opengl.GLDebugHelper
 import android.util.AttributeSet
-import android.util.Log
 import android.view.TextureView
 import android.view.View
 import androidx.annotation.CallSuper
@@ -1550,11 +1549,8 @@ open class GLTextureView @JvmOverloads constructor(
                     val millisPerFrame = (1000f / mFPS).toLong()
                     val millisPassed = (System.currentTimeMillis()) - prevDrawTime
                     val isTimeForNextFrame = millisPassed >= millisPerFrame
-                    //Frames passed at a rate of 1 per millisecond
-                    //Log.d("GLTextureView", "$microsPassed >= $microsPerFrame ? $isTimeForNextFrame");
                     if (isTimeForNextFrame) {
                         prevDrawTime = System.currentTimeMillis()
-                        Log.d("GLTextureView", "Draw frame");
                         run {
                             val view = mGLTextureViewWeakRef.get()
                             if (view != null) {

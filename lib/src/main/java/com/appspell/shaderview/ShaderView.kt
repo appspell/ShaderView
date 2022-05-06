@@ -98,9 +98,9 @@ class ShaderView @JvmOverloads constructor(
             }
         }
 
-    var fps: Int
+    var framerate: Int
         set(value) {
-            setFPS(fps)
+            setFPS(value)
         }
         get(): Int {
             return getFPS()
