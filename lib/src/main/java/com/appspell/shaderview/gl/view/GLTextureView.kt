@@ -1548,27 +1548,28 @@ open class GLTextureView @JvmOverloads constructor(
                         LibLog.w("GLThread", "onDrawFrame tid=$id")
                     }
 
-                    val millisPerFrame = 1000.0 / mFPS
-                    val millisPassed = System.currentTimeMillis() - prevDrawTime
-                    val timeForNexFrame = millisPassed >= millisPerFrame
-                    if (timeForNexFrame) {
-                        prevDrawTime = System.currentTimeMillis()
-                        run {
-                            val view = mGLTextureViewWeakRef.get()
-                            if (view != null) {
-                                try {
-                                    Trace.traceBegin(
-                                        Trace.TRACE_TAG_VIEW,
-                                        "onDrawFrame"
-                                    )
+
+                    run {
+                        val view = mGLTextureViewWeakRef.get()
+                        if (view != null) {
+                            try {
+                                Trace.traceBegin(
+                                    Trace.TRACE_TAG_VIEW,
+                                    "onDrawFrame"
+                                )
+                                val millisPerFrame = 1000.0 / mFPS
+                                val millisPassed = System.currentTimeMillis() - prevDrawTime
+                                val timeForNexFrame = millisPassed >= millisPerFrame
+                                if (timeForNexFrame) {
+                                    prevDrawTime = System.currentTimeMillis()
                                     view.mRenderer?.onDrawFrame(gl)
-                                    if (finishDrawingRunnable != null) {
-                                        finishDrawingRunnable!!.run()
-                                        finishDrawingRunnable = null
-                                    }
-                                } finally {
-                                    Trace.traceEnd(Trace.TRACE_TAG_VIEW)
                                 }
+                                if (finishDrawingRunnable != null) {
+                                    finishDrawingRunnable!!.run()
+                                    finishDrawingRunnable = null
+                                }
+                            } finally {
+                                Trace.traceEnd(Trace.TRACE_TAG_VIEW)
                             }
                         }
                     }
