@@ -1599,7 +1599,7 @@ open class GLTextureView @JvmOverloads constructor(
                     }
 
                     val millisPerFrame = (1000f / mFPS).toLong()
-                    threadLockCondition.await(millisPerFrame, TimeUnit.MILLISECONDS);
+                    sleep(millisPerFrame);
                 }
             } finally {
                 /*
