@@ -1522,6 +1522,7 @@ open class GLTextureView @JvmOverloads constructor(
                         if (view != null) {
                             try {
                                 Trace.traceBegin(Trace.TRACE_TAG_VIEW, "onSurfaceCreated")
+                                Log.d("GLTextureView", "Surface created");
                                 view.mRenderer?.onSurfaceCreated(gl, mEglHelper!!.mEglConfig)
                             } finally {
                                 Trace.traceEnd(Trace.TRACE_TAG_VIEW)
@@ -1537,6 +1538,7 @@ open class GLTextureView @JvmOverloads constructor(
                         if (view != null) {
                             try {
                                 Trace.traceBegin(Trace.TRACE_TAG_VIEW, "onSurfaceChanged")
+                                Log.d("GLTextureView", "Surface changed");
                                 view.mRenderer?.onSurfaceChanged(gl, w, h)
                             } finally {
                                 Trace.traceEnd(Trace.TRACE_TAG_VIEW)
@@ -1548,28 +1550,28 @@ open class GLTextureView @JvmOverloads constructor(
                         LibLog.w("GLThread", "onDrawFrame tid=$id")
                     }
 
-
-                    run {
-                        val view = mGLTextureViewWeakRef.get()
-                        if (view != null) {
-                            try {
-                                Trace.traceBegin(
-                                    Trace.TRACE_TAG_VIEW,
-                                    "onDrawFrame"
-                                )
-                                val millisPerFrame = 1000.0 / mFPS
-                                val millisPassed = System.currentTimeMillis() - prevDrawTime
-                                val timeForNexFrame = millisPassed >= millisPerFrame
-                                if (timeForNexFrame) {
-                                    prevDrawTime = System.currentTimeMillis()
+                    val millisPerFrame = 1000.0 / mFPS
+                    val millisPassed = System.currentTimeMillis() - prevDrawTime
+                    val timeForNexFrame = millisPassed >= millisPerFrame
+                    if (timeForNexFrame) {
+                        prevDrawTime = System.currentTimeMillis()
+                        run {
+                            val view = mGLTextureViewWeakRef.get()
+                            if (view != null) {
+                                try {
+                                    Trace.traceBegin(
+                                        Trace.TRACE_TAG_VIEW,
+                                        "onDrawFrame"
+                                    )
+                                    Log.d("GLTextureView", "Draw frame");
                                     view.mRenderer?.onDrawFrame(gl)
+                                    if (finishDrawingRunnable != null) {
+                                        finishDrawingRunnable!!.run()
+                                        finishDrawingRunnable = null
+                                    }
+                                } finally {
+                                    Trace.traceEnd(Trace.TRACE_TAG_VIEW)
                                 }
-                                if (finishDrawingRunnable != null) {
-                                    finishDrawingRunnable!!.run()
-                                    finishDrawingRunnable = null
-                                }
-                            } finally {
-                                Trace.traceEnd(Trace.TRACE_TAG_VIEW)
                             }
                         }
                     }
