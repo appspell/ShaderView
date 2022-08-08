@@ -72,7 +72,7 @@ val shaderView = ShaderView(this)
 
 with(shaderView) {
    fragmentShaderRawResId = R.raw.color_frag
-   shaderParams = ShaderParams.Builder()
+   shaderParams = ShaderParamsBuilder()
                 .addColor("diffuseColor", R.color.teal_200, resources)
                 .build()
 }
