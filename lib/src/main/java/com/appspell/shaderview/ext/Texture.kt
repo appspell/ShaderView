@@ -4,8 +4,7 @@ import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.opengl.GLES11Ext
-import android.opengl.GLES20
-import android.opengl.GLES30
+import android.opengl.GLES32
 import android.opengl.GLUtils
 import androidx.annotation.DrawableRes
 import java.nio.IntBuffer
@@ -21,16 +20,16 @@ import java.nio.IntBuffer
  */
 fun createExternalTexture(): Int {
     val textureIds = IntArray(1)
-    GLES30.glGenTextures(1, IntBuffer.wrap(textureIds))
+    GLES32.glGenTextures(1, IntBuffer.wrap(textureIds))
     if (textureIds[0] == 0) {
         throw java.lang.RuntimeException("It's not possible to generate ID for texture")
     }
-    GLES30.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, textureIds[0])
-    GLES30.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR)
-    GLES30.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR)
+    GLES32.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, textureIds[0])
+    GLES32.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES32.GL_TEXTURE_MIN_FILTER, GLES32.GL_LINEAR)
+    GLES32.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES32.GL_TEXTURE_MAG_FILTER, GLES32.GL_LINEAR)
 
-    GLES30.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE)
-    GLES30.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE)
+    GLES32.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES32.GL_TEXTURE_WRAP_S, GLES32.GL_CLAMP_TO_EDGE)
+    GLES32.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES32.GL_TEXTURE_WRAP_T, GLES32.GL_CLAMP_TO_EDGE)
     return textureIds[0]
 }
 
@@ -47,30 +46,30 @@ fun Resources.loadBitmapForTexture(@DrawableRes drawableRes: Int): Bitmap {
  * @needToRecycle - do we need to recycle current Bitmap when we write it GPI?
  */
 @Throws(RuntimeException::class)
-fun Bitmap.toGlTexture(needToRecycle: Boolean = true, textureSlot: Int = GLES30.GL_TEXTURE0): Int {
+fun Bitmap.toGlTexture(needToRecycle: Boolean = true, textureSlot: Int = GLES32.GL_TEXTURE0): Int {
     // init textures
     val textureIds = IntArray(1)
-    GLES30.glGenTextures(1, textureIds, 0) // generate ID for texture
+    GLES32.glGenTextures(1, textureIds, 0) // generate ID for texture
     if (textureIds[0] == 0) {
         throw java.lang.RuntimeException("It's not possible to generate ID for texture")
     }
 
-    GLES30.glActiveTexture(textureSlot) // activate slot #0 for texture
-    GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, textureIds[0]) // bind texture by ID with active slot
+    GLES32.glActiveTexture(textureSlot) // activate slot #0 for texture
+    GLES32.glBindTexture(GLES32.GL_TEXTURE_2D, textureIds[0]) // bind texture by ID with active slot
 
     // texture filters
-    GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MIN_FILTER, GLES30.GL_LINEAR)
-    GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MAG_FILTER, GLES30.GL_LINEAR)
+    GLES32.glTexParameteri(GLES32.GL_TEXTURE_2D, GLES32.GL_TEXTURE_MIN_FILTER, GLES32.GL_LINEAR)
+    GLES32.glTexParameteri(GLES32.GL_TEXTURE_2D, GLES32.GL_TEXTURE_MAG_FILTER, GLES32.GL_LINEAR)
 
     // write bitmap to GPU
-    GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, this, 0)
+    GLUtils.texImage2D(GLES32.GL_TEXTURE_2D, 0, this, 0)
     // we don't need this bitmap anymore
     if (needToRecycle) {
         this.recycle()
     }
 
     // unbind texture from slot
-    GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, 0)
+    GLES32.glBindTexture(GLES32.GL_TEXTURE_2D, 0)
 
     return textureIds[0]
 }

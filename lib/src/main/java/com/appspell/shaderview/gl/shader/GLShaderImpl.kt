@@ -1,7 +1,7 @@
 package com.appspell.shaderview.gl.shader
 
 import android.content.res.Resources
-import android.opengl.GLES30
+import android.opengl.GLES32
 import com.appspell.shaderview.gl.params.ShaderParams
 import com.appspell.shaderview.log.LibLog
 
@@ -18,19 +18,19 @@ class GLShaderImpl constructor(
         if (program != UNKNOWN_PROGRAM) {
             release()
         }
-        val vertexShader = loadShader(GLES30.GL_VERTEX_SHADER, vertexSource)
+        val vertexShader = loadShader(GLES32.GL_VERTEX_SHADER, vertexSource)
         if (vertexShader == UNKNOWN_PROGRAM) {
             return false
         }
-        val pixelShader = loadShader(GLES30.GL_FRAGMENT_SHADER, fragmentSource)
+        val pixelShader = loadShader(GLES32.GL_FRAGMENT_SHADER, fragmentSource)
         if (pixelShader == UNKNOWN_PROGRAM) {
             return false
         }
-        program = GLES30.glCreateProgram()
+        program = GLES32.glCreateProgram()
         if (program != UNKNOWN_PROGRAM) {
-            GLES30.glAttachShader(program, vertexShader)
+            GLES32.glAttachShader(program, vertexShader)
             checkGlError("glAttachShader: vertex")
-            GLES30.glAttachShader(program, pixelShader)
+            GLES32.glAttachShader(program, pixelShader)
             checkGlError("glAttachShader: pixel")
             return linkProgram()
         }
@@ -41,13 +41,13 @@ class GLShaderImpl constructor(
         if (program == UNKNOWN_PROGRAM) {
             return false
         }
-        GLES30.glLinkProgram(program)
+        GLES32.glLinkProgram(program)
         val linkStatus = IntArray(1)
-        GLES30.glGetProgramiv(program, GLES30.GL_LINK_STATUS, linkStatus, 0)
-        if (linkStatus[0] != GLES30.GL_TRUE) {
+        GLES32.glGetProgramiv(program, GLES32.GL_LINK_STATUS, linkStatus, 0)
+        if (linkStatus[0] != GLES32.GL_TRUE) {
             LibLog.e(TAG, "Could not link program: ")
-            LibLog.e(TAG, GLES30.glGetProgramInfoLog(program))
-            GLES30.glDeleteProgram(program)
+            LibLog.e(TAG, GLES32.glGetProgramInfoLog(program))
+            GLES32.glDeleteProgram(program)
             program = UNKNOWN_PROGRAM
             return false
         }
@@ -63,7 +63,7 @@ class GLShaderImpl constructor(
 
     override fun release() {
         if (program != UNKNOWN_PROGRAM) {
-            GLES30.glDeleteProgram(program)
+            GLES32.glDeleteProgram(program)
             program = UNKNOWN_PROGRAM
         }
         params.release()
@@ -97,16 +97,16 @@ class GLShaderImpl constructor(
     }
 
     private fun loadShader(shaderType: Int, source: String): Int {
-        var shader = GLES30.glCreateShader(shaderType)
+        var shader = GLES32.glCreateShader(shaderType)
         if (shader != UNKNOWN_PROGRAM) {
-            GLES30.glShaderSource(shader, source)
-            GLES30.glCompileShader(shader)
+            GLES32.glShaderSource(shader, source)
+            GLES32.glCompileShader(shader)
             val compiled = IntArray(1)
-            GLES30.glGetShaderiv(shader, GLES30.GL_COMPILE_STATUS, compiled, 0)
+            GLES32.glGetShaderiv(shader, GLES32.GL_COMPILE_STATUS, compiled, 0)
             if (compiled[0] == UNKNOWN_PROGRAM) {
                 LibLog.e(TAG, "Could not compile shader $shaderType:")
-                LibLog.e(TAG, GLES30.glGetShaderInfoLog(shader))
-                GLES30.glDeleteShader(shader)
+                LibLog.e(TAG, GLES32.glGetShaderInfoLog(shader))
+                GLES32.glDeleteShader(shader)
                 shader = UNKNOWN_PROGRAM
             }
         }
@@ -115,7 +115,7 @@ class GLShaderImpl constructor(
 
     private fun checkGlError(op: String) {
         var error: Int
-        while (GLES30.glGetError().also { error = it } != GLES30.GL_NO_ERROR) {
+        while (GLES32.glGetError().also { error = it } != GLES32.GL_NO_ERROR) {
             LibLog.e(TAG, "$op: glError $error")
             throw RuntimeException("$op: glError $error")
         }

@@ -1,7 +1,6 @@
 package com.appspell.shaderview.gl.render
 
-import android.opengl.GLES20
-import android.opengl.GLES30
+import android.opengl.GLES32
 import android.opengl.Matrix
 import com.appspell.shaderview.gl.params.ShaderParams
 import com.appspell.shaderview.gl.shader.GLShader
@@ -83,7 +82,7 @@ internal class GLQuadRenderImpl(
     }
 
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
-        GLES30.glViewport(0, 0, width, height)
+        GLES32.glViewport(0, 0, width, height)
     }
 
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
@@ -112,10 +111,10 @@ internal class GLQuadRenderImpl(
             return
         }
 
-        GLES30.glClearColor(0.0f, 0.0f, 0.0f, 0.0f)
-        GLES30.glClear(GLES30.GL_DEPTH_BUFFER_BIT or GLES30.GL_COLOR_BUFFER_BIT)
+        GLES32.glClearColor(0.0f, 0.0f, 0.0f, 0.0f)
+        GLES32.glClear(GLES32.GL_DEPTH_BUFFER_BIT or GLES32.GL_COLOR_BUFFER_BIT)
 
-        GLES30.glUseProgram(shader.program)
+        GLES32.glUseProgram(shader.program)
         checkGlError("glUseProgram")
 
         // shader input (built-in attributes)
@@ -134,21 +133,21 @@ internal class GLQuadRenderImpl(
         shader.onDrawFrame()
 
         // activate blending for textures
-        GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA)
-        GLES30.glEnable(GLES20.GL_BLEND)
+        GLES32.glBlendFunc(GLES32.GL_SRC_ALPHA, GLES32.GL_ONE_MINUS_SRC_ALPHA)
+        GLES32.glEnable(GLES32.GL_BLEND)
 
         // draw scene
-        GLES30.glDrawArrays(GLES30.GL_TRIANGLE_STRIP, 0, 4)
+        GLES32.glDrawArrays(GLES32.GL_TRIANGLE_STRIP, 0, 4)
         checkGlError("glDrawArrays")
 
-        GLES30.glFinish()
+        GLES32.glFinish()
     }
 
     /**
      * get location of some input attribute for shader
      */
     private fun glGetAttribLocation(attrName: String): Int {
-        val attrLocation = GLES30.glGetAttribLocation(shader.program, attrName)
+        val attrLocation = GLES32.glGetAttribLocation(shader.program, attrName)
         checkGlError("glGetAttribLocation $attrName")
         return attrLocation
     }
@@ -162,24 +161,25 @@ internal class GLQuadRenderImpl(
             return
         }
         quadVertices.position(offset)
-        GLES30.glVertexAttribPointer(
+        GLES32.glVertexAttribPointer(
             attrLocation,
             size,
-            GLES30.GL_FLOAT,
+            GLES32.GL_FLOAT,
             false,
             TRIANGLE_VERTICES_DATA_STRIDE_BYTES,
             quadVertices
         )
         checkGlError("glVertexAttribPointer $attrName")
-        GLES30.glEnableVertexAttribArray(attrLocation)
+        GLES32.glEnableVertexAttribArray(attrLocation)
         checkGlError("glEnableVertexAttribArray $attrName")
     }
 
     private fun checkGlError(op: String) {
         var error: Int
-        while (GLES30.glGetError().also { error = it } != GLES30.GL_NO_ERROR) {
+        while (GLES32.glGetError().also { error = it } != GLES32.GL_NO_ERROR) {
             LibLog.e(TAG, "$op: glError $error")
-            throw RuntimeException("$op: glError $error")
+            // don't throw an exception since it cannot be caught outside of ShaderView
+            //throw RuntimeException("$op: glError $error")
         }
     }
 }

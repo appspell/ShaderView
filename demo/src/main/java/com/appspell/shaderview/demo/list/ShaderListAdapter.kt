@@ -1,6 +1,6 @@
 package com.appspell.shaderview.demo.list
 
-import android.opengl.GLES30
+import android.opengl.GLES32
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -74,17 +74,17 @@ class ShaderListAdapter : RecyclerView.Adapter<ShaderListAdapter.BaseShaderView>
                     .addTexture2D(
                         "uTextureSampler1",
                         R.drawable.bokeh,
-                        GLES30.GL_TEXTURE0
+                        GLES32.GL_TEXTURE0
                     )
                     .addTexture2D(
                         "uTextureSampler2",
                         R.drawable.normal_button,
-                        GLES30.GL_TEXTURE1
+                        GLES32.GL_TEXTURE1
                     )
                     .addTexture2D(
                         "uTextureSampler3",
                         R.drawable.test_texture,
-                        GLES30.GL_TEXTURE2
+                        GLES32.GL_TEXTURE2
                     )
                     .build()
             }
@@ -102,7 +102,7 @@ class ShaderListAdapter : RecyclerView.Adapter<ShaderListAdapter.BaseShaderView>
                     .addTexture2D(
                         "uNormalTexture",
                         R.drawable.normal_button,
-                        GLES30.GL_TEXTURE0
+                        GLES32.GL_TEXTURE0
                     )
                     .addColor("uColor", R.color.grey, resources)
                     .addVec3f("uVaryingColor", floatArrayOf(0.5f, 0.5f, 0.5f))
@@ -128,7 +128,7 @@ class ShaderListAdapter : RecyclerView.Adapter<ShaderListAdapter.BaseShaderView>
                     .addTexture2D(
                         "uNormalTexture",
                         R.drawable.normal_sphere,
-                        GLES30.GL_TEXTURE0
+                        GLES32.GL_TEXTURE0
                     )
                     .addVec4f("uColor", floatArrayOf(0.5f, 0.5f, 0.5f, 1f))
                     .addVec3f("uVaryingColor", floatArrayOf(0.4f, 0.4f, 0.5f))
@@ -199,7 +199,7 @@ class ShaderListAdapter : RecyclerView.Adapter<ShaderListAdapter.BaseShaderView>
                     .addTexture2D(
                         "uTexture",
                         R.drawable.android,
-                        GLES30.GL_TEXTURE0
+                        GLES32.GL_TEXTURE0
                     )
                     .addVec2f("uOffset")
                     .build()
@@ -223,7 +223,7 @@ class ShaderListAdapter : RecyclerView.Adapter<ShaderListAdapter.BaseShaderView>
                     .addTexture2D(
                         "uTexture",
                         R.drawable.test_texture,
-                        GLES30.GL_TEXTURE0
+                        GLES32.GL_TEXTURE0
                     )
                     .addVec2f("uScale", floatArrayOf(0f, 0f))
                     .addInt("uBlurSize", 3)

@@ -111,7 +111,7 @@ shaderView.shaderParams = ShaderParamsBuilder()
                     .addTexture2D(
                         "uNormalTexture", // name of `sampler2D` in the fragment shader
                         R.drawable.normal_button, // drawable that we use for such texture
-                        GLES30.GL_TEXTURE0 // texture slot
+                        GLES32.GL_TEXTURE0 // texture slot
                     )
                     .addColor("uColor", R.color.grey, resources) // send color as `uniform vec4`
                     .addVec4f("uColor2", floatArrayOf(0.5f, 0.5f, 0.5f, 1f))
