@@ -1,5 +1,5 @@
 # ShaderView
-[![](https://jitpack.io/v/appspell/ShaderView.svg)](https://jitpack.io/#appspell/ShaderView)
+[![](https://jitpack.io/v/oxters168/ShaderView.svg)](https://jitpack.io/#oxters168/ShaderView)
 
 This library is the easiest way to use **OpenGL shaders** as an **[Android View](https://developer.android.com/reference/android/view/View)**. You just simply need to add **ShaderView** in your layout and set up shaders.
 The advantage of this library that you can use ShaderView in your hierarchy as a regular View.
