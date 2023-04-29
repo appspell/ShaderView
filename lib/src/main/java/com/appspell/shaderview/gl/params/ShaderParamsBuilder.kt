@@ -3,7 +3,7 @@ package com.appspell.shaderview.gl.params
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.Color
-import android.opengl.GLES30
+import android.opengl.GLES32
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
@@ -125,7 +125,7 @@ class ShaderParamsBuilder {
     fun addTexture2D(
         paramName: String,
         bitmap: Bitmap? = null,
-        textureSlot: Int = GLES30.GL_TEXTURE0
+        textureSlot: Int = GLES32.GL_TEXTURE0
     ): ShaderParamsBuilder {
         val param = Param(
             valeType = Param.ValueType.SAMPLER_2D,
@@ -146,7 +146,7 @@ class ShaderParamsBuilder {
     fun addTexture2D(
         paramName: String,
         @DrawableRes textureResourceId: Int,
-        textureSlot: Int = GLES30.GL_TEXTURE0
+        textureSlot: Int = GLES32.GL_TEXTURE0
     ): ShaderParamsBuilder {
         val param = Param(
             valeType = Param.ValueType.SAMPLER_2D,

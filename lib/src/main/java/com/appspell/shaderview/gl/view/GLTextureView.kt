@@ -12,6 +12,7 @@ import androidx.annotation.CallSuper
 import com.appspell.shaderview.log.LibLog
 import java.io.Writer
 import java.lang.ref.WeakReference
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.locks.ReentrantLock
 import javax.microedition.khronos.egl.*
 import javax.microedition.khronos.opengles.GL
@@ -419,6 +420,20 @@ open class GLTextureView @JvmOverloads constructor(
      */
     fun getRenderMode(): Int {
         return mGLThread!!.renderMode
+    }
+
+    /**
+     * Set how often RENDERMODE_CONTINUOUSLY draws the shader
+     */
+    fun setFPS(fps: Int) {
+        mGLThread!!.fps = fps
+    }
+
+    /**
+     * Get the current framerate of RENDERMODE_CONTINUOUSLY
+     */
+    fun getFPS(): Int {
+        return mGLThread!!.fps
     }
 
     /**
@@ -1465,6 +1480,7 @@ open class GLTextureView @JvmOverloads constructor(
                                             + " mRenderMode: " + mRenderMode)
                                 )
                             }
+
                             threadLockCondition.await()
                         }
                     } // end of synchronized(sGLThreadManager)
@@ -1529,6 +1545,7 @@ open class GLTextureView @JvmOverloads constructor(
                     if (enableLogRendererDrawFrame) {
                         LibLog.w("GLThread", "onDrawFrame tid=$id")
                     }
+
                     run {
                         val view = mGLTextureViewWeakRef.get()
                         if (view != null) {
@@ -1537,6 +1554,7 @@ open class GLTextureView @JvmOverloads constructor(
                                     Trace.TRACE_TAG_VIEW,
                                     "onDrawFrame"
                                 )
+
                                 view.mRenderer?.onDrawFrame(gl)
                                 if (finishDrawingRunnable != null) {
                                     finishDrawingRunnable!!.run()
@@ -1547,6 +1565,7 @@ open class GLTextureView @JvmOverloads constructor(
                             }
                         }
                     }
+
                     val swapError = mEglHelper!!.swap()
                     when (swapError) {
                         EGL10.EGL_SUCCESS -> {
@@ -1562,7 +1581,11 @@ open class GLTextureView @JvmOverloads constructor(
                             // probably because the SurfaceView surface has been destroyed,
                             // but we haven't been notified yet.
                             // Log the error to help developers understand why rendering stopped.
-                            LogHelper.logEglErrorAsWarning("GLThread", "eglSwapBuffers", swapError)
+                            LogHelper.logEglErrorAsWarning(
+                                "GLThread",
+                                "eglSwapBuffers",
+                                swapError
+                            )
                             threadLock.withLock {
                                 mSurfaceIsBad = true
                                 threadLockCondition.signalAll()
@@ -1572,6 +1595,11 @@ open class GLTextureView @JvmOverloads constructor(
                     if (wantRenderNotification) {
                         doRenderNotification = true
                         wantRenderNotification = false
+                    }
+
+                    if (mFPS > 0) {
+                        val millisPerFrame = (1000f / mFPS).toLong()
+                        sleep(millisPerFrame);
                     }
                 }
             } finally {
@@ -1604,6 +1632,16 @@ open class GLTextureView @JvmOverloads constructor(
                 threadLock.withLock {
                     mRenderMode = renderMode
                     threadLockCondition.signalAll()
+                }
+            }
+
+        var fps: Int
+            get() {
+                threadLock.withLock { return mFPS }
+            }
+            set(fps) {
+                threadLock.withLock {
+                    mFPS = fps
                 }
             }
 
@@ -1797,6 +1835,7 @@ open class GLTextureView @JvmOverloads constructor(
         private var mShouldReleaseEglContext = false
         private var mWidth = 0
         private var mHeight = 0
+        private var mFPS = 0
         private var mRenderMode: Int
         private var mRequestRender = true
         private var mWantRenderNotification: Boolean

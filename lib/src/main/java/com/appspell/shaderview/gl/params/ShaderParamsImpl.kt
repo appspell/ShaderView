@@ -3,7 +3,7 @@ package com.appspell.shaderview.gl.params
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.SurfaceTexture
-import android.opengl.GLES30
+import android.opengl.GLES32
 import android.view.Surface
 import com.appspell.shaderview.annotations.ShaderExperimentalApi
 import com.appspell.shaderview.ext.createExternalTexture
@@ -64,7 +64,7 @@ class ShaderParamsImpl : ShaderParams {
 
     private fun updateUniformLocation(paramName: String, shaderProgram: Int) {
         map[paramName]?.apply {
-            location = GLES30.glGetUniformLocation(shaderProgram, paramName)
+            location = GLES32.glGetUniformLocation(shaderProgram, paramName)
         }
     }
 
@@ -105,30 +105,30 @@ class ShaderParamsImpl : ShaderParams {
                 continue
             }
             when (param.valeType) {
-                Param.ValueType.FLOAT -> GLES30.glUniform1f(param.location, param.value as Float)
-                Param.ValueType.INT -> GLES30.glUniform1i(param.location, param.value as Int)
-                Param.ValueType.BOOL -> GLES30.glUniform1i(param.location, if (param.value as Boolean) 1 else 0)
-                Param.ValueType.FLOAT_VEC2 -> GLES30.glUniform2fv(param.location, 1, (param.value as FloatArray), 0)
-                Param.ValueType.FLOAT_VEC3 -> GLES30.glUniform3fv(param.location, 1, (param.value as FloatArray), 0)
-                Param.ValueType.FLOAT_VEC4 -> GLES30.glUniform4fv(param.location, 1, (param.value as FloatArray), 0)
-                Param.ValueType.INT_VEC2 -> GLES30.glUniform2iv(param.location, 1, (param.value as IntArray), 0)
-                Param.ValueType.INT_VEC3 -> GLES30.glUniform3iv(param.location, 1, (param.value as IntArray), 0)
-                Param.ValueType.INT_VEC4 -> GLES30.glUniform4iv(param.location, 1, (param.value as IntArray), 0)
-                Param.ValueType.MAT3 -> GLES30.glUniformMatrix3fv(
+                Param.ValueType.FLOAT -> GLES32.glUniform1f(param.location, param.value as Float)
+                Param.ValueType.INT -> GLES32.glUniform1i(param.location, param.value as Int)
+                Param.ValueType.BOOL -> GLES32.glUniform1i(param.location, if (param.value as Boolean) 1 else 0)
+                Param.ValueType.FLOAT_VEC2 -> GLES32.glUniform2fv(param.location, 1, (param.value as FloatArray), 0)
+                Param.ValueType.FLOAT_VEC3 -> GLES32.glUniform3fv(param.location, 1, (param.value as FloatArray), 0)
+                Param.ValueType.FLOAT_VEC4 -> GLES32.glUniform4fv(param.location, 1, (param.value as FloatArray), 0)
+                Param.ValueType.INT_VEC2 -> GLES32.glUniform2iv(param.location, 1, (param.value as IntArray), 0)
+                Param.ValueType.INT_VEC3 -> GLES32.glUniform3iv(param.location, 1, (param.value as IntArray), 0)
+                Param.ValueType.INT_VEC4 -> GLES32.glUniform4iv(param.location, 1, (param.value as IntArray), 0)
+                Param.ValueType.MAT3 -> GLES32.glUniformMatrix3fv(
                     param.location,
                     1,
                     false,
                     (param.value as FloatArray),
                     0
                 )
-                Param.ValueType.MAT4 -> GLES30.glUniformMatrix4fv(
+                Param.ValueType.MAT4 -> GLES32.glUniformMatrix4fv(
                     param.location,
                     1,
                     false,
                     (param.value as FloatArray),
                     0
                 )
-                Param.ValueType.MAT3x4 -> GLES30.glUniformMatrix3x4fv(
+                Param.ValueType.MAT3x4 -> GLES32.glUniformMatrix3x4fv(
                     param.location,
                     1,
                     false,
@@ -137,9 +137,9 @@ class ShaderParamsImpl : ShaderParams {
                 )
                 Param.ValueType.SAMPLER_2D -> {
                     (param.value as? TextureParam)?.apply {
-                        GLES30.glUniform1i(param.location, textureSlot.convertTextureSlotToIndex())
-                        GLES30.glActiveTexture(textureSlot)
-                        textureId?.also { GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, it) }
+                        GLES32.glUniform1i(param.location, textureSlot.convertTextureSlotToIndex())
+                        GLES32.glActiveTexture(textureSlot)
+                        textureId?.also { GLES32.glBindTexture(GLES32.GL_TEXTURE_2D, it) }
                     }
                 }
                 Param.ValueType.SAMPLER_OES -> {
@@ -208,38 +208,38 @@ class ShaderParamsImpl : ShaderParams {
 
     private fun Int.convertTextureSlotToIndex(): Int =
         when (this) {
-            GLES30.GL_TEXTURE0 -> 0
-            GLES30.GL_TEXTURE1 -> 1
-            GLES30.GL_TEXTURE2 -> 2
-            GLES30.GL_TEXTURE3 -> 3
-            GLES30.GL_TEXTURE4 -> 4
-            GLES30.GL_TEXTURE5 -> 5
-            GLES30.GL_TEXTURE6 -> 6
-            GLES30.GL_TEXTURE7 -> 7
-            GLES30.GL_TEXTURE8 -> 8
-            GLES30.GL_TEXTURE9 -> 9
-            GLES30.GL_TEXTURE10 -> 10
-            GLES30.GL_TEXTURE11 -> 11
-            GLES30.GL_TEXTURE12 -> 12
-            GLES30.GL_TEXTURE13 -> 13
-            GLES30.GL_TEXTURE14 -> 14
-            GLES30.GL_TEXTURE15 -> 15
-            GLES30.GL_TEXTURE16 -> 16
-            GLES30.GL_TEXTURE17 -> 17
-            GLES30.GL_TEXTURE18 -> 18
-            GLES30.GL_TEXTURE19 -> 19
-            GLES30.GL_TEXTURE20 -> 20
-            GLES30.GL_TEXTURE21 -> 21
-            GLES30.GL_TEXTURE22 -> 22
-            GLES30.GL_TEXTURE23 -> 23
-            GLES30.GL_TEXTURE24 -> 24
-            GLES30.GL_TEXTURE25 -> 25
-            GLES30.GL_TEXTURE26 -> 26
-            GLES30.GL_TEXTURE27 -> 27
-            GLES30.GL_TEXTURE28 -> 28
-            GLES30.GL_TEXTURE29 -> 29
-            GLES30.GL_TEXTURE30 -> 30
-            GLES30.GL_TEXTURE31 -> 31
+            GLES32.GL_TEXTURE0 -> 0
+            GLES32.GL_TEXTURE1 -> 1
+            GLES32.GL_TEXTURE2 -> 2
+            GLES32.GL_TEXTURE3 -> 3
+            GLES32.GL_TEXTURE4 -> 4
+            GLES32.GL_TEXTURE5 -> 5
+            GLES32.GL_TEXTURE6 -> 6
+            GLES32.GL_TEXTURE7 -> 7
+            GLES32.GL_TEXTURE8 -> 8
+            GLES32.GL_TEXTURE9 -> 9
+            GLES32.GL_TEXTURE10 -> 10
+            GLES32.GL_TEXTURE11 -> 11
+            GLES32.GL_TEXTURE12 -> 12
+            GLES32.GL_TEXTURE13 -> 13
+            GLES32.GL_TEXTURE14 -> 14
+            GLES32.GL_TEXTURE15 -> 15
+            GLES32.GL_TEXTURE16 -> 16
+            GLES32.GL_TEXTURE17 -> 17
+            GLES32.GL_TEXTURE18 -> 18
+            GLES32.GL_TEXTURE19 -> 19
+            GLES32.GL_TEXTURE20 -> 20
+            GLES32.GL_TEXTURE21 -> 21
+            GLES32.GL_TEXTURE22 -> 22
+            GLES32.GL_TEXTURE23 -> 23
+            GLES32.GL_TEXTURE24 -> 24
+            GLES32.GL_TEXTURE25 -> 25
+            GLES32.GL_TEXTURE26 -> 26
+            GLES32.GL_TEXTURE27 -> 27
+            GLES32.GL_TEXTURE28 -> 28
+            GLES32.GL_TEXTURE29 -> 29
+            GLES32.GL_TEXTURE30 -> 30
+            GLES32.GL_TEXTURE31 -> 31
             else -> 0
         }
 }

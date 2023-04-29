@@ -43,6 +43,15 @@ class ShaderBuilder {
         }
         return this
     }
+    fun create(
+        vertexShader: String,
+        fragmentShader: String
+    ): ShaderBuilder {
+        if (!shader.createProgram(vertexShader, fragmentShader)) {
+            LibLog.e(TAG, "shader program wasn't created")
+        }
+        return this
+    }
 
     fun params(shaderParams: ShaderParams): ShaderBuilder {
         shader.params = shaderParams

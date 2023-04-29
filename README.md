@@ -1,5 +1,5 @@
 # ShaderView
-[![](https://jitpack.io/v/appspell/ShaderView.svg)](https://jitpack.io/#appspell/ShaderView)
+[![](https://jitpack.io/v/oxters168/ShaderView.svg)](https://jitpack.io/#oxters168/ShaderView)
 
 This library is the easiest way to use **OpenGL shaders** as an **[Android View](https://developer.android.com/reference/android/view/View)**. You just simply need to add **ShaderView** in your layout and set up shaders.
 The advantage of this library that you can use ShaderView in your hierarchy as a regular View.
@@ -81,9 +81,13 @@ with(shaderView) {
 
 ## The full list of ShaderView properties:
 
-`fragmentShaderRawResId` - reference to the vertex shader file in RAW resource solder [example]
+`fragmentShaderRawResId` - reference to the vertex shader file in RAW resource solder [example]  
+OR  
+`fragmentShader` - a string of the fragment shader code
 
-`vertexShaderRawResId` - reference to the fragment shader file in RAW resource solder [example]
+`vertexShaderRawResId` - reference to the fragment shader file in RAW resource solder [example]  
+OR  
+`vertexShader` - a string of the vertex shader code
 
 `shaderParams` - custom parameters that we're going to send to the shader (uniform)
 
@@ -92,6 +96,8 @@ with(shaderView) {
 `onDrawFrameListener` - called each frame
 
 `updateContinuously` -  should we render the view each frame (default is "false")
+
+`framerate` - how many frames the shader should be drawn per second when update mode is set to continuously (<=0 means every frame)
 
 `debugMode` - enable or disable debug logs
 
@@ -105,7 +111,7 @@ shaderView.shaderParams = ShaderParamsBuilder()
                     .addTexture2D(
                         "uNormalTexture", // name of `sampler2D` in the fragment shader
                         R.drawable.normal_button, // drawable that we use for such texture
-                        GLES30.GL_TEXTURE0 // texture slot
+                        GLES32.GL_TEXTURE0 // texture slot
                     )
                     .addColor("uColor", R.color.grey, resources) // send color as `uniform vec4`
                     .addVec4f("uColor2", floatArrayOf(0.5f, 0.5f, 0.5f, 1f))
